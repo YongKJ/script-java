@@ -4,6 +4,7 @@ import com.yongkj.App;
 import com.yongkj.pojo.dto.Log;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class FileUtil {
 
@@ -63,19 +64,21 @@ public class FileUtil {
             return sb.toString();
         } catch (Exception e) {
             LogUtil.loggerLine(Log.of("FileUtil", "read", "e", e));
+            e.printStackTrace();
             return "";
         }
     }
 
     public static void write(String fileName, String content) {
         try {
-            FileWriter writeFile = new FileWriter(new File(fileName).getAbsoluteFile());
+            FileWriter writeFile = new FileWriter(fileName, StandardCharsets.UTF_8);
             BufferedWriter writer = new BufferedWriter(writeFile);
             writer.write(content);
             writer.flush();
             writeFile.close();
         } catch (Exception e) {
             LogUtil.loggerLine(Log.of("FileUtil", "write", "e", e));
+            e.printStackTrace();
         }
     }
 

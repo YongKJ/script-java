@@ -30,6 +30,7 @@ public class GenUtil {
             return mapper.readValue(new File(path), Map.class);
         } catch (Exception e) {
             LogUtil.loggerLine(Log.of("GenUtil", "getConfig", "e", e));
+            e.printStackTrace();
             return new HashMap<String, Object>();
         }
     }
@@ -39,9 +40,11 @@ public class GenUtil {
             String path = getConfigPath(config);
             String content = mapper.writeValueAsString(mapData);
             content = content.substring(4);
+            LogUtil.loggerLine(Log.of("GenUtil", "writeConfig", "content", content));
             FileUtil.write(path, content);
         } catch (Exception e) {
             LogUtil.loggerLine(Log.of("GenUtil", "writeConfig", "e", e));
+            e.printStackTrace();
         }
     }
 
