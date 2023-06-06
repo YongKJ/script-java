@@ -5,8 +5,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.yongkj.pojo.dto.Log;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class GenUtil {
 
@@ -15,6 +15,14 @@ public class GenUtil {
     }
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+    public static int strToInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     public static String objToStr(Object value) {
         return value != null ? value.toString() : "";
@@ -40,7 +48,6 @@ public class GenUtil {
             String path = getConfigPath(config);
             String content = mapper.writeValueAsString(mapData);
             content = content.substring(4);
-            LogUtil.loggerLine(Log.of("GenUtil", "writeConfig", "content", content));
             FileUtil.write(path, content);
         } catch (Exception e) {
             LogUtil.loggerLine(Log.of("GenUtil", "writeConfig", "e", e));
@@ -54,6 +61,41 @@ public class GenUtil {
             path = FileUtil.getAbsPath(false, "src", "main", "resources", config);
         }
         return path;
+    }
+
+    public static String toHump(String name) {
+        return name.substring(0, 1).toUpperCase() + Pattern.compile("\\-(\\w)").matcher(name.substring(1)).replaceAll(str -> str.group(1).toUpperCase());
+    }
+
+    public static String toLine(String name) {
+        return name.substring(0, 1).toLowerCase() + name.substring(1).replaceAll("([A-Z])", "-$1").toLowerCase();
+    }
+
+    public static void println() {
+        System.out.println();
+    }
+
+    public static void println(String str) {
+        System.out.println(str);
+    }
+
+    public static void print(String str) {
+        System.out.print(str);
+    }
+
+    public static List<String> readParams() {
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();
+        return strToList(line);
+    }
+
+    public static List<String> strToList(String str) {
+        return strToList(str, " ");
+    }
+
+    public static List<String> strToList(String str, String separator) {
+        if (str.length() == 0) return new ArrayList<>();
+        return Arrays.asList(str.trim().split(separator));
     }
 
 }

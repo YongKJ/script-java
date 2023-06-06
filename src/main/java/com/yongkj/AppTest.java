@@ -1,11 +1,11 @@
 package com.yongkj;
 
-import com.yongkj.applet.demo.Demo;
+import com.yongkj.deploy.service.BuildScriptService;
 
 public class AppTest {
 
     public static void main(String[] args) {
-        Demo.run();
+        BuildScriptService.run();
     }
 
 }

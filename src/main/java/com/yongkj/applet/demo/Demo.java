@@ -40,8 +40,19 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test", "absPath", path));
     }
 
+    private void test1() {
+        String humpName = GenUtil.toHump("build-script-service.java");
+        LogUtil.loggerLine(Log.of("Demo", "test1", "humpName", humpName));
+        System.out.println("----------------------------------------------------------------- ");
+        String lineName = GenUtil.toLine("buildScriptService.java");
+        LogUtil.loggerLine(Log.of("Demo", "test1", "lineName", lineName));
+        System.out.println("----------------------------------------------------------------- ");
+    }
+
     public static void run() {
-        new Demo().test();
+        Demo demo = new Demo();
+        demo.test1();
+        demo.test();
     }
 
 }
