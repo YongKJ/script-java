@@ -35,6 +35,7 @@ public class BuildScriptService {
             }
             if (index == -1) {
                 String buildCmd = CmdUtil.copyMavenDependencies();
+                RemoteUtil.changeWorkFolder(FileUtil.appDir());
                 RemoteUtil.execLocalCmd(buildCmd);
             }
         }
