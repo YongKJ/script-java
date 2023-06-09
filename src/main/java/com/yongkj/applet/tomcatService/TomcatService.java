@@ -9,16 +9,18 @@ public class TomcatService {
 
     private TomcatService() {
         Object value = GenUtil.getValue("tomcat-service.yaml", "tomcat-bin");
-        this.tomcatBin = GenUtil.objToStr(value);
+        tomcatBin = GenUtil.objToStr(value);
     }
 
     private void start() {
         String startupBat = tomcatBin + "\\startup.bat";
+        RemoteUtil.changeWorkFolder(tomcatBin);
         RemoteUtil.execLocalCmdByAsync(startupBat);
     }
 
     private void shutdown() {
         String shutdownBat = tomcatBin + "\\shutdown.bat";
+        RemoteUtil.changeWorkFolder(tomcatBin);
         RemoteUtil.execLocalCmd(shutdownBat);
     }
 
