@@ -9,6 +9,7 @@ import java.util.List;
 
 public class BuildScriptService {
 
+    private int configType = 1;
     private final List<Script> scripts;
     private final BuildConfig buildConfig;
 
@@ -28,6 +29,17 @@ public class BuildScriptService {
         if (nums.size() == 0) return;
         GenUtil.println();
 
+        GenUtil.println("1. external libraries");
+        GenUtil.println("2. external libraries update");
+        GenUtil.println("3. internal libraries");
+        GenUtil.print("Please enter the number corresponding to the config: ");
+        List<String> types = GenUtil.readParams();
+        if (nums.size() > 0) {
+            configType = GenUtil.strToInt(types.get(0));
+        }
+        GenUtil.println();
+
+        changePomXml(true);
         for (String num : nums) {
             int index = GenUtil.strToInt(num) - 1;
             if (0 <= index && index < scripts.size()) {
@@ -39,6 +51,7 @@ public class BuildScriptService {
                 RemoteUtil.execLocalCmd(buildCmd);
             }
         }
+        changePomXml(false);
     }
 
     private void build(Script script) {
@@ -57,7 +70,16 @@ public class BuildScriptService {
     }
 
     private void updateScript(Script script) {
-        FileUtil.copy(buildConfig.getJarPath(), script.getScriptPath());
+        FileUtil.copy(configType == 3 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
+    }
+
+    private void changePomXml(boolean isBefore) {
+        if (configType == 1) return;
+        FileUtil.modFile(
+                buildConfig.getPomPath(), buildConfig.getPomPluginsPattern(),
+                !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 2 ?
+                        buildConfig.getPomPluginsExternalUpdate() : buildConfig.getPomPluginsInternal())
+        );
     }
 
     private void changeBuildConfig(Script script, boolean isBefore) {
@@ -83,7 +105,7 @@ public class BuildScriptService {
         );
     }
 
-    public static void run() {
+    public static void run(String[] args) {
         new BuildScriptService().apply();
     }
 
