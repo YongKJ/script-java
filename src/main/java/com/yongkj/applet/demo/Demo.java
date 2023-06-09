@@ -21,7 +21,9 @@ public class Demo {
     }
 
     private void test() {
-        GenUtil.writeConfig("demo.yaml", Map.of("msg", "世界，你好！"));
+        Map<String, Object> data = new HashMap<>();
+        data.put("msg", "世界，你好！");
+        GenUtil.writeConfig("demo.yaml", data);
         LogUtil.loggerLine(Log.of("Demo", "test", "msg", msg));
         final String dir = System.getProperty("user.dir");
         System.out.println("----------------------------------------------------------------- ");
@@ -66,13 +68,13 @@ public class Demo {
 
     private void test3() {
         String path = "D:\\Document\\MyCodes\\Github\\script-java\\pom.xml";
-        FileUtil.modFile(path, "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getInternalLibraries());
+        FileUtil.modFile(path, "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getExternalLibraries());
     }
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-//        demo.test3();
-        demo.test2();
+        demo.test3();
+//        demo.test2();
 //        demo.test1();
 //        demo.test();
     }
