@@ -1,11 +1,14 @@
 package com.yongkj.applet.demo;
 
 import com.yongkj.AppTest;
+import com.yongkj.deploy.pojo.po.PomXml;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.ApiUtil;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Demo {
@@ -49,10 +52,29 @@ public class Demo {
         System.out.println("----------------------------------------------------------------- ");
     }
 
-    public static void run() {
+    private void test2() {
+        String url = "http://localhost:8899/path/demo";
+        String data = ApiUtil.requestByGetWithParams(url, new HashMap<>());
+        LogUtil.loggerLine(Log.of("Demo", "test2", "data", data));
+        System.out.println("----------------------------------------------------------------- ");
+        ApiUtil.setProxyEnable(true);
+        url = "https://www.google.com";
+        data = ApiUtil.requestByGetWithParams(url, new HashMap<>());
+        LogUtil.loggerLine(Log.of("Demo", "test2", "data", data));
+        System.out.println("----------------------------------------------------------------- ");
+    }
+
+    private void test3() {
+        String path = "D:\\Document\\MyCodes\\Github\\script-java\\pom.xml";
+        FileUtil.modFile(path, "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getInternalLibraries());
+    }
+
+    public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test1();
-        demo.test();
+//        demo.test3();
+        demo.test2();
+//        demo.test1();
+//        demo.test();
     }
 
 }

@@ -145,6 +145,26 @@ public class FileUtil {
         }
     }
 
+    public static void modFile(String path, String regStr, String value) {
+        modFile(path, regStr, value, false);
+    }
+
+    public static void modFile(String path, String regStr, String value, boolean isAll) {
+        modFile(path, regStr, str -> value, isAll);
+    }
+
+    public static void modFile(String path, String regStr, Function<String, String> valueFunc, boolean isAll) {
+        String content = read(path);
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(content);
+        if (isAll) {
+            content = matcher.replaceAll(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+        } else {
+            content = matcher.replaceFirst(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+        }
+        write(path, content);
+    }
+
     public static void modContent(String path, String regStr, String value) {
         modContent(path, regStr, value, false);
     }

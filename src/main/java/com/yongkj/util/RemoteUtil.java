@@ -20,7 +20,7 @@ public class RemoteUtil {
     }
 
     public static void execLocalCmdByAsync(List<String> lstCommand, String localPrefix) {
-        String cmd = (System.getProperty("os.name").contains("dows") ? "cmd /k " : "") +
+        String cmd = (System.getProperty("os.name").contains("dows") ? "cmd /c start " : "") +
                 String.join(" & ", lstCommand);
         execCmdByAsync(cmd, localPrefix);
     }
