@@ -5,7 +5,6 @@ import com.yongkj.pojo.dto.Log;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +59,9 @@ public class FileUtil {
     public static String read(String path) {
         String lineBreak = System.getProperty("os.name").contains("dows") ? "\r\n" : "\n";
         try {
-            FileReader reader = new FileReader(path);
+//            FileReader reader = new FileReader(path);
+            FileInputStream inputStream = new FileInputStream(path);
+            InputStreamReader reader = new InputStreamReader(inputStream);
             BufferedReader bReader = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
             String s = "";
