@@ -1,4 +1,4 @@
-package com.yongkj.util;
+package com.yongkj.applet.tomcatService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,24 +8,35 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
-public class RemoteUtil {
+public class TomcatService {
 
-    private RemoteUtil() {
+    private final String tomcatBin = "D:\\Software\\scoop\\apps\\tomcat8\\8.5.77\\bin";
+
+    private void start() {
+        String startupBat = tomcatBin + "\\startup.bat";
+        execLocalCmdByAsync(startupBat);
     }
 
-    private static String workFolder = "";
-
-    public static void execLocalCmdByAsync(String command) {
-        execLocalCmdByAsync(Collections.singletonList(command), workFolder);
+    private void shutdown() {
+        String shutdownBat = tomcatBin + "\\shutdown.bat";
+        execLocalCmd(shutdownBat);
     }
 
-    public static void execLocalCmdByAsync(List<String> lstCommand, String localPrefix) {
-        String cmd = (System.getProperty("os.name").contains("dows") ? "cmd /k " : "") +
+    public static void main(String[] args) {
+        if ((args.length == 0 || args[0].equals("start"))) {
+            new TomcatService().start();
+        } else {
+            new TomcatService().shutdown();
+        }
+    }
+
+    public void execLocalCmdByAsync(String command) {
+        execLocalCmdByAsync(Collections.singletonList(command), tomcatBin);
+    }
+
+    public void execLocalCmdByAsync(List<String> lstCommand, String localPrefix) {
+        String cmd = (System.getProperty("os.name").contains("dows") ? "cmd /c start " : "") +
                 String.join(" & ", lstCommand);
-        execCmdByAsync(cmd, localPrefix);
-    }
-
-    private static void execCmdByAsync(String cmd, String localPrefix) {
         try {
             if (localPrefix.length() == 0) {
                 Runtime.getRuntime().exec(cmd);
@@ -37,17 +48,13 @@ public class RemoteUtil {
         }
     }
 
-    public static void execLocalCmd(String command) {
-        execLocalCmd(Collections.singletonList(command), workFolder);
+    public void execLocalCmd(String command) {
+        execLocalCmd(Collections.singletonList(command), tomcatBin);
     }
 
-    public static void execLocalCmd(List<String> lstCommand, String localPrefix) {
+    public void execLocalCmd(List<String> lstCommand, String localPrefix) {
         String cmd = (System.getProperty("os.name").contains("dows") ? "cmd /c " : "") +
                 String.join(" & ", lstCommand);
-        execCmd(cmd, localPrefix);
-    }
-
-    private static void execCmd(String cmd, String localPrefix) {
         try {
             Process process = localPrefix.length() == 0 ? Runtime.getRuntime().exec(cmd) :
                     Runtime.getRuntime().exec(cmd, null, new File(localPrefix));
@@ -58,7 +65,7 @@ public class RemoteUtil {
         }
     }
 
-    private static void printInfo(InputStream in) {
+    private void printInfo(InputStream in) {
         InputStreamReader isr = new InputStreamReader(in, StandardCharsets.UTF_8);
         BufferedReader reader = new BufferedReader(isr);
         try {
@@ -69,10 +76,6 @@ public class RemoteUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void changeWorkFolder(String home) {
-        workFolder = home;
     }
 
 }
