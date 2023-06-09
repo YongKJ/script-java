@@ -3,6 +3,8 @@ package com.yongkj.applet.tomcatService;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.RemoteUtil;
 
+import java.util.concurrent.TimeUnit;
+
 public class TomcatService {
 
     private final String tomcatBin;
@@ -25,10 +27,20 @@ public class TomcatService {
     }
 
     public static void run(String[] args) {
-        if ((args.length == 0 || args[0].equals("start"))) {
+        if (args.length > 0) {
+            if (args[0].equals("start")) {
+                new TomcatService().start();
+            } else if (args[0].equals("stop")) {
+                new TomcatService().shutdown();
+            }
+            return;
+        }
+        try {
             new TomcatService().start();
-        } else if (args[0].equals("stop")) {
+            TimeUnit.SECONDS.sleep(10);
             new TomcatService().shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
