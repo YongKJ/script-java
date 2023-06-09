@@ -6,6 +6,8 @@ import com.yongkj.pojo.dto.Log;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GenUtil {
@@ -64,7 +66,25 @@ public class GenUtil {
     }
 
     public static String toHump(String name) {
-        return name.substring(0, 1).toUpperCase() + Pattern.compile("\\-(\\w)").matcher(name.substring(1)).replaceAll(str -> str.group(1).toUpperCase());
+//        return name.substring(0, 1).toUpperCase() + Pattern.compile("\\-(\\w)").matcher(name.substring(1)).replaceAll(str -> str.group(1).toUpperCase());
+        String tempName = name.substring(1);
+        Pattern pattern = Pattern.compile("\\-(\\w)");
+        Matcher matcher = pattern.matcher(tempName);
+        return name.substring(0, 1).toUpperCase() + replaceStr(matcher, String::toUpperCase, true);
+    }
+
+    public static String replaceStr(Matcher matcher, Function<String, String> valueFunc, boolean isAll) {
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            if (matcher.group(1) == null) {
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(matcher.group()));
+            } else {
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(valueFunc.apply(matcher.group(1))));
+            }
+            if (!isAll) break;
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     public static String toLine(String name) {

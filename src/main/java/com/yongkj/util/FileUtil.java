@@ -79,7 +79,9 @@ public class FileUtil {
 
     public static void write(String fileName, String content) {
         try {
-            FileWriter writeFile = new FileWriter(fileName, StandardCharsets.UTF_8);
+//            FileWriter writeFile = new FileWriter(fileName, StandardCharsets.UTF_8);
+            FileOutputStream outputStream = new FileOutputStream(fileName);
+            OutputStreamWriter writeFile = new OutputStreamWriter(outputStream);
             BufferedWriter writer = new BufferedWriter(writeFile);
             writer.write(content);
             writer.flush();
@@ -158,9 +160,11 @@ public class FileUtil {
         Pattern pattern = Pattern.compile(regStr);
         Matcher matcher = pattern.matcher(content);
         if (isAll) {
-            content = matcher.replaceAll(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+//            content = matcher.replaceAll(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+            content = GenUtil.replaceStr(matcher, valueFunc, isAll);
         } else {
-            content = matcher.replaceFirst(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+//            content = matcher.replaceFirst(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
+            content = GenUtil.replaceStr(matcher, valueFunc, isAll);
         }
         write(path, content);
     }
