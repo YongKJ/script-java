@@ -37,9 +37,10 @@ public class BuildScriptService {
 
         GenUtil.println("1. external libraries");
         GenUtil.println("2. external libraries slim");
-        GenUtil.println("3. external libraries update");
-        GenUtil.println("4. internal libraries");
-        GenUtil.println("5. internal libraries slim");
+        GenUtil.println("3. external libraries slim mini");
+        GenUtil.println("4. external libraries update");
+        GenUtil.println("5. internal libraries");
+        GenUtil.println("6. internal libraries slim");
         GenUtil.print("Please enter the number corresponding to the config: ");
         List<String> types = GenUtil.readParams();
         if (nums.size() > 0) {
@@ -68,8 +69,8 @@ public class BuildScriptService {
         RemoteUtil.changeWorkFolder(FileUtil.appDir());
         switch (configType) {
             case 1:
-            case 3:
             case 4:
+            case 5:
                 RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
                 break;
             case 2:
@@ -80,7 +81,17 @@ public class BuildScriptService {
                 RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
                 changePomDependencies(script, false);
                 break;
-            case 5:
+            case 3:
+                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
+                changePomDependencies(script, true);
+                changePomClassPath(true);
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
+                FileUtil.delete(buildConfig.getLibsPath());
+                RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
+                changePomClassPath(false);
+                changePomDependencies(script, false);
+                break;
+            case 6:
                 RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
                 changePomDependencies(script, true);
                 RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
@@ -97,22 +108,30 @@ public class BuildScriptService {
     }
 
     private void updateScript(Script script) {
-        FileUtil.copy(configType == 4 || configType == 5 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
+        FileUtil.copy(configType == 5 || configType == 6 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
     }
 
     private void changePomDependencies(Script script, boolean isBefore) {
-        if (!(configType == 2 || configType == 5)) return;
+        if (!(configType == 2 || configType == 3 || configType == 6)) return;
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomDependenciesPattern(),
                 !isBefore ? buildConfig.getPomDependenciesOriginal() : BuildConfig.getPomDependenciesLatest(dependencies, script)
         );
     }
 
+    private void changePomClassPath(boolean isBefore) {
+        if (configType != 3) return;
+        FileUtil.modContent(
+                buildConfig.getPomPath(), buildConfig.getPomClassPathPattern(),
+                !isBefore ? buildConfig.getPomClassPathOriginal() : buildConfig.getPomClassPathLatest()
+        );
+    }
+
     private void changePomPlugins(boolean isBefore) {
-        if (configType == 1 || configType == 2) return;
+        if (configType == 1 || configType == 2 || configType == 3) return;
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomPluginsPattern(),
-                !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 3 ?
+                !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 4 ?
                         buildConfig.getPomPluginsExternalUpdate() : buildConfig.getPomPluginsInternal())
         );
     }

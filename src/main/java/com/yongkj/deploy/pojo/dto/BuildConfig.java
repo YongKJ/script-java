@@ -29,8 +29,11 @@ public class BuildConfig {
     private String pomPluginsExternalUpdate;
     private String pomDependenciesPattern;
     private String pomDependenciesOriginal;
+    private String pomClassPathPattern;
+    private String pomClassPathOriginal;
+    private String pomClassPathLatest;
 
-    private BuildConfig(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal) {
+    private BuildConfig(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal, String pomClassPathPattern, String pomClassPathOriginal, String pomClassPathLatest) {
         this.jarName = jarName;
         this.jarPath = jarPath;
         this.appPath = appPath;
@@ -49,10 +52,13 @@ public class BuildConfig {
         this.pomPluginsInternal = pomPluginsInternal;
         this.pomDependenciesPattern = pomDependenciesPattern;
         this.pomDependenciesOriginal = pomDependenciesOriginal;
+        this.pomClassPathPattern = pomClassPathPattern;
+        this.pomClassPathOriginal = pomClassPathOriginal;
+        this.pomClassPathLatest = pomClassPathLatest;
     }
 
-    public static BuildConfig of(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal) {
-        return new BuildConfig(jarName, jarPath, appPath, pomPath, libsPath, jarDepName, jarDepPath, scriptRunPattern, scriptRunOriginal, packageImportPattern, packageImportOriginal, pomPluginsPattern, pomPluginsOriginal, pomPluginsExternal, pomPluginsExternalUpdate, pomPluginsInternal, pomDependenciesPattern, pomDependenciesOriginal);
+    public static BuildConfig of(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal, String pomClassPathPattern, String pomClassPathOriginal, String pomClassPathLatest) {
+        return new BuildConfig(jarName, jarPath, appPath, pomPath, libsPath, jarDepName, jarDepPath, scriptRunPattern, scriptRunOriginal, packageImportPattern, packageImportOriginal, pomPluginsPattern, pomPluginsOriginal, pomPluginsExternal, pomPluginsExternalUpdate, pomPluginsInternal, pomDependenciesPattern, pomDependenciesOriginal, pomClassPathPattern, pomClassPathOriginal, pomClassPathLatest);
     }
 
     public static BuildConfig get() {
@@ -70,7 +76,8 @@ public class BuildConfig {
                 "Demo", "import (.*);", "com.yongkj.applet.demo.Demo",
                 "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getExternalLibraries(),
                 PomXml.getExternalLibraries(), PomXml.getExternalLibrariesUpdate(), PomXml.getInternalLibraries(),
-                "(<dependencies>[\\s\\S]*?</dependencies>)", ""
+                "(<dependencies>[\\s\\S]*?</dependencies>)", "",
+                "<classpathPrefix>([\\s\\S]*?)</classpathPrefix>", "../libs/", "./libs/"
         );
         setPomDependenciesOriginal(config);
         return config;
@@ -245,5 +252,29 @@ public class BuildConfig {
 
     public void setPomDependenciesOriginal(String pomDependenciesOriginal) {
         this.pomDependenciesOriginal = pomDependenciesOriginal;
+    }
+
+    public String getPomClassPathPattern() {
+        return pomClassPathPattern;
+    }
+
+    public void setPomClassPathPattern(String pomClassPathPattern) {
+        this.pomClassPathPattern = pomClassPathPattern;
+    }
+
+    public String getPomClassPathOriginal() {
+        return pomClassPathOriginal;
+    }
+
+    public void setPomClassPathOriginal(String pomClassPathOriginal) {
+        this.pomClassPathOriginal = pomClassPathOriginal;
+    }
+
+    public String getPomClassPathLatest() {
+        return pomClassPathLatest;
+    }
+
+    public void setPomClassPathLatest(String pomClassPathLatest) {
+        this.pomClassPathLatest = pomClassPathLatest;
     }
 }
