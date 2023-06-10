@@ -86,6 +86,7 @@ public class Script {
                 if (tempPackageName.contains("java.")) continue;
                 if (tempPackageName.contains("javax.")) continue;
                 if (tempPackageName.contains("w3c.dom")) continue;
+                if (tempPackageName.contains("com.yongkj.App")) continue;
                 if (tempPackageName.contains("yongkj")) {
                     packageNames.addAll(analyzePackageName(content, tempPackageName, paths));
                     continue;
