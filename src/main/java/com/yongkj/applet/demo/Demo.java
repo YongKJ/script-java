@@ -209,7 +209,8 @@ public class Demo {
 
     private void test10() {
 //        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
-        String packageName = "com.yongkj.deploy.service.BuildScriptService";
+//        String packageName = "com.yongkj.deploy.service.BuildScriptService";
+        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
         String content = FileUtil.read(Script.getSourceCodePath(packageName));
         Set<String> packageNames = Script.analyzePackageName(content, packageName, new HashSet<>());
         for (String name : packageNames) {
@@ -287,11 +288,11 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test14();
+//        demo.test14();
 //        demo.test13();
 //        demo.test12();
 //        demo.test11();
-//        demo.test10();
+        demo.test10();
 //        demo.test9();
 //        demo.test8();
 //        demo.test7();
