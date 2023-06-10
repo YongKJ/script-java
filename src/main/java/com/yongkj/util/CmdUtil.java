@@ -5,6 +5,10 @@ public class CmdUtil {
     private CmdUtil() {
     }
 
+    public static String pullMavenDependencies(String pomPath, String libsPath) {
+        return "mvn -f " + pomPath + " dependency:copy-dependencies -DoutputDirectory=" + libsPath;
+    }
+
     public static String copyMavenDependencies() {
         return "mvn -f pom.xml dependency:copy-dependencies -DoutputDirectory=" + FileUtil.getAbsPath(false, "libs");
     }
