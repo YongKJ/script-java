@@ -1,15 +1,27 @@
 package com.yongkj.applet.demo;
 
 import com.yongkj.AppTest;
+import com.yongkj.deploy.pojo.dto.BuildConfig;
+import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.PomXml;
+import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.ApiUtil;
-import com.yongkj.util.FileUtil;
-import com.yongkj.util.GenUtil;
-import com.yongkj.util.LogUtil;
+import com.yongkj.util.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.FileInputStream;
+import java.io.StringReader;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Demo {
 
@@ -71,9 +83,176 @@ public class Demo {
         FileUtil.modFile(path, "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getExternalLibraries());
     }
 
+    private void test4() {
+        RemoteUtil.execLocalCmd("wmic process list full");
+    }
+
+    private void test5() {
+        String jarPath = "C:\\Users\\admin\\.m2\\repository\\org\\springframework\\spring-web\\5.3.27\\spring-web-5.3.27.jar";
+        try {
+            JarEntry entry;
+            FileInputStream inputStream = new FileInputStream(jarPath);
+            JarInputStream jarInputStream = new JarInputStream(inputStream);
+            while ((entry = jarInputStream.getNextJarEntry()) != null) {
+                if (!entry.isDirectory()) continue;
+                String[] paths = entry.getName().split("/");
+                if (paths.length != 3) continue;
+                int index = entry.getName().length() - 1;
+                String packageName = entry.getName().substring(0, index);
+                packageName = packageName.replace("/", ".");
+                LogUtil.loggerLine(Log.of("Demo", "test5", "entryName", entry.getName()));
+                LogUtil.loggerLine(Log.of("Demo", "test5", "packageName", packageName));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void test6() {
+        String regStr = "\n(\\s+<dependency>[\\s\\S]*?</dependency>)";
+        String path = "D:\\Document\\MyCodes\\Github\\script-java\\pom.xml";
+
+        String content = FileUtil.read(path);
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(content);
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            while (matcher.find()) {
+                String xmlData = matcher.group(1).replaceAll("\r\n", "\n");
+                LogUtil.loggerLine(Log.of("Demo", "test6", "dependency", "\n" + xmlData));
+
+                Document document = builder.parse(new InputSource(new StringReader(xmlData)));
+//                Document document = builder.parse(xmlData);
+                NodeList dependencyData = document.getElementsByTagName("dependency");
+                String dataStr = dependencyData.item(0).toString();
+                LogUtil.loggerLine(Log.of("Demo", "test6", "dataStr", dataStr));
+
+
+                for (int i = 0; i < dependencyData.getLength(); i++) {
+                    NodeList data = dependencyData.item(i).getChildNodes();
+                    LogUtil.loggerLine(Log.of("Demo", "test6", "dataLength", data.getLength()));
+                    LogUtil.loggerLine(Log.of("Demo", "test6", "data", data.getLength()));
+                    for (int j = 0; j < data.getLength(); j++) {
+                        Node node = data.item(i);
+                        String name = node.getNodeName();
+                        String value = node.getNodeValue();
+                        LogUtil.loggerLine(Log.of("Demo", "test6", "node", node.toString()));
+                        LogUtil.loggerLine(Log.of("Demo", "test6", "name", name));
+                        LogUtil.loggerLine(Log.of("Demo", "test6", "value", value));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void test7() {
+        String path = "C:\\Users\\admin\\.m2\\repository";
+        String separator = "\\";
+        String xmlData = "<dependency>\n" +
+                "            <groupId>org.apache.httpcomponents</groupId>\n" +
+                "            <artifactId>httpclient</artifactId>\n" +
+                "            <version>4.5.14</version>\n" +
+                "        </dependency>";
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+//            Document document = builder.parse(new ByteArrayInputStream(xmlData.getBytes(StandardCharsets.UTF_8)));
+            Document document = builder.parse(new InputSource(new StringReader(xmlData)));
+            Element rootEl = document.getDocumentElement();
+            NodeList data = rootEl.getChildNodes();
+
+            for (int i = 0; i < data.getLength(); i++) {
+                Node node = data.item(i);
+                if (node.getNodeType() != Node.ELEMENT_NODE) continue;
+                String name = node.getNodeName();
+                String value = node.getFirstChild().getNodeValue();
+                LogUtil.loggerLine(Log.of("Demo", "test6", "name", name));
+                LogUtil.loggerLine(Log.of("Demo", "test6", "value", value));
+                if (!name.equals("groupId")) continue;
+                String[] paths = value.split("\\.");
+                for (String pathStr : paths) {
+                    path += separator + pathStr;
+                }
+                LogUtil.loggerLine(Log.of("Demo", "test6", "path", path));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void test8() {
+        String path = "C:\\Users\\admin\\.m2\\repository";
+        List<Dependency> dependencies = Dependency.get(path);
+        for (Dependency dependency : dependencies) {
+            LogUtil.loggerLine(Log.of("Demo", "test6", "dependency", dependency.toString()));
+        }
+    }
+
+    private void test9() {
+        String path = FileUtil.getAbsPath(false, "src", "main", "java");
+        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
+        String separator = path.contains("/") ? "/" : "\\";
+        path += separator + packageName.replace(".", separator);
+        path += ".java";
+
+        String regStr = "import (.*);";
+        String content = FileUtil.read(path);
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            String name = matcher.group(1);
+            if (name.contains("java.")) continue;
+            LogUtil.loggerLine(Log.of("Demo", "test6", "packageName", name));
+        }
+    }
+
+    private void test10() {
+//        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
+        String packageName = "com.yongkj.deploy.service.BuildScriptService";
+        String content = FileUtil.read(Script.getSourceCodePath(packageName));
+        Set<String> packageNames = Script.analyzePackageName(content, packageName, new HashSet<>());
+        for (String name : packageNames) {
+            LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
+        }
+
+//        List<Script> lstScript = Script.get();
+//        for (Script script : lstScript) {
+//            LogUtil.loggerLine(Log.of("Demo", "test10", "script", script.toString()));
+//        }
+    }
+
+    private void test11() {
+        BuildConfig config = BuildConfig.get();
+        LogUtil.loggerLine(Log.of("Demo", "test11", "pomDependenciesOriginal", config.getPomDependenciesOriginal()));
+    }
+
+    private void test12() {
+        String path = "C:\\Users\\admin\\.m2\\repository";
+        List<Dependency> dependencies = Dependency.get(path);
+        BuildConfig config = BuildConfig.get();
+        List<Script> lstScript = Script.get();
+        for (Script script : lstScript) {
+            String pomDependenciesLatest = BuildConfig.getPomDependenciesLatest(dependencies, script);
+            LogUtil.loggerLine(Log.of("Demo", "test12", "scriptName", script.getScriptName()));
+            LogUtil.loggerLine(Log.of("Demo", "test12", "pomDependenciesLatest", pomDependenciesLatest));
+        }
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test3();
+        demo.test12();
+//        demo.test11();
+//        demo.test10();
+//        demo.test9();
+//        demo.test8();
+//        demo.test7();
+//        demo.test6();
+//        demo.test5();
+//        demo.test4();
+//        demo.test3();
 //        demo.test2();
 //        demo.test1();
 //        demo.test();
