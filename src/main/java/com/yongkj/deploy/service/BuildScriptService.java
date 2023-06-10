@@ -1,6 +1,7 @@
 package com.yongkj.deploy.service;
 
 import com.yongkj.deploy.pojo.dto.BuildConfig;
+import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
@@ -12,26 +13,33 @@ public class BuildScriptService {
     private int configType = 1;
     private final List<Script> scripts;
     private final BuildConfig buildConfig;
+    private final List<Dependency> dependencies;
 
     private BuildScriptService() {
-        this.scripts = Script.get();
+        String repositoryPath = GenUtil.objToStr(GenUtil.getValue(
+                "build-script-service.yaml", "repository-path"
+        ));
+        this.dependencies = Dependency.get(repositoryPath);
         this.buildConfig = BuildConfig.get();
+        this.scripts = Script.get();
     }
 
     private void apply() {
         GenUtil.println();
-        GenUtil.println("0. update script dependencies");
         for (int i = 0; i < scripts.size(); i++) {
             GenUtil.println((i + 1) + ". " + scripts.get(i).getJavaName());
         }
+        GenUtil.println((scripts.size() + 1) + ". update script dependencies");
         GenUtil.print("Please enter one or more numbers corresponding to the script: ");
         List<String> nums = GenUtil.readParams();
         if (nums.size() == 0) return;
         GenUtil.println();
 
         GenUtil.println("1. external libraries");
-        GenUtil.println("2. external libraries update");
-        GenUtil.println("3. internal libraries");
+        GenUtil.println("2. external libraries slim");
+        GenUtil.println("3. external libraries update");
+        GenUtil.println("4. internal libraries");
+        GenUtil.println("5. internal libraries slim");
         GenUtil.print("Please enter the number corresponding to the config: ");
         List<String> types = GenUtil.readParams();
         if (nums.size() > 0) {
@@ -39,27 +47,45 @@ public class BuildScriptService {
         }
         GenUtil.println();
 
-        changePomXml(true);
+        changePomPlugins(true);
         for (String num : nums) {
             int index = GenUtil.strToInt(num) - 1;
             if (0 <= index && index < scripts.size()) {
                 build(scripts.get(index));
             }
-            if (index == -1) {
+            if (index == scripts.size()) {
                 String buildCmd = CmdUtil.copyMavenDependencies();
                 RemoteUtil.changeWorkFolder(FileUtil.appDir());
                 RemoteUtil.execLocalCmd(buildCmd);
             }
         }
-        changePomXml(false);
+        changePomPlugins(false);
     }
 
     private void build(Script script) {
         changeBuildConfig(script, true);
 
         RemoteUtil.changeWorkFolder(FileUtil.appDir());
-        String buildCmd = CmdUtil.buildJavaScript();
-        RemoteUtil.execLocalCmd(buildCmd);
+        switch (configType) {
+            case 1:
+            case 3:
+            case 4:
+                RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
+                break;
+            case 2:
+                RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
+                changePomDependencies(script, true);
+                FileUtil.delete(buildConfig.getLibsPath());
+                RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
+                changePomDependencies(script, false);
+                break;
+            case 5:
+                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
+                changePomDependencies(script, true);
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
+                changePomDependencies(script, false);
+                break;
+        }
         if (FileUtil.exist(script.getYamlConfig())) {
             FileUtil.copy(script.getYamlConfig(), script.getScriptConfig());
         }
@@ -70,14 +96,22 @@ public class BuildScriptService {
     }
 
     private void updateScript(Script script) {
-        FileUtil.copy(configType == 3 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
+        FileUtil.copy(configType == 4 || configType == 5 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
     }
 
-    private void changePomXml(boolean isBefore) {
-        if (configType == 1) return;
+    private void changePomDependencies(Script script, boolean isBefore) {
+        if (!(configType == 2 || configType == 5)) return;
+        FileUtil.modFile(
+                buildConfig.getPomPath(), buildConfig.getPomDependenciesPattern(),
+                !isBefore ? buildConfig.getPomDependenciesOriginal() : BuildConfig.getPomDependenciesLatest(dependencies, script)
+        );
+    }
+
+    private void changePomPlugins(boolean isBefore) {
+        if (configType == 1 || configType == 2) return;
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomPluginsPattern(),
-                !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 2 ?
+                !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 3 ?
                         buildConfig.getPomPluginsExternalUpdate() : buildConfig.getPomPluginsInternal())
         );
     }

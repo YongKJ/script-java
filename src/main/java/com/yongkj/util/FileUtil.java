@@ -148,6 +148,27 @@ public class FileUtil {
         }
     }
 
+    public static void delete(String fileName) {
+        File file = new File(fileName);
+        if (!file.isDirectory()) {
+            if (file.exists()) file.delete();
+        } else {
+            deleteFolder(fileName);
+        }
+    }
+
+    private static void deleteFolder(String fileName) {
+        List<File> lstFile = list(fileName);
+        for (File file : lstFile) {
+            if (file.isFile()) {
+                delete(file.getAbsolutePath());
+            } else {
+                deleteFolder(file.getAbsolutePath());
+            }
+        }
+        new File(fileName).delete();
+    }
+
     public static void modFile(String path, String regStr, String value) {
         modFile(path, regStr, value, false);
     }

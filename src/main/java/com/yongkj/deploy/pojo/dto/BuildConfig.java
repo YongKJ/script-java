@@ -1,7 +1,13 @@
 package com.yongkj.deploy.pojo.dto;
 
+import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.PomXml;
+import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.util.FileUtil;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BuildConfig {
 
@@ -9,6 +15,7 @@ public class BuildConfig {
     private String jarPath;
     private String appPath;
     private String pomPath;
+    private String libsPath;
     private String jarDepName;
     private String jarDepPath;
     private String scriptRunPattern;
@@ -20,12 +27,15 @@ public class BuildConfig {
     private String pomPluginsExternal;
     private String pomPluginsInternal;
     private String pomPluginsExternalUpdate;
+    private String pomDependenciesPattern;
+    private String pomDependenciesOriginal;
 
-    private BuildConfig(String jarName, String jarPath, String appPath, String pomPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal) {
+    private BuildConfig(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal) {
         this.jarName = jarName;
         this.jarPath = jarPath;
         this.appPath = appPath;
         this.pomPath = pomPath;
+        this.libsPath = libsPath;
         this.jarDepName = jarDepName;
         this.jarDepPath = jarDepPath;
         this.scriptRunPattern = scriptRunPattern;
@@ -37,27 +47,60 @@ public class BuildConfig {
         this.pomPluginsExternal = pomPluginsExternal;
         this.pomPluginsExternalUpdate = pomPluginsExternalUpdate;
         this.pomPluginsInternal = pomPluginsInternal;
+        this.pomDependenciesPattern = pomDependenciesPattern;
+        this.pomDependenciesOriginal = pomDependenciesOriginal;
     }
 
-    public static BuildConfig of(String jarName, String jarPath, String appPath, String pomPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal) {
-        return new BuildConfig(jarName, jarPath, appPath, pomPath, jarDepName, jarDepPath, scriptRunPattern, scriptRunOriginal, packageImportPattern, packageImportOriginal, pomPluginsPattern, pomPluginsOriginal, pomPluginsExternal, pomPluginsExternalUpdate, pomPluginsInternal);
+    public static BuildConfig of(String jarName, String jarPath, String appPath, String pomPath, String libsPath, String jarDepName, String jarDepPath, String scriptRunPattern, String scriptRunOriginal, String packageImportPattern, String packageImportOriginal, String pomPluginsPattern, String pomPluginsOriginal, String pomPluginsExternal, String pomPluginsExternalUpdate, String pomPluginsInternal, String pomDependenciesPattern, String pomDependenciesOriginal) {
+        return new BuildConfig(jarName, jarPath, appPath, pomPath, libsPath, jarDepName, jarDepPath, scriptRunPattern, scriptRunOriginal, packageImportPattern, packageImportOriginal, pomPluginsPattern, pomPluginsOriginal, pomPluginsExternal, pomPluginsExternalUpdate, pomPluginsInternal, pomDependenciesPattern, pomDependenciesOriginal);
     }
 
     public static BuildConfig get() {
         String appPath = FileUtil.getAbsPath(false, "src", "main", "java", "com", "yongkj", "App.java");
         String targetDir = FileUtil.getAbsPath(false, "target");
         String pomPath = FileUtil.getAbsPath(false, "pom.xml");
+        String libsPath = FileUtil.getAbsPath(false, "libs");
         String separator = targetDir.contains("/") ? "/" : "\\";
         String jarName = "script-java-1.0-SNAPSHOT.jar";
         String jarPath = targetDir + separator + jarName;
         String jarDepName = "script-java-1.0-SNAPSHOT-jar-with-dependencies.jar";
         String jarDepPath = targetDir + separator + jarDepName;
-        return BuildConfig.of(
-                jarName, jarPath, appPath, pomPath, jarDepName, jarDepPath, "\\s+(.*)\\.run\\(args\\);",
+        BuildConfig config = BuildConfig.of(
+                jarName, jarPath, appPath, pomPath, libsPath, jarDepName, jarDepPath, "\\s+(.*)\\.run\\(args\\);",
                 "Demo", "import (.*);", "com.yongkj.applet.demo.Demo",
                 "(<plugins>[\\s\\S]*?</plugins>)", PomXml.getExternalLibraries(),
-                PomXml.getExternalLibraries(), PomXml.getExternalLibrariesUpdate(), PomXml.getInternalLibraries()
+                PomXml.getExternalLibraries(), PomXml.getExternalLibrariesUpdate(), PomXml.getInternalLibraries(),
+                "(<dependencies>[\\s\\S]*?</dependencies>)", ""
         );
+        setPomDependenciesOriginal(config);
+        return config;
+    }
+
+    public static String getPomDependenciesLatest(List<Dependency> dependencies, Script script) {
+        StringBuilder dependenciesStr = new StringBuilder("<dependencies>");
+        for (Dependency dependency : dependencies) {
+            if (dependency.getGroupId().equals("junit")) continue;
+            for (String packageName : dependency.getPackageNames()) {
+                boolean flag = false;
+                for (String tempPackageName : script.getPackageNames()) {
+                    if (!tempPackageName.contains(packageName)) continue;
+                    dependenciesStr.append(dependency.getXmlText());
+                    flag = true;
+                    break;
+                }
+                if (flag) break;
+            }
+        }
+        return dependenciesStr + "\n    </dependencies>";
+    }
+
+    private static void setPomDependenciesOriginal(BuildConfig config) {
+        Pattern pattern = Pattern.compile(config.pomDependenciesPattern);
+        String content = FileUtil.read(config.pomPath);
+        Matcher matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            config.setPomDependenciesOriginal(matcher.group(1));
+        }
     }
 
     public String getJarName() {
@@ -90,6 +133,14 @@ public class BuildConfig {
 
     public void setPomPath(String pomPath) {
         this.pomPath = pomPath;
+    }
+
+    public String getLibsPath() {
+        return libsPath;
+    }
+
+    public void setLibsPath(String libsPath) {
+        this.libsPath = libsPath;
     }
 
     public String getScriptRunPattern() {
@@ -178,5 +229,21 @@ public class BuildConfig {
 
     public void setPomPluginsExternalUpdate(String pomPluginsExternalUpdate) {
         this.pomPluginsExternalUpdate = pomPluginsExternalUpdate;
+    }
+
+    public String getPomDependenciesPattern() {
+        return pomDependenciesPattern;
+    }
+
+    public void setPomDependenciesPattern(String pomDependenciesPattern) {
+        this.pomDependenciesPattern = pomDependenciesPattern;
+    }
+
+    public String getPomDependenciesOriginal() {
+        return pomDependenciesOriginal;
+    }
+
+    public void setPomDependenciesOriginal(String pomDependenciesOriginal) {
+        this.pomDependenciesOriginal = pomDependenciesOriginal;
     }
 }
