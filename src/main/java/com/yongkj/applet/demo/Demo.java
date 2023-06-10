@@ -15,11 +15,9 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.FileInputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
+import java.util.jar.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -241,9 +239,57 @@ public class Demo {
         }
     }
 
+    private void test13() {
+        String pomPath = "C:\\Users\\admin\\Desktop\\pom.xml";
+        String mainFest = "C:\\Users\\admin\\Desktop\\MANIFEST.MF";
+        String jarPath = "D:\\Document\\MyCodes\\Github\\script-java\\script\\tomcat-service.jar";
+        try {
+            JarEntry entry;
+//            JarFile jarFile = new JarFile(jarPath);
+            JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jarPath));
+//            JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(jarPath));
+
+//            Attributes attributes = jarInputStream.getManifest().getMainAttributes();
+//            String classPathOriginal = attributes.getValue("Class-Path");
+//            String classPathLatest = classPathOriginal.replace("..", ".");
+//            LogUtil.loggerLine(Log.of("Demo", "test13", "classPathOriginal", classPathOriginal));
+//            LogUtil.loggerLine(Log.of("Demo", "test13", "classPathLatest", classPathLatest));
+
+            while ((entry = jarInputStream.getNextJarEntry()) != null) {
+//                if (entry.isDirectory()) continue;
+//                if (!entry.getName().contains("pom.xml")) continue;
+//                if (!entry.getName().contains("MANIFEST.MF")) continue;
+                LogUtil.loggerLine(Log.of("Demo", "test13", "entryName", entry.getName()));
+
+//                InputStream stream = jarFile.getInputStream(entry);
+//                OutputStream outputStream = new FileOutputStream(pomPath);
+//                OutputStream outputStream = new FileOutputStream(mainFest);
+//                int len;
+//                byte[] b = new byte[1024];
+//                while ((len = stream.read(b)) > 0) {
+//                    outputStream.write(b, 0, len);
+//                }
+//                outputStream.flush();
+//                stream.close();
+
+//                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void test14() {
+        String regStr = "<classpathPrefix>([\\s\\S]*?)</classpathPrefix>";
+        String pomPath = "C:\\Users\\admin\\Desktop\\pom.xml";
+        FileUtil.modContent(pomPath, regStr, "./libs/");
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test12();
+        demo.test14();
+//        demo.test13();
+//        demo.test12();
 //        demo.test11();
 //        demo.test10();
 //        demo.test9();
