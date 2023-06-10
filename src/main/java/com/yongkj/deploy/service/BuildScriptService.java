@@ -73,8 +73,9 @@ public class BuildScriptService {
                 RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
                 break;
             case 2:
-                RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
+                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
                 changePomDependencies(script, true);
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 FileUtil.delete(buildConfig.getLibsPath());
                 RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
                 changePomDependencies(script, false);
