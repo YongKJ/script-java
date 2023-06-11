@@ -31,19 +31,24 @@ public class LibrariesPull {
             String pomPath = FileUtil.dirname(jarPath) + separator + "pom.xml";
             while ((entry = jarInputStream.getNextJarEntry()) != null) {
                 if (entry.isDirectory()) continue;
-                if (!entry.getName().contains("pom.xml")) continue;
-                writePom(new JarFile(jarPath).getInputStream(entry), pomPath);
-                break;
+                if (!(entry.getName().contains("pom.xml") ||
+                        entry.getName().contains(".yaml"))) continue;
+                int index = entry.getName().lastIndexOf("/");
+                String fileName = entry.getName().substring(index + 1);
+                fileName = FileUtil.dirname(jarPath) + separator + fileName;
+                writeFile(new JarFile(jarPath).getInputStream(entry), fileName);
             }
+            inputStream.close();
+            jarInputStream.close();
             pullLibraries(pomPath, libsPath);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void writePom(InputStream stream, String pomPath) {
+    private void writeFile(InputStream stream, String filePath) {
         try {
-            OutputStream outputStream = new FileOutputStream(pomPath);
+            OutputStream outputStream = new FileOutputStream(filePath);
             int len;
             byte[] b = new byte[1024];
             while ((len = stream.read(b)) > 0) {
