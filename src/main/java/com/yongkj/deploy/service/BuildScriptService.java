@@ -6,6 +6,7 @@ import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
 
+import java.io.File;
 import java.util.List;
 
 public class BuildScriptService {
@@ -61,38 +62,39 @@ public class BuildScriptService {
             }
         }
         changePomPlugins(false);
+        RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
     }
 
     private void build(Script script) {
         changeBuildConfig(script, true);
 
         RemoteUtil.changeWorkFolder(FileUtil.appDir());
+        RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
+        changeResourcesYaml(script, true);
+        changeTargetClasses(script);
         switch (configType) {
             case 1:
             case 4:
             case 5:
-                RemoteUtil.execLocalCmd(CmdUtil.buildJavaScript());
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 break;
             case 2:
-                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
                 changePomDependencies(script, true);
-                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 FileUtil.delete(buildConfig.getLibsPath());
                 RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 changePomDependencies(script, false);
                 break;
             case 3:
-                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
                 changePomDependencies(script, true);
                 changePomClassPath(true);
-                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 FileUtil.delete(buildConfig.getLibsPath());
                 RemoteUtil.execLocalCmd(CmdUtil.copyMavenDependencies());
+                RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 changePomClassPath(false);
                 changePomDependencies(script, false);
                 break;
             case 6:
-                RemoteUtil.execLocalCmd(CmdUtil.compileJavaScript());
                 changePomDependencies(script, true);
                 RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 changePomDependencies(script, false);
@@ -102,13 +104,42 @@ public class BuildScriptService {
             FileUtil.copy(script.getYamlConfig(), script.getScriptConfig());
         }
 
-        changeBuildConfig(script, false);
-
         updateScript(script);
+        changeBuildConfig(script, false);
+        changeResourcesYaml(script, false);
     }
 
     private void updateScript(Script script) {
         FileUtil.copy(configType == 5 || configType == 6 ? buildConfig.getJarDepPath() : buildConfig.getJarPath(), script.getScriptPath());
+    }
+
+    private void changeResourcesYaml(Script script, boolean isBefore) {
+        String resourcesPath = FileUtil.getAbsPath(false, "src", "main", "resources");
+        String mainPath = FileUtil.getAbsPath(false, "src", "main");
+        List<File> lstFile = FileUtil.list(isBefore ? resourcesPath : mainPath);
+        String separator = resourcesPath.contains("/") ? "/" : "\\";
+        for (File file : lstFile) {
+            if (file.isDirectory()) continue;
+            String packageName = Script.getPackageName(file.getAbsolutePath());
+            if (isBefore && script.getInternalPackageNames().contains(packageName)) continue;
+            String srcPath = (isBefore ? resourcesPath : mainPath)  + separator + file.getName();
+            String desPath = (isBefore ? mainPath : resourcesPath)  + separator + file.getName();
+            FileUtil.move(srcPath, desPath);
+        }
+    }
+
+    private void changeTargetClasses(Script script) {
+        String path = FileUtil.getAbsPath(false, "target", "classes");
+        List<File> lstFile = FileUtil.list(path);
+        for (File file : lstFile) {
+            if (file.isDirectory()) {
+                BuildConfig.changeClassFolder(script, file.getAbsolutePath());
+                continue;
+            }
+            String packageName = Script.getPackageName(file.getAbsolutePath());
+            if (file.isFile() && script.getInternalPackageNames().contains(packageName)) continue;
+            FileUtil.delete(file.getAbsolutePath());
+        }
     }
 
     private void changePomDependencies(Script script, boolean isBefore) {

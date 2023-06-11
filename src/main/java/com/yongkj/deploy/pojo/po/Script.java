@@ -18,9 +18,10 @@ public class Script {
     private String scriptPath;
     private String scriptConfig;
     private String scriptRun;
-    private Set<String> packageNames;
+    private Set<String> externalPackageNames;
+    private Set<String> internalPackageNames;
 
-    private Script(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> packageNames) {
+    private Script(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> externalPackageNames, Set<String> internalPackageNames) {
         this.javaName = javaName;
         this.javaPath = javaPath;
         this.packageName = packageName;
@@ -29,11 +30,12 @@ public class Script {
         this.scriptPath = scriptPath;
         this.scriptConfig = scriptConfig;
         this.scriptRun = scriptRun;
-        this.packageNames = packageNames;
+        this.externalPackageNames = externalPackageNames;
+        this.internalPackageNames = internalPackageNames;
     }
 
-    public static Script of(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> packageNames) {
-        return new Script(javaName, javaPath, packageName, yamlConfig, scriptName, scriptPath, scriptConfig, scriptRun, packageNames);
+    public static Script of(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> externalPackageNames, Set<String> internalPackageNames) {
+        return new Script(javaName, javaPath, packageName, yamlConfig, scriptName, scriptPath, scriptConfig, scriptRun, externalPackageNames, internalPackageNames);
     }
 
     public static List<Script> get() {
@@ -55,6 +57,8 @@ public class Script {
             if (file.isDirectory()) {
                 javaPath = getScript(javaPath);
             }
+            Set<String> paths = new HashSet<>();
+            Set<String> internalPackageNames = new HashSet<>();
             int index = javaPath.lastIndexOf(File.separator);
             String packageName = getPackageName(javaPath);
             String javaName = javaPath.substring(index + 1);
@@ -63,17 +67,29 @@ public class Script {
             String yamlConfig = resourcesDir + separator + GenUtil.toLine(yamlName);
             String scriptName = GenUtil.toLine(javaName.replace(".java", ".jar"));
             String scriptRun = javaName.replace(".java", "");
+            internalPackageNames.add(GenUtil.toLine(yamlName));
             String scriptPath = scriptDir + separator + scriptName;
-            lstScript.add(Script.of(
+            String content = FileUtil.read(getSourceCodePath(packageName));
+            Set<String> externalPackageNames = analyzeExternalPackageName(content, packageName, paths);
+            Script script = Script.of(
                     javaName, javaPath, packageName, yamlConfig,
                     scriptName, scriptPath, scriptConfig, scriptRun,
-                    analyzePackageName(FileUtil.read(getSourceCodePath(packageName)), packageName, new HashSet<>())
-            ));
+                    externalPackageNames, internalPackageNames
+            );
+            lstScript.add(analyzeInternalPackageName(script, paths));
         }
         return lstScript;
     }
 
-    public static Set<String> analyzePackageName(String content, String packageName, Set<String> paths) {
+    public static Script analyzeInternalPackageName(Script script, Set<String> paths) {
+        script.getInternalPackageNames().add("com.yongkj.App");
+        for (String path : paths) {
+            script.getInternalPackageNames().add(getPackageName(path));
+        }
+        return script;
+    }
+
+    public static Set<String> analyzeExternalPackageName(String content, String packageName, Set<String> paths) {
         List<String> lstPath = getSourceCodePaths(content, packageName);
         Set<String> packageNames = new HashSet<>();
         for (String path : lstPath) {
@@ -88,7 +104,8 @@ public class Script {
                 if (tempPackageName.contains("w3c.dom")) continue;
                 if (tempPackageName.contains("com.yongkj.App")) continue;
                 if (tempPackageName.contains("yongkj")) {
-                    packageNames.addAll(analyzePackageName(content, tempPackageName, paths));
+                    packageNames.addAll(analyzeExternalPackageName(content, tempPackageName, paths));
+                    packageNames.addAll(analyzeExternalPackageName(tempContent, tempPackageName, paths));
                     continue;
                 }
                 packageNames.add(tempPackageName);
@@ -103,6 +120,11 @@ public class Script {
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()) {
             packageNames.add(matcher.group(1));
+        }
+        pattern = Pattern.compile("package (.*);");
+        matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            packageNames.add(matcher.group(1) + ".*");
         }
         return packageNames;
     }
@@ -121,7 +143,8 @@ public class Script {
         for (File file : lstFile) {
             String name = file.getName().replace(".java", "");
             if (content.length() > 0 && !content.contains(name)) continue;
-            lstPath.add(file.getAbsolutePath());
+            String sourceCodePath = path + separator + file.getName();
+            lstPath.add(sourceCodePath);
         }
         return lstPath;
     }
@@ -133,8 +156,14 @@ public class Script {
         return path + ".java";
     }
 
-    private static String getPackageName(String javaPath) {
-        javaPath = javaPath.replace(".java", "");
+    public static String getPackageName(String javaPath) {
+        int index = javaPath.lastIndexOf(".");
+        String suffix = javaPath.substring(index);
+        if (suffix.equals(".yaml")) {
+            String separator = javaPath.contains("/") ? "/" : "\\";
+            return javaPath.substring(javaPath.lastIndexOf(separator) + 1);
+        }
+        javaPath = javaPath.replace(suffix, "");
         String separator = javaPath.contains("/") ? "/" : "\\\\";
         javaPath = "com" + javaPath.split("com")[1];
         return javaPath.replaceAll(separator, ".");
@@ -210,11 +239,19 @@ public class Script {
         this.scriptRun = scriptRun;
     }
 
-    public Set<String> getPackageNames() {
-        return packageNames;
+    public Set<String> getExternalPackageNames() {
+        return externalPackageNames;
     }
 
-    public void setPackageNames(Set<String> packageNames) {
-        this.packageNames = packageNames;
+    public void setExternalPackageNames(Set<String> externalPackageNames) {
+        this.externalPackageNames = externalPackageNames;
+    }
+
+    public Set<String> getInternalPackageNames() {
+        return internalPackageNames;
+    }
+
+    public void setInternalPackageNames(Set<String> internalPackageNames) {
+        this.internalPackageNames = internalPackageNames;
     }
 }

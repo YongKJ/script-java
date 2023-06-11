@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,6 +110,10 @@ public class FileUtil {
         return Arrays.asList(files);
     }
 
+    public static boolean isEmpty(String fileName) {
+        return Objects.requireNonNull((new File(fileName)).listFiles()).length == 0;
+    }
+
     public static void mkdir(String fileName) {
         File file = new File(fileName);
         if (file.exists()) return;
@@ -128,17 +133,19 @@ public class FileUtil {
                 FileChannel sourceChannel = new FileInputStream(srcFileName).getChannel();
                 FileChannel destChannel = new FileOutputStream(desFileName).getChannel();
                 destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+                sourceChannel.close();
+                destChannel.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static void copyFolder(String srcFolderName, String desFileName) {
+    private static void copyFolder(String srcFolderName, String desFolderName) {
         List<File> lstFile = list(srcFolderName);
         for (File file : lstFile) {
             String srcNewFileName = srcFolderName + File.separator + file.getName();
-            String desNewFileName = desFileName + File.separator + file.getName();
+            String desNewFileName = desFolderName + File.separator + file.getName();
             if (isFolder(srcNewFileName)) {
                 mkdir(desNewFileName);
                 copyFolder(srcNewFileName, desNewFileName);
@@ -146,6 +153,30 @@ public class FileUtil {
                 copy(srcNewFileName, desNewFileName);
             }
         }
+    }
+
+    public static void move(String srcFileName, String desFileName) {
+        if (isFolder(srcFileName)) {
+            mkdir(desFileName);
+            moveFolder(srcFileName, desFileName);
+        } else {
+            new File(srcFileName).renameTo(new File(desFileName));
+        }
+    }
+
+    private static void moveFolder(String srcFolderName, String desFolderName) {
+        List<File> lstFile = list(srcFolderName);
+        for (File file : lstFile) {
+            String srcNewFileName = srcFolderName + File.separator + file.getName();
+            String desNewFileName = desFolderName + File.separator + file.getName();
+            if (isFolder(srcNewFileName)) {
+                mkdir(desNewFileName);
+                moveFolder(srcNewFileName, desNewFileName);
+            } else {
+                move(srcNewFileName, desNewFileName);
+            }
+        }
+        if (isEmpty(srcFolderName)) delete(srcFolderName);
     }
 
     public static void delete(String fileName) {

@@ -5,6 +5,7 @@ import com.yongkj.deploy.pojo.po.PomXml;
 import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.util.FileUtil;
 
+import java.io.File;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,13 +84,28 @@ public class BuildConfig {
         return config;
     }
 
+    public static void changeClassFolder(Script script, String fileName) {
+        List<File> lstFile = FileUtil.list(fileName);
+        for (File file : lstFile) {
+            if (file.isDirectory()) {
+                changeClassFolder(script, file.getAbsolutePath());
+                continue;
+            }
+            String packageName = Script.getPackageName(file.getAbsolutePath());
+            if (file.isFile() && script.getInternalPackageNames().contains(packageName)) continue;
+            FileUtil.delete(file.getAbsolutePath());
+        }
+        if (!FileUtil.isEmpty(fileName)) return;
+        FileUtil.delete(fileName);
+    }
+
     public static String getPomDependenciesLatest(List<Dependency> dependencies, Script script) {
         StringBuilder dependenciesStr = new StringBuilder("<dependencies>");
         for (Dependency dependency : dependencies) {
             if (dependency.getGroupId().equals("junit")) continue;
             for (String packageName : dependency.getPackageNames()) {
                 boolean flag = false;
-                for (String tempPackageName : script.getPackageNames()) {
+                for (String tempPackageName : script.getExternalPackageNames()) {
                     if (!tempPackageName.contains(packageName)) continue;
                     dependenciesStr.append(dependency.getXmlText());
                     flag = true;

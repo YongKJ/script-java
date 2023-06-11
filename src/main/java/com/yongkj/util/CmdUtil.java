@@ -22,7 +22,7 @@ public class CmdUtil {
     }
 
     public static String packageJavaScript() {
-        return "mvn package -Dmaven.test.skip=true";
+        return "mvn package -Dmaven.main.skip=true -Dmaven.test.skip=true";
     }
 
 }
