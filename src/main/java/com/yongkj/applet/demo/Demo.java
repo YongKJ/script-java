@@ -208,13 +208,17 @@ public class Demo {
     }
 
     private void test10() {
-//        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
+        Set<String> paths = new HashSet<>();
+        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
 //        String packageName = "com.yongkj.deploy.service.BuildScriptService";
-        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
+//        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
         String content = FileUtil.read(Script.getSourceCodePath(packageName));
-        Set<String> packageNames = Script.analyzePackageName(content, packageName, new HashSet<>());
+        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths);
         for (String name : packageNames) {
             LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
+        }
+        for (String path : paths) {
+            LogUtil.loggerLine(Log.of("Demo", "test10", "path", path));
         }
 
 //        List<Script> lstScript = Script.get();
@@ -286,8 +290,15 @@ public class Demo {
         FileUtil.modContent(pomPath, regStr, "./libs/");
     }
 
+    private void test15() {
+        String srcFolder = "C:\\Users\\admin\\Desktop\\script-java";
+        String desFolder = "C:\\Users\\admin\\Desktop\\test\\script-java";
+        FileUtil.move(srcFolder, desFolder);
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+//        demo.test15();
 //        demo.test14();
 //        demo.test13();
 //        demo.test12();
