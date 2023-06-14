@@ -42,6 +42,7 @@ public class BuildScriptService {
         GenUtil.println("4. external libraries update");
         GenUtil.println("5. internal libraries");
         GenUtil.println("6. internal libraries slim");
+        GenUtil.println("7. internal libraries slim loader");
         GenUtil.print("Please enter the number corresponding to the config: ");
         List<String> types = GenUtil.readParams();
         if (nums.size() > 0) {
@@ -95,6 +96,7 @@ public class BuildScriptService {
                 changePomDependencies(script, false);
                 break;
             case 6:
+            case 7:
                 changePomDependencies(script, true);
                 RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 changePomDependencies(script, false);
@@ -143,7 +145,7 @@ public class BuildScriptService {
     }
 
     private void changePomDependencies(Script script, boolean isBefore) {
-        if (!(configType == 2 || configType == 3 || configType == 6)) return;
+        if (!(configType == 2 || configType == 3 || configType == 6 || configType == 7)) return;
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomDependenciesPattern(),
                 !isBefore ? buildConfig.getPomDependenciesOriginal() : BuildConfig.getPomDependenciesLatest(dependencies, script)
@@ -163,7 +165,8 @@ public class BuildScriptService {
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomPluginsPattern(),
                 !isBefore ? buildConfig.getPomPluginsOriginal() : (configType == 4 ?
-                        buildConfig.getPomPluginsExternalUpdate() : buildConfig.getPomPluginsInternal())
+                        buildConfig.getPomPluginsExternalUpdate() : (configType == 7 ?
+                        buildConfig.getPomPluginsInternalLoader() : buildConfig.getPomPluginsInternal()))
         );
     }
 

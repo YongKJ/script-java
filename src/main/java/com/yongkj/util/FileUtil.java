@@ -5,6 +5,7 @@ import com.yongkj.pojo.dto.Log;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,10 @@ public class FileUtil {
 
     public static String appDir(boolean isProd) {
         String launchName = App.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if (launchName.contains(".jar!")) {
+            launchName = launchName.split("!")[0];
+            launchName = launchName.replace("file:", "");
+        }
         String appDir = FileUtil.dirname(launchName);
         if (isProd) return appDir;
         return FileUtil.dirname(appDir);
@@ -62,7 +67,7 @@ public class FileUtil {
         try {
 //            FileReader reader = new FileReader(path);
             FileInputStream inputStream = new FileInputStream(path);
-            InputStreamReader reader = new InputStreamReader(inputStream);
+            InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             BufferedReader bReader = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
             String s = "";
@@ -83,7 +88,7 @@ public class FileUtil {
         try {
 //            FileWriter writeFile = new FileWriter(fileName, StandardCharsets.UTF_8);
             FileOutputStream outputStream = new FileOutputStream(fileName);
-            OutputStreamWriter writeFile = new OutputStreamWriter(outputStream);
+            OutputStreamWriter writeFile = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             BufferedWriter writer = new BufferedWriter(writeFile);
             writer.write(content);
             writer.flush();
