@@ -130,8 +130,15 @@ public class Script {
     }
 
     private static List<String> getSourceCodePaths(String content, String packageName) {
+        List<String> lstPath = new ArrayList<>();
         if (!packageName.contains("*")) {
-            return Collections.singletonList(getSourceCodePath(packageName));
+            lstPath.add(getSourceCodePath(packageName));
+            if (content.contains("@SpringBootApplication") &&
+                    packageName.contains("applet")) {
+                String scriptDir = FileUtil.dirname(lstPath.get(0));
+                lstPath.addAll(getSourceCodePaths(scriptDir));
+            }
+            return lstPath;
         }
         String path = FileUtil.getAbsPath(false, "src", "main", "java");
         packageName = packageName.replace(".*", "");
@@ -139,7 +146,6 @@ public class Script {
         path += separator + packageName.replace(".", separator);
 
         List<File> lstFile = FileUtil.list(path);
-        List<String> lstPath = new ArrayList<>();
         for (File file : lstFile) {
             String name = file.getName().replace(".java", "");
             if (content.length() > 0 && !content.contains(name)) continue;
@@ -147,6 +153,21 @@ public class Script {
             lstPath.add(sourceCodePath);
         }
         return lstPath;
+    }
+
+    private static List<String> getSourceCodePaths(String scriptDir) {
+        String separator = scriptDir.contains("/") ? "/" : "\\";
+        List<File> lstFile = FileUtil.list(scriptDir);
+        List<String> paths = new ArrayList<>();
+        for (File file : lstFile) {
+            String path = scriptDir + separator + file.getName();
+            if (file.isDirectory()) {
+                paths.addAll(getSourceCodePaths(path));
+                continue;
+            }
+            paths.add(path);
+        }
+        return paths;
     }
 
     public static String getSourceCodePath(String packageName) {
