@@ -78,8 +78,7 @@ public class Script {
             Script script = Script.of(
                     javaName, javaPath, packageName, yamlConfig,
                     scriptName, scriptPath, scriptConfig, scriptRun,
-                    content.contains("SpringBootApplication"),
-                    new HashSet<>(), internalPackageNames
+                    hasSpring, new HashSet<>(), internalPackageNames
             );
             script.setExternalPackageNames(analyzeExternalPackageName(content, packageName, paths, script.isHasSpring()));
             lstScript.add(analyzeInternalPackageName(script, paths));
