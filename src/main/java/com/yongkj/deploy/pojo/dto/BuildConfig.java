@@ -109,10 +109,7 @@ public class BuildConfig {
                 boolean flag = false;
                 for (String tempPackageName : script.getExternalPackageNames()) {
                     if (!tempPackageName.contains(packageName)) continue;
-                    if (dependency.getArtifactId().contains("spring-boot-starter")) {
-                        String content = FileUtil.read(script.getJavaPath());
-                        if (!content.contains("@SpringBootApplication")) continue;
-                    }
+                    if (dependency.getArtifactId().contains("spring-boot-starter") && !script.isHasSpring()) continue;
                     dependenciesStr.append(dependency.getXmlText());
                     flag = true;
                     break;

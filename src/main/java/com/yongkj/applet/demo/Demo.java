@@ -213,7 +213,7 @@ public class Demo {
 //        String packageName = "com.yongkj.deploy.service.BuildScriptService";
 //        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
         String content = FileUtil.read(Script.getSourceCodePath(packageName));
-        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths);
+        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths, false);
         for (String name : packageNames) {
             LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
         }
@@ -301,9 +301,9 @@ public class Demo {
 //        demo.test15();
 //        demo.test14();
 //        demo.test13();
-//        demo.test12();
+        demo.test12();
 //        demo.test11();
-        demo.test10();
+//        demo.test10();
 //        demo.test9();
 //        demo.test8();
 //        demo.test7();

@@ -18,10 +18,11 @@ public class Script {
     private String scriptPath;
     private String scriptConfig;
     private String scriptRun;
+    private boolean hasSpring;
     private Set<String> externalPackageNames;
     private Set<String> internalPackageNames;
 
-    private Script(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> externalPackageNames, Set<String> internalPackageNames) {
+    private Script(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, boolean hasSpring, Set<String> externalPackageNames, Set<String> internalPackageNames) {
         this.javaName = javaName;
         this.javaPath = javaPath;
         this.packageName = packageName;
@@ -30,12 +31,13 @@ public class Script {
         this.scriptPath = scriptPath;
         this.scriptConfig = scriptConfig;
         this.scriptRun = scriptRun;
+        this.hasSpring = hasSpring;
         this.externalPackageNames = externalPackageNames;
         this.internalPackageNames = internalPackageNames;
     }
 
-    public static Script of(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, Set<String> externalPackageNames, Set<String> internalPackageNames) {
-        return new Script(javaName, javaPath, packageName, yamlConfig, scriptName, scriptPath, scriptConfig, scriptRun, externalPackageNames, internalPackageNames);
+    public static Script of(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, boolean hasSpring, Set<String> externalPackageNames, Set<String> internalPackageNames) {
+        return new Script(javaName, javaPath, packageName, yamlConfig, scriptName, scriptPath, scriptConfig, scriptRun, hasSpring, externalPackageNames, internalPackageNames);
     }
 
     public static List<Script> get() {
@@ -70,12 +72,13 @@ public class Script {
             internalPackageNames.add(GenUtil.toLine(yamlName));
             String scriptPath = scriptDir + separator + scriptName;
             String content = FileUtil.read(getSourceCodePath(packageName));
-            Set<String> externalPackageNames = analyzeExternalPackageName(content, packageName, paths);
             Script script = Script.of(
                     javaName, javaPath, packageName, yamlConfig,
                     scriptName, scriptPath, scriptConfig, scriptRun,
-                    externalPackageNames, internalPackageNames
+                    content.contains("SpringBootApplication"),
+                    new HashSet<>(), internalPackageNames
             );
+            script.setExternalPackageNames(analyzeExternalPackageName(content, packageName, paths, script.isHasSpring()));
             lstScript.add(analyzeInternalPackageName(script, paths));
         }
         return lstScript;
@@ -89,8 +92,8 @@ public class Script {
         return script;
     }
 
-    public static Set<String> analyzeExternalPackageName(String content, String packageName, Set<String> paths) {
-        List<String> lstPath = getSourceCodePaths(content, packageName);
+    public static Set<String> analyzeExternalPackageName(String content, String packageName, Set<String> paths, boolean hasSpring) {
+        List<String> lstPath = getSourceCodePaths(content, packageName, hasSpring);
         Set<String> packageNames = new HashSet<>();
         for (String path : lstPath) {
             if (paths.contains(path)) continue;
@@ -104,8 +107,8 @@ public class Script {
                 if (tempPackageName.contains("w3c.dom")) continue;
                 if (tempPackageName.contains("com.yongkj.App")) continue;
                 if (tempPackageName.contains("yongkj")) {
-                    packageNames.addAll(analyzeExternalPackageName(content, tempPackageName, paths));
-                    packageNames.addAll(analyzeExternalPackageName(tempContent, tempPackageName, paths));
+                    packageNames.addAll(analyzeExternalPackageName(content, tempPackageName, paths, hasSpring));
+                    packageNames.addAll(analyzeExternalPackageName(tempContent, tempPackageName, paths, hasSpring));
                     continue;
                 }
                 packageNames.add(tempPackageName);
@@ -129,15 +132,13 @@ public class Script {
         return packageNames;
     }
 
-    private static List<String> getSourceCodePaths(String content, String packageName) {
+    private static List<String> getSourceCodePaths(String content, String packageName, boolean hasSpring) {
         List<String> lstPath = new ArrayList<>();
         if (!packageName.contains("*")) {
             lstPath.add(getSourceCodePath(packageName));
-            if (content.contains("@SpringBootApplication") &&
-                    packageName.contains("applet")) {
-                String scriptDir = FileUtil.dirname(lstPath.get(0));
-                lstPath.addAll(getSourceCodePaths(scriptDir));
-            }
+            if (!hasSpring) return lstPath;
+            String scriptDir = FileUtil.dirname(lstPath.get(0));
+            lstPath.addAll(getSourceCodePaths(scriptDir));
             return lstPath;
         }
         String path = FileUtil.getAbsPath(false, "src", "main", "java");
@@ -194,6 +195,14 @@ public class Script {
         List<File> lstFile = FileUtil.list(folder);
         File script = lstFile.stream().filter(file -> file.getName().contains(".java")).findFirst().orElse(null);
         return script != null ? script.getAbsolutePath() : "";
+    }
+
+    public boolean isHasSpring() {
+        return hasSpring;
+    }
+
+    public void setHasSpring(boolean hasSpring) {
+        this.hasSpring = hasSpring;
     }
 
     public String getYamlConfig() {
