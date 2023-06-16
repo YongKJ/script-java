@@ -64,14 +64,17 @@ public class Script {
             int index = javaPath.lastIndexOf(File.separator);
             String packageName = getPackageName(javaPath);
             String javaName = javaPath.substring(index + 1);
+            String content = FileUtil.read(getSourceCodePath(packageName));
+            boolean hasSpring = content.contains("SpringBootApplication");
             String yamlName = javaName.replace(".java", ".yaml");
+            yamlName = !hasSpring ? yamlName : "application" +
+                    yamlName.substring(0, 1).toUpperCase() + yamlName.substring(1);
             String scriptConfig = scriptDir + separator + GenUtil.toLine(yamlName);
             String yamlConfig = resourcesDir + separator + GenUtil.toLine(yamlName);
             String scriptName = GenUtil.toLine(javaName.replace(".java", ".jar"));
             String scriptRun = javaName.replace(".java", "");
             internalPackageNames.add(GenUtil.toLine(yamlName));
             String scriptPath = scriptDir + separator + scriptName;
-            String content = FileUtil.read(getSourceCodePath(packageName));
             Script script = Script.of(
                     javaName, javaPath, packageName, yamlConfig,
                     scriptName, scriptPath, scriptConfig, scriptRun,
