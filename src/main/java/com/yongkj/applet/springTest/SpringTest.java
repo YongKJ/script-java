@@ -8,6 +8,7 @@ public class SpringTest {
 
     public static void run(String[] args) {
         try {
+            System.setProperty("spring.profiles.default", "spring-test");
             SpringApplication.run(SpringTest.class, args);
         } catch (Exception e) {
             e.printStackTrace();
