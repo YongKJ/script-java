@@ -4,7 +4,10 @@ import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -138,9 +141,11 @@ public class Script {
         List<String> lstPath = new ArrayList<>();
         if (!packageName.contains("*")) {
             lstPath.add(getSourceCodePath(packageName));
-            if (!hasSpring) return lstPath;
-            String scriptDir = FileUtil.dirname(lstPath.get(0));
-            lstPath.addAll(getSourceCodePaths(scriptDir));
+            String tempContent = FileUtil.read(getSourceCodePath(packageName));
+            if (hasSpring && tempContent.contains("SpringBootApplication")) {
+                String scriptDir = FileUtil.dirname(lstPath.get(0));
+                lstPath.addAll(getSourceCodePaths(scriptDir));
+            }
             return lstPath;
         }
         String path = FileUtil.getAbsPath(false, "src", "main", "java");

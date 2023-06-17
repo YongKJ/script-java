@@ -3,7 +3,9 @@ package com.yongkj.deploy.pojo.dto;
 import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.PomXml;
 import com.yongkj.deploy.pojo.po.Script;
+import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.FileUtil;
+import com.yongkj.util.LogUtil;
 
 import java.io.File;
 import java.util.List;
@@ -110,6 +112,8 @@ public class BuildConfig {
                 for (String tempPackageName : script.getExternalPackageNames()) {
                     if (!tempPackageName.contains(packageName)) continue;
                     if (dependency.getArtifactId().contains("spring-boot-starter") && !script.isHasSpring()) continue;
+                    LogUtil.loggerLine(Log.of("BuildConfig", "getPomDependenciesLatest", "packageName", packageName));
+                    LogUtil.loggerLine(Log.of("BuildConfig", "getPomDependenciesLatest", "dependency", dependency.getXmlText()));
                     dependenciesStr.append(dependency.getXmlText());
                     flag = true;
                     break;

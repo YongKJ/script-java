@@ -2,6 +2,7 @@ package com.yongkj.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.yongkj.App;
 import com.yongkj.pojo.dto.Log;
 
 import java.io.File;
@@ -30,8 +31,8 @@ public class GenUtil {
         return value != null ? value.toString() : "";
     }
 
-    public static Object getValue(String config, String key) {
-        return getConfig(config).get(key);
+    public static Object getValue(String key) {
+        return getConfig(getProfile() + ".yaml").get(key);
     }
 
     public static Map getConfig(String config) {
@@ -112,8 +113,14 @@ public class GenUtil {
 
     public static String getPackageName(boolean isLaunchClass) {
         try {
-            StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-            return stacks[stacks.length - (isLaunchClass ? 1 : 2)].getClassName();
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+            int index = elements.length - 1;
+            for (int i = elements.length - 1; i >= 0; i--) {
+                if (!elements[i].getClassName().equals(App.class.getName())) continue;
+                index = i;
+                break;
+            }
+            return elements[isLaunchClass ? index : index - 1].getClassName();
         } catch (Exception e) {
             e.printStackTrace();
             return "";

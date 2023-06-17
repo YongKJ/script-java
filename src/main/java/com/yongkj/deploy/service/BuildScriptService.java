@@ -17,9 +17,7 @@ public class BuildScriptService {
     private final List<Dependency> dependencies;
 
     private BuildScriptService() {
-        String repositoryPath = GenUtil.objToStr(GenUtil.getValue(
-                "build-script-service.yaml", "repository-path"
-        ));
+        String repositoryPath = GenUtil.objToStr(GenUtil.getValue("repository-path"));
         this.dependencies = Dependency.get(repositoryPath);
         this.buildConfig = BuildConfig.get();
         this.scripts = Script.get();
