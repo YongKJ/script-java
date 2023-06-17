@@ -1,6 +1,5 @@
 package com.yongkj.util;
 
-import com.yongkj.App;
 import com.yongkj.pojo.dto.Log;
 
 import java.io.*;
@@ -28,12 +27,12 @@ public class FileUtil {
     }
 
     public static String appDir(boolean isProd) {
-        String launchName = App.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        if (launchName.contains(".jar!")) {
-            launchName = launchName.split("!")[0];
-            launchName = launchName.replace("file:", "");
+        String launchPath = GenUtil.getAppPath();
+        if (launchPath.contains(".jar!")) {
+            launchPath = launchPath.split("!")[0];
+            launchPath = launchPath.replace("file:", "");
         }
-        String appDir = FileUtil.dirname(launchName);
+        String appDir = FileUtil.dirname(launchPath);
         if (isProd) return appDir;
         return FileUtil.dirname(appDir);
     }

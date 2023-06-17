@@ -91,6 +91,35 @@ public class GenUtil {
         return name.substring(0, 1).toLowerCase() + name.substring(1).replaceAll("([A-Z])", "-$1").toLowerCase();
     }
 
+    public static String getProfile() {
+        try {
+            return toLine(Class.forName(getPackageName(false)).getSimpleName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getAppPath() {
+        try {
+            return Class.forName(getPackageName(true))
+                    .getProtectionDomain().getCodeSource().getLocation().getPath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getPackageName(boolean isLaunchClass) {
+        try {
+            StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
+            return stacks[stacks.length - (isLaunchClass ? 1 : 2)].getClassName();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public static void println() {
         System.out.println();
     }
