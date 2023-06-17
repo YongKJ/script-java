@@ -10,7 +10,7 @@ public class TomcatService {
     private final String tomcatBin;
 
     private TomcatService() {
-        Object value = GenUtil.getValue("tomcat-service.yaml", "tomcat-bin");
+        Object value = GenUtil.getValue("tomcat-bin");
         tomcatBin = GenUtil.objToStr(value);
     }
 
