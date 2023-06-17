@@ -26,7 +26,7 @@ public class Demo {
     private final String msg;
 
     private Demo() {
-        Object value = GenUtil.getValue("demo.yaml", "msg");
+        Object value = GenUtil.getValue("msg");
         this.msg = GenUtil.objToStr(value);
     }
 
@@ -209,11 +209,12 @@ public class Demo {
 
     private void test10() {
         Set<String> paths = new HashSet<>();
-        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
+//        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
 //        String packageName = "com.yongkj.deploy.service.BuildScriptService";
 //        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
+        String packageName = "com.yongkj.applet.springTest.SpringTest";
         String content = FileUtil.read(Script.getSourceCodePath(packageName));
-        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths, false);
+        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths, true);
         for (String name : packageNames) {
             LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
         }
@@ -307,13 +308,13 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test16();
+//        demo.test16();
 //        demo.test15();
 //        demo.test14();
 //        demo.test13();
 //        demo.test12();
 //        demo.test11();
-//        demo.test10();
+        demo.test10();
 //        demo.test9();
 //        demo.test8();
 //        demo.test7();
