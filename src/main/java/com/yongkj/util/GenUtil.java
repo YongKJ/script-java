@@ -31,8 +31,8 @@ public class GenUtil {
         return value != null ? value.toString() : "";
     }
 
-    public static Object getValue(String key) {
-        return getConfig(getProfile() + ".yaml").get(key);
+    public static String getValue(String key) {
+        return objToStr(getConfig(getProfile() + ".yaml").get(key));
     }
 
     public static Map getConfig(String config) {
@@ -59,9 +59,16 @@ public class GenUtil {
     }
 
     private static String getConfigPath(String config) {
+        String tempConfig = "application-" + config;
         String path = FileUtil.getAbsPath(true, config);
         if (!FileUtil.exist(path)) {
+            path = FileUtil.getAbsPath(true, tempConfig);
+        }
+        if (!FileUtil.exist(path)) {
             path = FileUtil.getAbsPath(false, "src", "main", "resources", config);
+        }
+        if (!FileUtil.exist(path)) {
+            path = FileUtil.getAbsPath(false, "src", "main", "resources", tempConfig);
         }
         return path;
     }

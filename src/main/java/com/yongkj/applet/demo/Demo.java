@@ -26,8 +26,7 @@ public class Demo {
     private final String msg;
 
     private Demo() {
-        Object value = GenUtil.getValue("msg");
-        this.msg = GenUtil.objToStr(value);
+        this.msg = GenUtil.getValue("msg");
     }
 
     private void test() {
