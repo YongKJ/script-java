@@ -296,12 +296,22 @@ public class Demo {
         FileUtil.move(srcFolder, desFolder);
     }
 
+    private void test16() {
+        String name = Demo.class.getSimpleName();
+        String lineName = GenUtil.toLine(name);
+        String profileName = GenUtil.getProfile();
+        LogUtil.loggerLine(Log.of("Demo", "test16", "name", name));
+        LogUtil.loggerLine(Log.of("Demo", "test16", "lineName", lineName));
+        LogUtil.loggerLine(Log.of("Demo", "test16", "profileName", profileName));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+        demo.test16();
 //        demo.test15();
 //        demo.test14();
 //        demo.test13();
-        demo.test12();
+//        demo.test12();
 //        demo.test11();
 //        demo.test10();
 //        demo.test9();
