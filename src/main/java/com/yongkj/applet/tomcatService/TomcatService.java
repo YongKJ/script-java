@@ -1,5 +1,6 @@
 package com.yongkj.applet.tomcatService;
 
+import com.yongkj.applet.librariesPull.LibrariesPull;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.RemoteUtil;
 
@@ -26,6 +27,8 @@ public class TomcatService {
     }
 
     public static void run(String[] args) {
+        LibrariesPull.run(args);
+        if (LibrariesPull.isPullFlag()) return;
         if (args.length > 0) {
             if (args[0].equals("start")) {
                 new TomcatService().start();

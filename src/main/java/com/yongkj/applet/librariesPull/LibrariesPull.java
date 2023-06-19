@@ -12,6 +12,8 @@ import java.util.jar.JarInputStream;
 
 public class LibrariesPull {
 
+    private static boolean PULL_FLAG = false;
+
     private void apply() {
         List<File> lstFile = FileUtil.list(FileUtil.appDir(true));
         for (File file : lstFile) {
@@ -33,14 +35,21 @@ public class LibrariesPull {
                 if (entry.isDirectory()) continue;
                 if (!(entry.getName().contains("pom.xml") ||
                         entry.getName().contains(".yaml"))) continue;
+                if (entry.getName().contains("pom.xml") &&
+                        FileUtil.exist(libsPath)) continue;
                 int index = entry.getName().lastIndexOf("/");
                 String fileName = entry.getName().substring(index + 1);
                 fileName = FileUtil.dirname(jarPath) + separator + fileName;
+                if (entry.getName().contains(".yaml") && FileUtil.exist(fileName)) continue;
                 writeFile(new JarFile(jarPath).getInputStream(entry), fileName);
+                if (entry.getName().contains(".yaml")) PULL_FLAG = true;
             }
             inputStream.close();
             jarInputStream.close();
-            pullLibraries(pomPath, libsPath);
+            if (!FileUtil.exist(libsPath)) {
+                pullLibraries(pomPath, libsPath);
+                PULL_FLAG = true;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,4 +81,7 @@ public class LibrariesPull {
         new LibrariesPull().apply();
     }
 
+    public static boolean isPullFlag() {
+        return PULL_FLAG;
+    }
 }
