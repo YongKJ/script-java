@@ -47,8 +47,8 @@ public class LibrariesPull {
             inputStream.close();
             jarInputStream.close();
             if (!FileUtil.exist(libsPath)) {
-                pullLibraries(pomPath, libsPath);
                 PULL_FLAG = true;
+                pullLibraries(pomPath, libsPath);
             }
         } catch (Exception e) {
             e.printStackTrace();
