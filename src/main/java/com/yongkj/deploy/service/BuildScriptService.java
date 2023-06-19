@@ -3,7 +3,6 @@ package com.yongkj.deploy.service;
 import com.yongkj.deploy.pojo.dto.BuildConfig;
 import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.Script;
-import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
 
 import java.io.File;
@@ -176,18 +175,6 @@ public class BuildScriptService {
         FileUtil.modContent(
                 buildConfig.getAppPath(), buildConfig.getScriptRunPattern(),
                 isBefore ? script.getScriptRun() : buildConfig.getScriptRunOriginal()
-        );
-    }
-
-    private void test() {
-        LogUtil.loggerLine(Log.of("BuildScriptService", "test", "scripts", scripts));
-        LogUtil.loggerLine(Log.of("BuildScriptService", "test", "buildConfig", buildConfig));
-    }
-
-    private void test1() {
-        FileUtil.modContent(
-                buildConfig.getAppPath(), buildConfig.getPackageImportPattern(),
-                "com.yongkj.applet.demo.Test"
         );
     }
 

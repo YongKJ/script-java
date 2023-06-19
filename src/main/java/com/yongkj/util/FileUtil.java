@@ -1,6 +1,6 @@
 package com.yongkj.util;
 
-import com.yongkj.pojo.dto.Log;
+import com.yongkj.App;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -27,7 +27,7 @@ public class FileUtil {
     }
 
     public static String appDir(boolean isProd) {
-        String launchPath = GenUtil.getAppPath();
+        String launchPath = getAppPath();
         if (launchPath.contains(".jar!")) {
             launchPath = launchPath.split("!")[0];
             launchPath = launchPath.replace("file:", "");
@@ -35,6 +35,32 @@ public class FileUtil {
         String appDir = FileUtil.dirname(launchPath);
         if (isProd) return appDir;
         return FileUtil.dirname(appDir);
+    }
+
+    public static String getAppPath() {
+        try {
+            return Class.forName(getPackageName(true))
+                    .getProtectionDomain().getCodeSource().getLocation().getPath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getPackageName(boolean isLaunchClass) {
+        try {
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+            int index = elements.length - 1;
+            for (int i = elements.length - 1; i >= 0; i--) {
+                if (!elements[i].getClassName().equals(App.class.getName())) continue;
+                index = i;
+                break;
+            }
+            return elements[isLaunchClass ? index : index - 1].getClassName();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static String getAbsPath(boolean isProd, String ...names) {
@@ -77,7 +103,6 @@ public class FileUtil {
             reader.close();
             return sb.toString();
         } catch (Exception e) {
-            LogUtil.loggerLine(Log.of("FileUtil", "read", "e", e));
             e.printStackTrace();
             return "";
         }
@@ -93,7 +118,6 @@ public class FileUtil {
             writer.flush();
             writeFile.close();
         } catch (Exception e) {
-            LogUtil.loggerLine(Log.of("FileUtil", "write", "e", e));
             e.printStackTrace();
         }
     }
@@ -218,12 +242,24 @@ public class FileUtil {
         Matcher matcher = pattern.matcher(content);
         if (isAll) {
 //            content = matcher.replaceAll(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
-            content = GenUtil.replaceStr(matcher, valueFunc, isAll);
+            content = replaceStr(matcher, valueFunc, isAll);
         } else {
 //            content = matcher.replaceFirst(str -> Matcher.quoteReplacement(valueFunc.apply(str.group(1))));
-            content = GenUtil.replaceStr(matcher, valueFunc, isAll);
+            content = replaceStr(matcher, valueFunc, isAll);
         }
         write(path, content);
+    }
+
+    public static String replaceStr(Matcher matcher, Function<String, String> valueFunc, boolean isAll) {
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(
+                    matcher.group(1) == null ? matcher.group() : valueFunc.apply(matcher.group(1))
+            ));
+            if (!isAll) break;
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     public static void modContent(String path, String regStr, String value) {

@@ -5,6 +5,7 @@ import com.yongkj.deploy.pojo.dto.BuildConfig;
 import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.PomXml;
 import com.yongkj.deploy.pojo.po.Script;
+import com.yongkj.deploy.pojo.po.SourceCode;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
 import org.w3c.dom.Document;
@@ -207,19 +208,19 @@ public class Demo {
     }
 
     private void test10() {
-        Set<String> paths = new HashSet<>();
+//        Set<String> paths = new HashSet<>();
 //        String packageName = "com.yongkj.applet.tomcatService.TomcatService";
 //        String packageName = "com.yongkj.deploy.service.BuildScriptService";
 //        String packageName = "com.yongkj.applet.librariesPull.LibrariesPull";
-        String packageName = "com.yongkj.applet.springTest.SpringTest";
-        String content = FileUtil.read(Script.getSourceCodePath(packageName));
-        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths, true);
-        for (String name : packageNames) {
-            LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
-        }
-        for (String path : paths) {
-            LogUtil.loggerLine(Log.of("Demo", "test10", "path", path));
-        }
+//        String packageName = "com.yongkj.applet.springTest.SpringTest";
+//        String content = FileUtil.read(Script.getSourceCodePath(packageName));
+//        Set<String> packageNames = Script.analyzeExternalPackageName(content, packageName, paths, true);
+//        for (String name : packageNames) {
+//            LogUtil.loggerLine(Log.of("Demo", "test10", "name", name));
+//        }
+//        for (String path : paths) {
+//            LogUtil.loggerLine(Log.of("Demo", "test10", "path", path));
+//        }
 
 //        List<Script> lstScript = Script.get();
 //        for (Script script : lstScript) {
@@ -305,15 +306,23 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test16", "profileName", profileName));
     }
 
+    private void test17() {
+        Map<String, SourceCode> codes = SourceCode.get();
+        List<Script> lstScript = Script.get();
+        LogUtil.loggerLine(Log.of("Demo", "test17", "codes.size()", codes.size()));
+        LogUtil.loggerLine(Log.of("Demo", "test17", "lstScript.size()", lstScript.size()));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+        demo.test17();
 //        demo.test16();
 //        demo.test15();
 //        demo.test14();
 //        demo.test13();
 //        demo.test12();
 //        demo.test11();
-        demo.test10();
+//        demo.test10();
 //        demo.test9();
 //        demo.test8();
 //        demo.test7();

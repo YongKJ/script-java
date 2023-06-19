@@ -4,12 +4,7 @@ import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class Script {
 
@@ -24,6 +19,7 @@ public class Script {
     private boolean hasSpring;
     private Set<String> externalPackageNames;
     private Set<String> internalPackageNames;
+    private static final Map<String, SourceCode> mapCodes = SourceCode.get();
 
     private Script(String javaName, String javaPath, String packageName, String yamlConfig, String scriptName, String scriptPath, String scriptConfig, String scriptRun, boolean hasSpring, Set<String> externalPackageNames, Set<String> internalPackageNames) {
         this.javaName = javaName;
@@ -51,7 +47,8 @@ public class Script {
     }
 
     private static List<Script> get(String appletDir) {
-        if (appletDir.length() == 0) appletDir = FileUtil.getAbsPath(false, "src", "main", "java", "com", "yongkj", "applet");
+        if (appletDir.length() == 0)
+            appletDir = FileUtil.getAbsPath(false, "src", "main", "java", "com", "yongkj", "applet");
         String resourcesDir = FileUtil.getAbsPath(false, "src", "main", "resources");
         String scriptDir = FileUtil.getAbsPath(false, "script");
         String separator = appletDir.contains("/") ? "/" : "\\";
@@ -62,8 +59,8 @@ public class Script {
             if (file.isDirectory()) {
                 javaPath = getScript(javaPath);
             }
-            Set<String> paths = new HashSet<>();
             Set<String> internalPackageNames = new HashSet<>();
+            Set<String> externalPackageNames = new HashSet<>();
             int index = javaPath.lastIndexOf(File.separator);
             String packageName = getPackageName(javaPath);
             String javaName = javaPath.substring(index + 1);
@@ -76,106 +73,28 @@ public class Script {
             String yamlConfig = resourcesDir + separator + GenUtil.toLine(yamlName);
             String scriptName = GenUtil.toLine(javaName.replace(".java", ".jar"));
             String scriptRun = javaName.replace(".java", "");
-            internalPackageNames.add(GenUtil.toLine(yamlName));
             String scriptPath = scriptDir + separator + scriptName;
-            Script script = Script.of(
+            internalPackageNames.add(GenUtil.toLine(yamlName));
+            internalPackageNames.add("com.yongkj.App");
+            lstScript.add(Script.of(
                     javaName, javaPath, packageName, yamlConfig,
                     scriptName, scriptPath, scriptConfig, scriptRun,
-                    hasSpring, new HashSet<>(), internalPackageNames
-            );
-            script.setExternalPackageNames(analyzeExternalPackageName(content, packageName, paths, script.isHasSpring()));
-            lstScript.add(analyzeInternalPackageName(script, paths));
+                    hasSpring, externalPackageNames, internalPackageNames
+            ));
+            analyzePackageNames(mapCodes.get(packageName), new HashSet<>(), internalPackageNames, externalPackageNames);
         }
         return lstScript;
     }
 
-    public static Script analyzeInternalPackageName(Script script, Set<String> paths) {
-        script.getInternalPackageNames().add("com.yongkj.App");
-        for (String path : paths) {
-            script.getInternalPackageNames().add(getPackageName(path));
+    private static void analyzePackageNames(SourceCode code, Set<String> codePackageNames, Set<String> internalPackageNames, Set<String> externalPackageNames) {
+        if (code == null) return;
+        for (String packageName : code.getInternalPackageNames()) {
+            if (codePackageNames.contains(packageName)) continue;
+            codePackageNames.add(code.getPackageName());
+            internalPackageNames.addAll(code.getInternalPackageNames());
+            externalPackageNames.addAll(code.getExternalPackageNames());
+            analyzePackageNames(mapCodes.get(packageName), codePackageNames, internalPackageNames, externalPackageNames);
         }
-        return script;
-    }
-
-    public static Set<String> analyzeExternalPackageName(String content, String packageName, Set<String> paths, boolean hasSpring) {
-        List<String> lstPath = getSourceCodePaths(content, packageName, hasSpring);
-        Set<String> packageNames = new HashSet<>();
-        for (String path : lstPath) {
-            if (paths.contains(path)) continue;
-            paths.add(path);
-            String tempContent = FileUtil.read(path);
-            List<String> lstPackageNames = getPackageNames(tempContent);
-            for (String tempPackageName : lstPackageNames) {
-                if (packageName.contains(tempPackageName)) continue;
-                if (tempPackageName.contains("java.")) continue;
-                if (tempPackageName.contains("javax.")) continue;
-                if (tempPackageName.contains("w3c.dom")) continue;
-                if (tempPackageName.contains("com.yongkj.App")) continue;
-                if (tempPackageName.contains("yongkj")) {
-                    packageNames.addAll(analyzeExternalPackageName(content, tempPackageName, paths, hasSpring));
-                    packageNames.addAll(analyzeExternalPackageName(tempContent, tempPackageName, paths, hasSpring));
-                    continue;
-                }
-                packageNames.add(tempPackageName);
-            }
-        }
-        return packageNames;
-    }
-
-    private static List<String> getPackageNames(String content) {
-        Pattern pattern = Pattern.compile("\\simport (.*);");
-        List<String> packageNames = new ArrayList<>();
-        Matcher matcher = pattern.matcher(content);
-        while (matcher.find()) {
-            packageNames.add(matcher.group(1));
-        }
-        pattern = Pattern.compile("package (.*);");
-        matcher = pattern.matcher(content);
-        while (matcher.find()) {
-            packageNames.add(matcher.group(1) + ".*");
-        }
-        return packageNames;
-    }
-
-    private static List<String> getSourceCodePaths(String content, String packageName, boolean hasSpring) {
-        List<String> lstPath = new ArrayList<>();
-        if (!packageName.contains("*")) {
-            lstPath.add(getSourceCodePath(packageName));
-            String tempContent = FileUtil.read(getSourceCodePath(packageName));
-            if (hasSpring && tempContent.contains("SpringBootApplication")) {
-                String scriptDir = FileUtil.dirname(lstPath.get(0));
-                lstPath.addAll(getSourceCodePaths(scriptDir));
-            }
-            return lstPath;
-        }
-        String path = FileUtil.getAbsPath(false, "src", "main", "java");
-        packageName = packageName.replace(".*", "");
-        String separator = path.contains("/") ? "/" : "\\";
-        path += separator + packageName.replace(".", separator);
-
-        List<File> lstFile = FileUtil.list(path);
-        for (File file : lstFile) {
-            String name = file.getName().replace(".java", "");
-            if (content.length() > 0 && !content.contains(name)) continue;
-            String sourceCodePath = path + separator + file.getName();
-            lstPath.add(sourceCodePath);
-        }
-        return lstPath;
-    }
-
-    private static List<String> getSourceCodePaths(String scriptDir) {
-        String separator = scriptDir.contains("/") ? "/" : "\\";
-        List<File> lstFile = FileUtil.list(scriptDir);
-        List<String> paths = new ArrayList<>();
-        for (File file : lstFile) {
-            String path = scriptDir + separator + file.getName();
-            if (file.isDirectory()) {
-                paths.addAll(getSourceCodePaths(path));
-                continue;
-            }
-            paths.add(path);
-        }
-        return paths;
     }
 
     public static String getSourceCodePath(String packageName) {

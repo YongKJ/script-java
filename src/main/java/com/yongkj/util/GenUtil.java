@@ -2,12 +2,9 @@ package com.yongkj.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.yongkj.App;
-import com.yongkj.pojo.dto.Log;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +37,6 @@ public class GenUtil {
             String path = getConfigPath(config);
             return mapper.readValue(new File(path), Map.class);
         } catch (Exception e) {
-            LogUtil.loggerLine(Log.of("GenUtil", "getConfig", "e", e));
             e.printStackTrace();
             return new HashMap<String, Object>();
         }
@@ -53,7 +49,6 @@ public class GenUtil {
             content = content.substring(4);
             FileUtil.write(path, content);
         } catch (Exception e) {
-            LogUtil.loggerLine(Log.of("GenUtil", "writeConfig", "e", e));
             e.printStackTrace();
         }
     }
@@ -78,21 +73,7 @@ public class GenUtil {
         String tempName = name.substring(1);
         Pattern pattern = Pattern.compile("\\-(\\w)");
         Matcher matcher = pattern.matcher(tempName);
-        return name.substring(0, 1).toUpperCase() + replaceStr(matcher, String::toUpperCase, true);
-    }
-
-    public static String replaceStr(Matcher matcher, Function<String, String> valueFunc, boolean isAll) {
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            if (matcher.group(1) == null) {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(matcher.group()));
-            } else {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(valueFunc.apply(matcher.group(1))));
-            }
-            if (!isAll) break;
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return name.substring(0, 1).toUpperCase() + FileUtil.replaceStr(matcher, String::toUpperCase, true);
     }
 
     public static String toLine(String name) {
@@ -101,33 +82,7 @@ public class GenUtil {
 
     public static String getProfile() {
         try {
-            return toLine(Class.forName(getPackageName(false)).getSimpleName());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String getAppPath() {
-        try {
-            return Class.forName(getPackageName(true))
-                    .getProtectionDomain().getCodeSource().getLocation().getPath();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String getPackageName(boolean isLaunchClass) {
-        try {
-            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-            int index = elements.length - 1;
-            for (int i = elements.length - 1; i >= 0; i--) {
-                if (!elements[i].getClassName().equals(App.class.getName())) continue;
-                index = i;
-                break;
-            }
-            return elements[isLaunchClass ? index : index - 1].getClassName();
+            return toLine(Class.forName(FileUtil.getPackageName(false)).getSimpleName());
         } catch (Exception e) {
             e.printStackTrace();
             return "";
