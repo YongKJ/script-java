@@ -41,8 +41,8 @@ public class LibrariesPull {
                 String fileName = entry.getName().substring(index + 1);
                 fileName = FileUtil.dirname(jarPath) + separator + fileName;
                 if (entry.getName().contains(".yaml") && FileUtil.exist(fileName)) continue;
-                writeFile(new JarFile(jarPath).getInputStream(entry), fileName);
                 if (entry.getName().contains(".yaml")) PULL_FLAG = true;
+                writeFile(new JarFile(jarPath).getInputStream(entry), fileName);
             }
             inputStream.close();
             jarInputStream.close();
