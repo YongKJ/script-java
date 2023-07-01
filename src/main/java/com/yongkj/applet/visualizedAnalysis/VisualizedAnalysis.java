@@ -30,15 +30,15 @@ public class VisualizedAnalysis {
         );
         FileUtil.mkdir(outputPath);
         for (String col : cols) {
+            String title = "epoch / " + col;
             Table outputTable = table.selectColumns("epoch");
             StringColumn stringColumn = table.stringColumn(col);
             DoubleColumn doubleColumn = stringColumn.parseDouble();
+            String fileName = outputPath + "epoch-" + col + ".html";
 
             doubleColumn.setName(col);
             outputTable.addColumns(doubleColumn);
-            Plot.show(LinePlot.create(
-                    "epoch / " + col, outputTable, "epoch", col
-            ), new File(outputPath + "epoch-" + col + ".html"));
+            Plot.show(LinePlot.create(title, outputTable, "epoch", col), new File(fileName));
         }
     }
 
