@@ -18,6 +18,21 @@
 
     <dependencies>
         <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-excel</artifactId>
+            <version>0.43.1</version>
+        </dependency>
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-jsplot</artifactId>
+            <version>0.43.1</version>
+        </dependency>
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-core</artifactId>
+            <version>0.43.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>2.7.6</version>
