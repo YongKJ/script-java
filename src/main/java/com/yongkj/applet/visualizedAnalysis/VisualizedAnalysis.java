@@ -7,6 +7,9 @@ import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.api.LinePlot;
+import tech.tablesaw.plotly.components.Figure;
+import tech.tablesaw.plotly.components.Layout;
+import tech.tablesaw.plotly.traces.ScatterTrace;
 
 import java.io.File;
 import java.util.Arrays;
@@ -42,8 +45,46 @@ public class VisualizedAnalysis {
         }
     }
 
+    private void multipleLineCharts() {
+        List<String> cols = Arrays.asList(
+                "train_loss", "test_loss",
+                "train_acc", "test_acc"
+        );
+        Table table = Table.read().file(excelPath);
+        ScatterTrace[] traces = getTraces(table, cols);
+        String fileName = outputPath + "epoch-data.html";
+        String title = "visual analysis of training data";
+        Layout layout = Layout.builder(title, "epoch", "training data").showLegend(true).build();
+        Plot.show(new Figure(layout, traces), new File(fileName));
+    }
+
+    private ScatterTrace[] getTraces(Table table, List<String> cols) {
+        ScatterTrace[] traces = new ScatterTrace[cols.size()];
+        for (int i = 0; i < cols.size(); i++) {
+            Table outputTable = getOutputTable(table, cols.get(i));
+            traces[i] = ScatterTrace.builder(
+                            outputTable.numberColumn("epoch"),
+                            outputTable.numberColumn(cols.get(i)))
+                        .showLegend(true)
+                        .name(cols.get(i))
+                        .mode(ScatterTrace.Mode.LINE)
+                        .build();
+        }
+        return traces;
+    }
+
+    private Table getOutputTable(Table table, String col) {
+        StringColumn stringColumn = table.stringColumn(col);
+        DoubleColumn doubleColumn = stringColumn.parseDouble();
+        Table outputTable = table.selectColumns("epoch");
+        outputTable.addColumns(doubleColumn);
+        doubleColumn.setName(col);
+        return outputTable;
+    }
+
     public static void run(String[] args) {
-        new VisualizedAnalysis().apply();
+//        new VisualizedAnalysis().apply();
+        new VisualizedAnalysis().multipleLineCharts();
     }
 
 }
