@@ -61,10 +61,9 @@ public class VisualizedAnalysis {
     private ScatterTrace[] getTraces(Table table, List<String> cols) {
         ScatterTrace[] traces = new ScatterTrace[cols.size()];
         for (int i = 0; i < cols.size(); i++) {
-            Table outputTable = getOutputTable(table, cols.get(i));
             traces[i] = ScatterTrace.builder(
-                            outputTable.numberColumn("epoch"),
-                            outputTable.numberColumn(cols.get(i)))
+                            table.numberColumn("epoch"),
+                            getColData(table, cols.get(i)))
                         .showLegend(true)
                         .name(cols.get(i))
                         .mode(ScatterTrace.Mode.LINE)
@@ -73,13 +72,8 @@ public class VisualizedAnalysis {
         return traces;
     }
 
-    private Table getOutputTable(Table table, String col) {
-        StringColumn stringColumn = table.stringColumn(col);
-        DoubleColumn doubleColumn = stringColumn.parseDouble();
-        Table outputTable = table.selectColumns("epoch");
-        outputTable.addColumns(doubleColumn);
-        doubleColumn.setName(col);
-        return outputTable;
+    private DoubleColumn getColData(Table table, String col) {
+        return table.stringColumn(col).parseDouble();
     }
 
     public static void run(String[] args) {
