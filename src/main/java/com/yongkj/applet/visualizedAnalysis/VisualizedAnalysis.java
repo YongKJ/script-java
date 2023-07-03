@@ -63,17 +63,13 @@ public class VisualizedAnalysis {
         for (int i = 0; i < cols.size(); i++) {
             traces[i] = ScatterTrace.builder(
                             table.numberColumn("epoch"),
-                            getColData(table, cols.get(i)))
+                            table.stringColumn(cols.get(i)).parseDouble())
                         .showLegend(true)
                         .name(cols.get(i))
                         .mode(ScatterTrace.Mode.LINE)
                         .build();
         }
         return traces;
-    }
-
-    private DoubleColumn getColData(Table table, String col) {
-        return table.stringColumn(col).parseDouble();
     }
 
     public static void run(String[] args) {
