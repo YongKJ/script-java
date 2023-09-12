@@ -27,31 +27,31 @@ public class ApiUtil {
     }
 
     private static boolean proxyEnable = Global.isProxyEnable();
-    private static final RestTemplate restTemplate = getRestTemplate(false);
-    private static final RestTemplate socksRestTemplate = getRestTemplate(true);
+    private static final RestTemplate REST_TEMPLATE = getRestTemplate(false);
+    private static final RestTemplate SOCKS_RESTTEMPLATE = getRestTemplate(true);
 
     public static String requestByGetWithParams(String api, Map<String, Object> params) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).getForObject(getUrl(api, params), String.class);
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), String.class);
     }
 
     public static <T> T requestByGetWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).getForObject(getUrl(api, params), clazz);
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), clazz);
     }
 
     public static String requestByPostWithParams(String api, Map<String, Object> params) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).postForObject(getUrl(api, params), null, String.class);
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, String.class);
     }
 
     public static <T> T requestByPostWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).postForObject(getUrl(api, params), null, clazz);
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, clazz);
     }
 
     private <T> T requestByGetWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).exchange(url, HttpMethod.GET, new HttpEntity<>(data, headers), responseType).getBody();
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.GET, new HttpEntity<>(data, headers), responseType).getBody();
     }
 
     private <T> T requestByPostWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
-        return (proxyEnable ? socksRestTemplate : restTemplate).exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers), responseType).getBody();
+        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers), responseType).getBody();
     }
 
     public static String getUrl(String api, Map<String, Object> params) {
