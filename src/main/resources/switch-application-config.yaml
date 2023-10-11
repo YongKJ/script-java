@@ -1,0 +1,8 @@
+environment: test
+config-path: "D:\\Document\\MyCodes\\Worker\\Config"
+project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
+project-name:
+  - api-gateway
+  - service-housekeeping
+  - service-im
+  - service-user
