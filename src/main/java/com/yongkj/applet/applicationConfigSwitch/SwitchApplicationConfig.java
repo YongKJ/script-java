@@ -80,13 +80,13 @@ public class SwitchApplicationConfig {
 
             git.close();
 
-            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "refName", refName));
-            System.out.println("---------------------------------------------------------------------------------------------");
-
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullResult.isSuccessful()", pullResult.isSuccessful()));
             System.out.println("---------------------------------------------------------------------------------------------");
 
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "branchName", branchName));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "refName", refName));
             System.out.println("---------------------------------------------------------------------------------------------");
 
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "url", url));
