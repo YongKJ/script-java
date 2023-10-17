@@ -1,0 +1,16 @@
+src:
+  database:
+    driver: ""
+    url: ""
+    username: ""
+    password: ""
+
+des:
+  database:
+    driver: ""
+    url: ""
+    username: ""
+    password: ""
+
+table-name:
+  - ""
