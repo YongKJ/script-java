@@ -17,7 +17,6 @@ import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.util.FS;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,37 +112,27 @@ public class SwitchApplicationConfig {
     }
 
     private String getApplicationDesPath(String projectName) {
-        return getProjectResourcesPath(projectName) + File.separator + "application.yml";
+        return getListPath(getProjectResourcesPath(projectName), "application.yml");
     }
 
     private String getApplicationSrcPath(String projectName) {
-        return getListPath(Arrays.asList(
-                configPath, projectName, configName
-        ));
+        return getListPath(configPath, projectName, configName);
     }
 
     private String getProjectGitPath(String projectName) {
-        return getListPath(Arrays.asList(
-                getProjectPath(projectName), ".git"
-        ));
+        return getListPath(getProjectPath(projectName), ".git");
     }
 
     private String getProjectResourcesPath(String projectName) {
-        return getListPath(Arrays.asList(
-                getProjectStartPath(projectName), "src", "main", "resources"
-        ));
+        return getListPath(getProjectStartPath(projectName), "src", "main", "resources");
     }
 
     private String getProjectStartPath(String projectName) {
-        String projectItemPath = getListPath(Arrays.asList(
-                getProjectPath(projectName), "service-order-start"
-        ));
+        String projectItemPath = getListPath(getProjectPath(projectName), "service-order-start");
         if (FileUtil.exist(projectItemPath)) {
             return projectItemPath;
         }
-        projectItemPath = getListPath(Arrays.asList(
-                getProjectPath(projectName), projectName + "-start"
-        ));
+        projectItemPath = getListPath(getProjectPath(projectName), projectName + "-start");
         if (FileUtil.exist(projectItemPath)) {
             return projectItemPath;
         }
@@ -151,13 +140,11 @@ public class SwitchApplicationConfig {
     }
 
     private String getProjectPath(String projectName) {
-        return getListPath(Arrays.asList(
-                projectPath, projectName
-        ));
+        return getListPath(projectPath, projectName);
     }
 
-    private String getListPath(List<String> lstName) {
-        return String.join(File.separator, lstName);
+    private String getListPath(String... name) {
+        return String.join(File.separator, name);
     }
 
     public static void run(String[] args) {
