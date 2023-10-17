@@ -47,6 +47,9 @@ public class SwitchApplicationConfig {
             branchCheckOutAndPull(projectName);
 
             String srcPath = getApplicationSrcPath(projectName);
+            if (!FileUtil.exist(srcPath)) {
+                continue;
+            }
             String desPath = getApplicationDesPath(projectName);
             if (FileUtil.exist(desPath)) {
                 FileUtil.delete(desPath);
