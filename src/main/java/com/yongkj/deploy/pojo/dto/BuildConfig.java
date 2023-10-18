@@ -1,14 +1,13 @@
 package com.yongkj.deploy.pojo.dto;
 
-import com.yongkj.deploy.pojo.po.Dependency;
-import com.yongkj.deploy.pojo.po.PomXml;
-import com.yongkj.deploy.pojo.po.Script;
+import com.yongkj.deploy.pojo.po.*;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.LogUtil;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,7 +102,7 @@ public class BuildConfig {
         FileUtil.delete(fileName);
     }
 
-    public static String getPomDependenciesLatest(List<Dependency> dependencies, Script script) {
+    public static String getPomDependenciesLatest(List<Dependency> dependencies, Script script, AppletDependency appletDependency) {
         StringBuilder dependenciesStr = new StringBuilder("<dependencies>");
         for (Dependency dependency : dependencies) {
             if (dependency.getGroupId().equals("junit")) continue;
@@ -120,8 +119,24 @@ public class BuildConfig {
                 }
                 if (flag) break;
             }
+            if (appletDependency != null) {
+                dependenciesStr.append(getPomDependency(dependency, appletDependency));
+            }
         }
         return dependenciesStr + "\n    </dependencies>";
+    }
+
+    private static String getPomDependency(Dependency dependency, AppletDependency appletDependency) {
+        if (appletDependency.getPomDependencies().size() == 0) return "";
+        for (PomDependency pomDependency : appletDependency.getPomDependencies()) {
+            if (!(Objects.equals(pomDependency.getGroupId(), dependency.getGroupId()) &&
+                    Objects.equals(pomDependency.getArtifactId(), dependency.getArtifactId()) &&
+                    Objects.equals(pomDependency.getVersion(), dependency.getVersion()))) continue;
+            LogUtil.loggerLine(Log.of("BuildConfig", "getPomDependency", "appletDependency", appletDependency.toString()));
+            LogUtil.loggerLine(Log.of("BuildConfig", "getPomDependency", "dependency", dependency.getXmlText()));
+            return dependency.getXmlText();
+        }
+        return "";
     }
 
     private static void setPomDependenciesOriginal(BuildConfig config) {

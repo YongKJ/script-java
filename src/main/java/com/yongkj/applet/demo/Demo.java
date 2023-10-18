@@ -16,9 +16,13 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
+import java.io.FileInputStream;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -239,7 +243,7 @@ public class Demo {
         BuildConfig config = BuildConfig.get();
         List<Script> lstScript = Script.get();
         for (Script script : lstScript) {
-            String pomDependenciesLatest = BuildConfig.getPomDependenciesLatest(dependencies, script);
+            String pomDependenciesLatest = BuildConfig.getPomDependenciesLatest(dependencies, script, null);
             LogUtil.loggerLine(Log.of("Demo", "test12", "scriptName", script.getScriptName()));
             LogUtil.loggerLine(Log.of("Demo", "test12", "pomDependenciesLatest", pomDependenciesLatest));
         }
@@ -315,7 +319,7 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test17();
+//        demo.test17();
 //        demo.test16();
 //        demo.test15();
 //        demo.test14();
@@ -332,7 +336,7 @@ public class Demo {
 //        demo.test3();
 //        demo.test2();
 //        demo.test1();
-//        demo.test();
+        demo.test();
     }
 
 }

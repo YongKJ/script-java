@@ -1,1 +1,12 @@
 repository-path: "C:\\Users\\admin\\.m2\\repository"
+applet-dependencies:
+  - name: "DataMigration"
+    dependencies:
+      - groupId: "mysql"
+        artifactId: "mysql-connector-java"
+        version: "8.0.33"
+  - name: "SwitchApplicationConfig"
+    dependencies:
+      - groupId: "com.github.mwiede"
+        artifactId: "jsch"
+        version: "0.2.11"

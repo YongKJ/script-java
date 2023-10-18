@@ -36,6 +36,12 @@ public class GenUtil {
         return objToStr(getConfig(getProfile() + ".yaml").get(key));
     }
 
+    public static List<Map<String, Object>> getListMap(String key) {
+        Object value = getConfig(getProfile() + ".yaml").get(key);
+        if (value instanceof List) return (List<Map<String, Object>>) value;
+        return new ArrayList<>();
+    }
+
     public static List<String> getList(String key) {
         Object value = getConfig(getProfile() + ".yaml").get(key);
         if (value instanceof List) return (List<String>) value;

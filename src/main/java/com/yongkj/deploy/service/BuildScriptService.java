@@ -1,12 +1,17 @@
 package com.yongkj.deploy.service;
 
 import com.yongkj.deploy.pojo.dto.BuildConfig;
+import com.yongkj.deploy.pojo.po.AppletDependency;
 import com.yongkj.deploy.pojo.po.Dependency;
 import com.yongkj.deploy.pojo.po.Script;
-import com.yongkj.util.*;
+import com.yongkj.util.CmdUtil;
+import com.yongkj.util.FileUtil;
+import com.yongkj.util.GenUtil;
+import com.yongkj.util.RemoteUtil;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class BuildScriptService {
 
@@ -14,10 +19,12 @@ public class BuildScriptService {
     private final List<Script> scripts;
     private final BuildConfig buildConfig;
     private final List<Dependency> dependencies;
+    private final Map<String, AppletDependency> mapAppletDependency;
 
     private BuildScriptService() {
         String repositoryPath = GenUtil.getValue("repository-path");
         this.dependencies = Dependency.get(repositoryPath);
+        this.mapAppletDependency = AppletDependency.get();
         this.buildConfig = BuildConfig.get();
         this.scripts = Script.get();
     }
@@ -98,6 +105,7 @@ public class BuildScriptService {
                 RemoteUtil.execLocalCmd(CmdUtil.packageJavaScript());
                 changePomDependencies(script, false);
                 break;
+            default:
         }
         if (FileUtil.exist(script.getYamlConfig())) {
             FileUtil.copy(script.getYamlConfig(), script.getScriptConfig());
@@ -121,8 +129,8 @@ public class BuildScriptService {
             if (file.isDirectory()) continue;
             String packageName = Script.getPackageName(file.getAbsolutePath());
             if (isBefore && script.getInternalPackageNames().contains(packageName)) continue;
-            String srcPath = (isBefore ? resourcesPath : mainPath)  + separator + file.getName();
-            String desPath = (isBefore ? mainPath : resourcesPath)  + separator + file.getName();
+            String srcPath = (isBefore ? resourcesPath : mainPath) + separator + file.getName();
+            String desPath = (isBefore ? mainPath : resourcesPath) + separator + file.getName();
             FileUtil.move(srcPath, desPath);
         }
     }
@@ -145,8 +153,8 @@ public class BuildScriptService {
         if (!(configType == 2 || configType == 3 || configType == 6 || configType == 7)) return;
         FileUtil.modFile(
                 buildConfig.getPomPath(), buildConfig.getPomDependenciesPattern(),
-                !isBefore ? buildConfig.getPomDependenciesOriginal() : BuildConfig.getPomDependenciesLatest(dependencies, script)
-        );
+                !isBefore ? buildConfig.getPomDependenciesOriginal() :
+                        BuildConfig.getPomDependenciesLatest(dependencies, script, mapAppletDependency.get(script.getScriptRun())));
     }
 
     private void changePomClassPath(boolean isBefore) {
