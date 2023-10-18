@@ -1,8 +1,11 @@
-environment: test
-config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
+config-path: "D:\\Document\\MyCodes\\Worker\\Config"
+private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
+branch: dev-1.1
 project-name:
   - api-gateway
+  - framework-core
+  - rocketmq-entity
   - service-housekeeping
   - service-im
   - service-settlement

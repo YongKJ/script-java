@@ -1,7 +1,7 @@
 project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
 config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
-branch: test-1.1
+branch: dev-1.1
 project-name:
   - api-gateway
   - framework-core
