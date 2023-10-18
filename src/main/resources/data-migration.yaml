@@ -1,16 +1,16 @@
 src:
   database:
-    driver: ""
-    url: ""
-    username: ""
-    password: ""
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_user?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs"
 
 des:
   database:
-    driver: ""
-    url: ""
-    username: ""
-    password: ""
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:23306/test_user?characterEncoding=utf-8"
+    username: "pre_chun"
+    password: "HHhda@%DSAs"
 
 table-name:
-  - ""
+  - "admin_user"

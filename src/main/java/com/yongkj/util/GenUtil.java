@@ -28,12 +28,16 @@ public class GenUtil {
         return value != null ? value.toString() : "";
     }
 
+    public static Object getObject(String key) {
+        return getConfig(getProfile() + ".yaml").get(key);
+    }
+
     public static String getValue(String key) {
         return objToStr(getConfig(getProfile() + ".yaml").get(key));
     }
 
     public static List<String> getList(String key) {
-        Object value =  getConfig(getProfile() + ".yaml").get(key);
+        Object value = getConfig(getProfile() + ".yaml").get(key);
         if (value instanceof List) return (List<String>) value;
         return new ArrayList<>();
     }
