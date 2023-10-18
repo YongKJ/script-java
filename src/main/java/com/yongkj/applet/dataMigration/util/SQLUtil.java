@@ -4,6 +4,9 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class SQLUtil {
 
@@ -26,14 +29,20 @@ public class SQLUtil {
 
     public static void closeAll(Manager manager) {
         try {
-            if (manager.getResultSet() != null) {
-                manager.getResultSet().close();
+            for (ResultSet resultSet : manager.getResultSets()) {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
             }
-            if (manager.getPreparedStatement() != null) {
-                manager.getPreparedStatement().close();
+            for (PreparedStatement preparedStatement : manager.getPreparedStatements()) {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
             }
-            if (manager.getStatement() != null) {
-                manager.getStatement().close();
+            for (Statement statement : manager.getStatements()) {
+                if (statement != null) {
+                    statement.close();
+                }
             }
             if (manager.getConnection() != null) {
                 manager.getConnection().close();

@@ -4,42 +4,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Manager {
 
-    private Statement statement;
-    private ResultSet resultSet;
     private Connection connection;
-    private PreparedStatement preparedStatement;
+    private List<Statement> statements;
+    private List<ResultSet> resultSets;
+    private List<PreparedStatement> preparedStatements;
 
     public Manager() {
+        this.connection = null;
+        this.statements = new ArrayList<>();
+        this.resultSets = new ArrayList<>();
+        this.preparedStatements = new ArrayList<>();
     }
 
     private Manager(Connection connection) {
-        this.statement = null;
-        this.resultSet = null;
         this.connection = connection;
-        this.preparedStatement = null;
+        this.statements = new ArrayList<>();
+        this.resultSets = new ArrayList<>();
+        this.preparedStatements = new ArrayList<>();
     }
 
     public static Manager get(Connection connection) {
         return new Manager(connection);
     }
 
-    public Statement getStatement() {
-        return statement;
-    }
-
     public void setStatement(Statement statement) {
-        this.statement = statement;
-    }
-
-    public ResultSet getResultSet() {
-        return resultSet;
+        this.statements.add(statement);
     }
 
     public void setResultSet(ResultSet resultSet) {
-        this.resultSet = resultSet;
+        this.resultSets.add(resultSet);
     }
 
     public Connection getConnection() {
@@ -50,11 +48,31 @@ public class Manager {
         this.connection = connection;
     }
 
-    public PreparedStatement getPreparedStatement() {
-        return preparedStatement;
+    public void setPreparedStatement(PreparedStatement preparedStatement) {
+        this.preparedStatements.add(preparedStatement);
     }
 
-    public void setPreparedStatement(PreparedStatement preparedStatement) {
-        this.preparedStatement = preparedStatement;
+    public List<Statement> getStatements() {
+        return statements;
+    }
+
+    public void setStatements(List<Statement> statements) {
+        this.statements = statements;
+    }
+
+    public List<ResultSet> getResultSets() {
+        return resultSets;
+    }
+
+    public void setResultSets(List<ResultSet> resultSets) {
+        this.resultSets = resultSets;
+    }
+
+    public List<PreparedStatement> getPreparedStatements() {
+        return preparedStatements;
+    }
+
+    public void setPreparedStatements(List<PreparedStatement> preparedStatements) {
+        this.preparedStatements = preparedStatements;
     }
 }
