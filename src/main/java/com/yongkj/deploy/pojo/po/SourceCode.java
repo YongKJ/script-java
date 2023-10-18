@@ -176,6 +176,7 @@ public class SourceCode {
     }
 
     private static String getPackageName(String javaPath) {
+        if (!javaPath.endsWith(".java")) return "";
         int index = javaPath.lastIndexOf(".");
         String suffix = javaPath.substring(index);
         javaPath = javaPath.replace(suffix, "");
