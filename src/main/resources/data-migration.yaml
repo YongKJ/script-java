@@ -12,5 +12,6 @@ des:
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
-table-name:
+database-name: "dev_user"
+table-names:
   - "admin_user"
