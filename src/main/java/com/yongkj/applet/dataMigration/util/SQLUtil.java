@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class SQLUtil {
 
@@ -27,7 +28,33 @@ public class SQLUtil {
         }
     }
 
-    public static void closeAll(Manager manager) {
+    public static void close(ResultSet resultSet, PreparedStatement preparedStatement) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void close(ResultSet resultSet, Statement statement) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void close(Manager manager) {
         try {
             for (ResultSet resultSet : manager.getResultSets()) {
                 if (resultSet != null) {
@@ -44,6 +71,17 @@ public class SQLUtil {
                     statement.close();
                 }
             }
+            manager.setResultSets(new ArrayList<>());
+            manager.setStatements(new ArrayList<>());
+            manager.setPreparedStatements(new ArrayList<>());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void closeAll(Manager manager) {
+        try {
+            close(manager);
             if (manager.getConnection() != null) {
                 manager.getConnection().close();
             }

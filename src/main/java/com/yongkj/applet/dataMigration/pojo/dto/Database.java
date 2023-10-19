@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class Database {
 
+    private String name;
     private String driver;
     private String url;
     private String username;
@@ -14,15 +15,16 @@ public class Database {
     private Database() {
     }
 
-    private Database(String driver, String url, String username, String password) {
+    private Database(String name, String driver, String url, String username, String password) {
+        this.name = name;
         this.driver = driver;
         this.url = url;
         this.username = username;
         this.password = password;
     }
 
-    public static Database of(String driver, String url, String username, String password) {
-        return new Database(driver, url, username, password);
+    public static Database of(String name, String driver, String url, String username, String password) {
+        return new Database(name, driver, url, username, password);
     }
 
     public static Database get(String key) {
@@ -34,11 +36,20 @@ public class Database {
         if (!(database instanceof Map)) {
             return new Database();
         }
+        String name = GenUtil.objToStr(((Map<String, Object>) database).get("name"));
         String driver = GenUtil.objToStr(((Map<String, Object>) database).get("driver"));
         String url = GenUtil.objToStr(((Map<String, Object>) database).get("url"));
         String username = GenUtil.objToStr(((Map<String, Object>) database).get("username"));
         String password = GenUtil.objToStr(((Map<String, Object>) database).get("password"));
-        return new Database(driver, url, username, password);
+        return new Database(name, driver, url, username, password);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDriver() {

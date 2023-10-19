@@ -1,5 +1,6 @@
 src:
   database:
+    name: "dev_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/dev_user?characterEncoding=utf-8"
     username: "dev"
@@ -7,11 +8,11 @@ src:
 
 des:
   database:
+    name: "test_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:23306/test_user?characterEncoding=utf-8"
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
-database-name: "dev_user"
 table-names:
   - "admin_user"
