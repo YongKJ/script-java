@@ -18,6 +18,7 @@ public class Table {
     private String name;
     private String createSql;
     private String deleteSql;
+    private String selectDataSql;
     private String insertDataSql;
     private String updateDataSql;
     private String removeDataSql;
@@ -27,6 +28,7 @@ public class Table {
         this.name = "";
         this.createSql = "";
         this.deleteSql = "";
+        this.selectDataSql = "";
         this.insertDataSql = "";
         this.updateDataSql = "";
         this.removeDataSql = "";
@@ -155,6 +157,14 @@ public class Table {
 
     public void setDeleteSql(String deleteSql) {
         this.deleteSql = deleteSql;
+    }
+
+    public String getSelectDataSql() {
+        return selectDataSql;
+    }
+
+    public void setSelectDataSql(String selectDataSql) {
+        this.selectDataSql = selectDataSql;
     }
 
     public String getInsertDataSql() {
