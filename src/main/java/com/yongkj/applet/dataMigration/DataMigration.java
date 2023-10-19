@@ -7,11 +7,9 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataMigration {
@@ -35,12 +33,13 @@ public class DataMigration {
     private void apply() {
         List<String> databases = getDatabases(srcManager);
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "databases", databases));
+
         List<String> tables = getTables(srcManager, databaseName);
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "tableNames", tables));
+
         List<String> fieldNames = getFields(srcManager, tableNames.get(0));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "fieldNames", fieldNames));
-        fieldNames = getFieldsBySql(srcManager, tableNames.get(0));
-        LogUtil.loggerLine(Log.of("DataMigration", "apply", "fieldNames", fieldNames));
+
         SQLUtil.closeAll(srcManager);
         SQLUtil.closeAll(desManager);
     }
@@ -48,35 +47,35 @@ public class DataMigration {
     private List<String> getFields(Manager manager, String table) {
         List<String> fields = new ArrayList<>();
         try {
-            String sql = "select * from ? where 1=2";
-            PreparedStatement preparedStatement = manager.getConnection().prepareStatement(sql);
-            preparedStatement.setString(1, table);
-            ResultSet sqlResult = preparedStatement.executeQuery();
+            String sql = String.format("select * from %s where 1=2", table);
+            Statement statement = manager.getConnection().createStatement();
+            ResultSet sqlResult = statement.executeQuery(sql);
             ResultSetMetaData sqlResultMeta = sqlResult.getMetaData();
 
             int count = sqlResultMeta.getColumnCount();
-            Map<String, String> mapRemark = getMapRemark(manager, table);
-            LogUtil.loggerLine(Log.of("DataMigration", "apply", "count", count));
+//            Map<String, String> mapRemark = getMapRemark(manager, table);
+            Map<String, String> mapRemark = getMapRemarkBySql(manager, table);
+            LogUtil.loggerLine(Log.of("DataMigration", "getFields", "mapRemark", mapRemark));
             for (int col = 1; col <= count; col++) {
                 String field = sqlResultMeta.getColumnName(col);
                 String type = sqlResultMeta.getColumnTypeName(col);
                 String remark = mapRemark.get(field);
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "field", field));
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "type", type));
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "remark", remark));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "field", field));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "type", type));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "remark", remark));
 
                 boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "isNotNull", isNotNull));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "isNotNull", isNotNull));
                 if (Objects.equals(type, "VARCHAR")) {
                     int fieldLength = sqlResultMeta.getColumnDisplaySize(col);
-                    LogUtil.loggerLine(Log.of("DataMigration", "apply", "fieldLength", fieldLength));
+                    LogUtil.loggerLine(Log.of("DataMigration", "getFields", "fieldLength", fieldLength));
                 }
                 System.out.println("--------------------------------------------------------");
 
                 fields.add(field);
             }
             manager.setResultSet(sqlResult);
-            manager.setPreparedStatement(preparedStatement);
+            manager.setStatement(statement);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,24 +86,20 @@ public class DataMigration {
     private Map<String, String> getMapRemarkBySql(Manager manager, String table) {
         Map<String, String> mapRemark = new HashMap<>();
         try {
-            String sql = "show create table ?";
-            PreparedStatement preparedStatement = manager.getConnection().prepareStatement(sql);
-            preparedStatement.setString(1, table);
-            ResultSet sqlResult = preparedStatement.executeQuery();
+            String sql = String.format("show create table %s", table);
+            Statement statement = manager.getConnection().createStatement();
+            ResultSet sqlResult = statement.executeQuery(sql);
 
             while (sqlResult.next()) {
-                String tableName = sqlResult.getString("Table");
                 String createTableSql = sqlResult.getString("Create Table");
+                LogUtil.loggerLine(Log.of("DataMigration", "getMapRemarkBySql", "createTableSql", createTableSql));
+
                 String lineBreak = createTableSql.contains("\r\n") ? "\r\n" : "\n";
                 List<String> lstLine = Arrays.asList(createTableSql.split(lineBreak));
                 mapRemark = getMapRemark(lstLine);
-
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "tableName", tableName));
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "createTableSql", createTableSql));
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "lstLine", lstLine));
             }
             manager.setResultSet(sqlResult);
-            manager.setPreparedStatement(preparedStatement);
+            manager.setStatement(statement);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,8 +107,17 @@ public class DataMigration {
     }
 
     private Map<String, String> getMapRemark(List<String> lstLine) {
-        String regStr = "\\s+`(\\S+)`[\\s\\S]+";
+        String regStr = "\\s+`(\\S+)`[\\s\\S]+COMMENT\\s'(\\S+)'[\\s\\S]+";
+        Map<String, String> mapRemark = new HashMap<>();
         Pattern pattern = Pattern.compile(regStr);
+        for (String line : lstLine) {
+            Matcher matcher = pattern.matcher(line);
+            if (!matcher.find()) continue;
+            String field = matcher.group(1);
+            String comment = matcher.group(2);
+            mapRemark.put(field, comment);
+        }
+        return mapRemark;
     }
 
     private Map<String, String> getMapRemark(Manager manager, String table) {
@@ -128,8 +132,8 @@ public class DataMigration {
             while (resultSet.next() && columnIndex <= columnCount) {
                 String remark = resultSet.getString("REMARKS");
                 String field = resultSet.getString("COLUMN_NAME");
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "field", field));
-                LogUtil.loggerLine(Log.of("DataMigration", "apply", "remark", remark));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "field", field));
+                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "remark", remark));
 
                 if (!mapRemark.containsKey(field)) {
                     mapRemark.put(field, remark);
