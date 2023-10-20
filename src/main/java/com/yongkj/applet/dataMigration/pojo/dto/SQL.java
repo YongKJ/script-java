@@ -4,7 +4,7 @@ public class SQL {
 
     private static String TABLE_DELETE_SQL = "DROP TABLE IF EXISTS `%s`";
     private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s DEFAULT %s %s %s `%s`";
-    private static String FIELD_MODIFY_SQL;
+    private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s DEFAULT %s %s";
     private static String FIELD_DELETE_SQL;
     private static String DATA_INSERT_SQL;
     private static String DATA_UPDATE_SQL;
@@ -18,8 +18,8 @@ public class SQL {
         return String.format(FIELD_CREATE_SQL, table, field, type, notNull, defaultValue, comment, position, positionField);
     }
 
-    public static String getFieldModifySql() {
-        return FIELD_MODIFY_SQL;
+    public static String getFieldModifySql(String table, String field, String type, String notNull, String defaultValue, String comment) {
+        return String.format(FIELD_MODIFY_SQL, table, field, type, notNull, defaultValue, comment);
     }
 
     public static String getFieldDeleteSql() {

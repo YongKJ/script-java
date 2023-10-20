@@ -97,6 +97,7 @@ public class Field {
 
     private static Field getSqlField(Field field) {
         field.setCreateSql(getCreateSQl(field));
+        field.setModifySql(getModifySQl(field));
         return field;
     }
 
@@ -105,8 +106,13 @@ public class Field {
                 field.getTable(), field.getName(), field.getType(),
                 field.getNotNull(), field.getDefaultValue(), field.getComment(),
                 field.getBeforeField().length() == 0 ? "BEFORE" : "AFTER",
-                field.getBeforeField().length() == 0 ? field.getAfterField() : field.getBeforeField()
-        );
+                field.getBeforeField().length() == 0 ? field.getAfterField() : field.getBeforeField());
+    }
+
+    private static String getModifySQl(Field field) {
+        return SQL.getFieldModifySql(
+                field.getTable(), field.getName(), field.getType(),
+                field.getNotNull(), field.getDefaultValue(), field.getComment());
     }
 
     public String getTable() {
