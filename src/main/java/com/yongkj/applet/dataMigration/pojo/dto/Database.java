@@ -4,7 +4,12 @@ import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.util.GenUtil;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Database {
@@ -50,8 +55,46 @@ public class Database {
         String password = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("password"));
         Database database = new Database(name, driver, url, username, password);
         database.setManager(SQLUtil.getConnection(database));
-        database.setMapTable(Table.getTables(database.getManager(), database.getName()));
+        database.setMapTable(Table.getTables(database.getManager()));
         return database;
+    }
+
+    public static List<String> getDatabasesBySql(Manager manager) {
+        List<String> databases = new ArrayList<>();
+        try {
+            String sql = "SHOW DATABASES";
+            Statement statement = manager.getConnection().createStatement();
+            ResultSet sqlResult = statement.executeQuery(sql);
+
+            while (sqlResult.next()) {
+                String database = sqlResult.getString(1);
+                databases.add(database);
+            }
+
+            manager.setResultSet(sqlResult);
+            manager.setStatement(statement);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return databases;
+    }
+
+    public static List<String> getDatabases(Manager manager) {
+        List<String> databases = new ArrayList<>();
+        try {
+            DatabaseMetaData metaData = manager.getConnection().getMetaData();
+            ResultSet resultSet = metaData.getCatalogs();
+
+            while (resultSet.next()) {
+                String database = resultSet.getString("TABLE_CAT");
+                databases.add(database);
+            }
+
+            manager.setResultSet(resultSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return databases;
     }
 
     public String getName() {

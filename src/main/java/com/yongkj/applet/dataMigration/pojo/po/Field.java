@@ -2,8 +2,6 @@ package com.yongkj.applet.dataMigration.pojo.po;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
-import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.LogUtil;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -43,10 +41,9 @@ public class Field {
     }
 
     public static Map<String, Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
-        LogUtil.loggerLine(Log.of("DataMigration", "getFields", "mapComment", mapComment));
         List<Field> fields = new ArrayList<>();
         try {
-            String sql = String.format("select * from %s where 1=2", tableName);
+            String sql = String.format("SELECT * FROM `%s` WHERE 1=2", tableName);
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
             ResultSetMetaData sqlResultMeta = sqlResult.getMetaData();
@@ -56,16 +53,9 @@ public class Field {
                 String fieldName = sqlResultMeta.getColumnName(col);
                 String type = sqlResultMeta.getColumnTypeName(col);
                 int length = sqlResultMeta.getColumnDisplaySize(col);
-                String comment = mapComment.get(fieldName);
+                String comment = mapComment.get(fieldName) == null ? "" : String.format("COMMENT '%s'", mapComment.get(fieldName));
                 boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;
                 String notNull = Objects.equals(type, "JSON") || !isNotNull ? "" : "NOT NULL";
-
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "fieldName", fieldName));
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "type", type));
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "comment", comment));
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "isNotNull", isNotNull));
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "length", length));
-                System.out.println("--------------------------------------------------------");
 
                 Field field = new Field();
                 field.setTable(tableName);

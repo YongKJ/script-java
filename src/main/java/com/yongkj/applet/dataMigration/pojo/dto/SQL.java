@@ -2,8 +2,8 @@ package com.yongkj.applet.dataMigration.pojo.dto;
 
 public class SQL {
 
-    private static String TABLE_DELETE_SQL = "DROP TABLE IF EXISTS %s";
-    private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s DEFAULT %s COMMENT '%s' %s `%s`";
+    private static String TABLE_DELETE_SQL = "DROP TABLE IF EXISTS `%s`";
+    private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s DEFAULT %s %s %s `%s`";
     private static String FIELD_MODIFY_SQL;
     private static String FIELD_DELETE_SQL;
     private static String DATA_INSERT_SQL;

@@ -36,9 +36,11 @@ public class Table {
         this.mapField = new HashMap<>();
     }
 
-    public static Map<String, Table> getTables(Manager manager, String database) {
+    public static Map<String, Table> getTables(Manager manager) {
         Map<String, Table> mapTable = new HashMap<>();
-        List<String> lstTableName = getTableNames(manager, database);
+        List<String> lstTableName = getTableNamesBySql(manager);
+        LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
+        LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
         for (String tableName : lstTableName) {
             Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
             String createSqs = mapRemark.get("createSql");
@@ -60,13 +62,12 @@ public class Table {
     private static Map<String, String> getMapRemarkBySql(Manager manager, String table) {
         Map<String, String> mapRemark = new HashMap<>();
         try {
-            String sql = String.format("show create table %s", table);
+            String sql = String.format("SHOW CREATE TABLE `%s`", table);
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
 
             while (sqlResult.next()) {
                 String createTableSql = sqlResult.getString("Create Table");
-                LogUtil.loggerLine(Log.of("DataMigration", "getMapRemarkBySql", "createTableSql", createTableSql));
 
                 String lineBreak = createTableSql.contains("\r\n") ? "\r\n" : "\n";
                 List<String> lstLine = Arrays.asList(createTableSql.split(lineBreak));
@@ -96,6 +97,25 @@ public class Table {
         return mapRemark;
     }
 
+    private static List<String> getTableNamesBySql(Manager manager) {
+        List<String> tables = new ArrayList<>();
+        try {
+            String sql = "SHOW TABLES";
+            Statement statement = manager.getConnection().createStatement();
+            ResultSet sqlResult = statement.executeQuery(sql);
+
+            while (sqlResult.next()) {
+                tables.add(sqlResult.getString(1));
+            }
+
+            manager.setResultSet(sqlResult);
+            manager.setStatement(statement);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tables;
+    }
+
     private static Map<String, String> getMapRemark(Manager manager, String table) {
         Map<String, String> mapRemark = new HashMap<>();
         try {
@@ -108,8 +128,6 @@ public class Table {
             while (resultSet.next() && columnIndex <= columnCount) {
                 String remark = resultSet.getString("REMARKS");
                 String field = resultSet.getString("COLUMN_NAME");
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "field", field));
-                LogUtil.loggerLine(Log.of("DataMigration", "getFields", "remark", remark));
 
                 if (!mapRemark.containsKey(field)) {
                     mapRemark.put(field, remark);
@@ -129,7 +147,6 @@ public class Table {
         try {
             DatabaseMetaData metaData = manager.getConnection().getMetaData();
             ResultSet resultSet = metaData.getTables(null, database, "%", new String[]{"TABLE"});
-            LogUtil.loggerLine(Log.of("DataMigration", "getTableNames", "resultSet", resultSet));
 
             while (resultSet.next()) {
                 tables.add(resultSet.getString("TABLE_NAME"));
