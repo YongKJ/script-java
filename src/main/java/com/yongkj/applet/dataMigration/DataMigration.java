@@ -2,7 +2,6 @@ package com.yongkj.applet.dataMigration;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
-import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
@@ -15,27 +14,19 @@ import java.util.List;
 
 public class DataMigration {
 
-    private final Manager srcManager;
-    private final Manager desManager;
     private final Database srcDatabase;
     private final Database desDatabase;
-    private final List<Table> srcTables;
-    private final List<Table> desTables;
     private final List<String> tableNames;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
         this.tableNames = GenUtil.getList("table-names");
-        this.srcManager = SQLUtil.getConnection(srcDatabase);
-        this.desManager = SQLUtil.getConnection(desDatabase);
-        this.srcTables = Table.getTables(srcManager, srcDatabase.getName());
-        this.desTables = Table.getTables(desManager, desDatabase.getName());
     }
 
     private void apply() {
-        List<String> srcDatabases = getDatabases(srcManager);
-        List<String> desDatabases = getDatabases(desManager);
+        List<String> srcDatabases = getDatabases(srcDatabase.getManager());
+        List<String> desDatabases = getDatabases(desDatabase.getManager());
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases", srcDatabases));
         if (!srcDatabases.contains(srcDatabase.getName()) ||
                 !desDatabases.contains(desDatabase.getName())) {
@@ -43,8 +34,8 @@ public class DataMigration {
             return;
         }
 
-        SQLUtil.closeAll(srcManager);
-        SQLUtil.closeAll(desManager);
+        SQLUtil.closeAll(srcDatabase.getManager());
+        SQLUtil.closeAll(desDatabase.getManager());
     }
 
     private List<String> getDatabases(Manager manager) {

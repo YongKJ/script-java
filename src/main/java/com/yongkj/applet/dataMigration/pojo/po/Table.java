@@ -1,6 +1,7 @@
 package com.yongkj.applet.dataMigration.pojo.po;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
+import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
@@ -22,7 +23,7 @@ public class Table {
     private String insertDataSql;
     private String updateDataSql;
     private String removeDataSql;
-    private List<Field> lstField;
+    private Map<String, Field> mapField;
 
     private Table() {
         this.name = "";
@@ -32,11 +33,11 @@ public class Table {
         this.insertDataSql = "";
         this.updateDataSql = "";
         this.removeDataSql = "";
-        this.lstField = new ArrayList<>();
+        this.mapField = new HashMap<>();
     }
 
-    public static List<Table> getTables(Manager manager, String database) {
-        List<Table> tables = new ArrayList<>();
+    public static Map<String, Table> getTables(Manager manager, String database) {
+        Map<String, Table> mapTable = new HashMap<>();
         List<String> lstTableName = getTableNames(manager, database);
         for (String tableName : lstTableName) {
             Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
@@ -44,10 +45,16 @@ public class Table {
             Table table = new Table();
             table.setName(tableName);
             table.setCreateSql(createSqs);
-            table.setLstField(Field.getFields(manager, tableName, mapRemark));
+            table.setMapField(Field.getFields(manager, tableName, mapRemark));
+            mapTable.put(tableName, getSqlTable(table));
         }
         SQLUtil.close(manager);
-        return tables;
+        return mapTable;
+    }
+
+    public static Table getSqlTable(Table table) {
+        table.setDeleteSql(SQL.getTableDeleteSql(table.getName()));
+        return table;
     }
 
     private static Map<String, String> getMapRemarkBySql(Manager manager, String table) {
@@ -191,11 +198,11 @@ public class Table {
         this.removeDataSql = removeDataSql;
     }
 
-    public List<Field> getLstField() {
-        return lstField;
+    public Map<String, Field> getMapField() {
+        return mapField;
     }
 
-    public void setLstField(List<Field> lstField) {
-        this.lstField = lstField;
+    public void setMapField(Map<String, Field> mapField) {
+        this.mapField = mapField;
     }
 }

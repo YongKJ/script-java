@@ -1,16 +1,14 @@
 package com.yongkj.applet.dataMigration.pojo.po;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
+import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Field {
 
@@ -18,8 +16,9 @@ public class Field {
     private String name;
     private String type;
     private int length;
+    private String notNull;
     private boolean isNotNull;
-    private Object defaultValue;
+    private String defaultValue;
     private String comment;
     private String afterField;
     private String beforeField;
@@ -31,6 +30,8 @@ public class Field {
         this.table = "";
         this.name = "";
         this.type = "";
+        this.length = 0;
+        this.notNull = "";
         this.isNotNull = false;
         this.defaultValue = "";
         this.comment = "";
@@ -41,7 +42,7 @@ public class Field {
         this.deleteSql = "";
     }
 
-    public static List<Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
+    public static Map<String, Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
         LogUtil.loggerLine(Log.of("DataMigration", "getFields", "mapComment", mapComment));
         List<Field> fields = new ArrayList<>();
         try {
@@ -57,6 +58,7 @@ public class Field {
                 int length = sqlResultMeta.getColumnDisplaySize(col);
                 String comment = mapComment.get(fieldName);
                 boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;
+                String notNull = Objects.equals(type, "JSON") || !isNotNull ? "" : "NOT NULL";
 
                 LogUtil.loggerLine(Log.of("DataMigration", "getFields", "fieldName", fieldName));
                 LogUtil.loggerLine(Log.of("DataMigration", "getFields", "type", type));
@@ -70,11 +72,13 @@ public class Field {
                 field.setName(fieldName);
                 field.setType(type);
                 field.setNotNull(isNotNull);
-                if (Objects.equals(type, "VARCHAR")) {
+                field.setNotNull(notNull);
+                field.setDefaultValue(
+                        Objects.equals(type, "VARCHAR") ? "''" :
+                                Objects.equals(type, "JSON") ? "NULL" : "'0'");
+                if (Objects.equals(type, "VARCHAR") && length > 0) {
                     field.setLength(length);
-                    field.setDefaultValue("");
-                } else {
-                    field.setDefaultValue(0);
+                    field.setType(type + "(" + length + ")");
                 }
                 field.setComment(comment);
                 fields.add(field);
@@ -85,7 +89,34 @@ public class Field {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return fields;
+        return getMapField(fields);
+    }
+
+    public static Map<String, Field> getMapField(List<Field> lstField) {
+        Map<String, Field> mapField = new HashMap<>();
+        for (int i = 0; i < lstField.size(); i++) {
+            String beforeField = i == 0 ? "" : lstField.get(i - 1).name;
+            String afterField = i == lstField.size() - 1 ? "" : lstField.get(i + 1).name;
+            Field field = lstField.get(i);
+            field.setBeforeField(beforeField);
+            field.setAfterField(afterField);
+            mapField.put(field.name, getSqlField(field));
+        }
+        return mapField;
+    }
+
+    private static Field getSqlField(Field field) {
+        field.setCreateSql(getCreateSQl(field));
+        return field;
+    }
+
+    private static String getCreateSQl(Field field) {
+        return SQL.getFieldCreateSql(
+                field.getTable(), field.getName(), field.getType(),
+                field.getNotNull(), field.getDefaultValue(), field.getComment(),
+                field.getBeforeField().length() == 0 ? "BEFORE" : "AFTER",
+                field.getBeforeField().length() == 0 ? field.getAfterField() : field.getBeforeField()
+        );
     }
 
     public String getTable() {
@@ -120,6 +151,14 @@ public class Field {
         this.length = length;
     }
 
+    public String getNotNull() {
+        return notNull;
+    }
+
+    public void setNotNull(String notNull) {
+        this.notNull = notNull;
+    }
+
     public boolean isNotNull() {
         return isNotNull;
     }
@@ -128,11 +167,11 @@ public class Field {
         isNotNull = notNull;
     }
 
-    public Object getDefaultValue() {
+    public String getDefaultValue() {
         return defaultValue;
     }
 
-    public void setDefaultValue(Object defaultValue) {
+    public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
