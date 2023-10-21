@@ -1,9 +1,9 @@
 package com.yongkj.applet.dataMigration;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
+import com.yongkj.applet.dataMigration.service.IncrementMigrationService;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
@@ -12,12 +12,14 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
-    private final List<String> tableNames;
+    private final IncrementMigrationService incrementMigrationService;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
-        this.tableNames = GenUtil.getList("table-names");
+        this.incrementMigrationService = new IncrementMigrationService(
+                this.srcDatabase, this.desDatabase
+        );
     }
 
     private void apply() {
