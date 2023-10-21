@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
-import com.yongkj.applet.dataMigration.service.IncrementMigrationService;
+import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
@@ -12,12 +12,12 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
-    private final IncrementMigrationService incrementMigrationService;
+    private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
-        this.incrementMigrationService = new IncrementMigrationService(
+        this.fieldIncrementMigrationService = new FieldIncrementMigrationService(
                 this.srcDatabase, this.desDatabase
         );
     }
@@ -37,11 +37,14 @@ public class DataMigration {
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases.size()", srcDatabases.size()));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases", desDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases.size()", desDatabases.size()));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
 
         if (!srcDatabases.contains(srcDatabase.getName()) || !desDatabases.contains(desDatabase.getName())) {
             System.out.println("数据库不存在！");
             return;
         }
+
+        fieldIncrementMigrationService.apply();
 
         SQLUtil.closeAll(srcDatabase.getManager());
         SQLUtil.closeAll(desDatabase.getManager());

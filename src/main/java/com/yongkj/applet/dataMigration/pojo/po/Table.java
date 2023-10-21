@@ -45,6 +45,7 @@ public class Table {
         List<String> lstTableName = getTableNamesBySql(manager);
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
         for (String tableName : lstTableName) {
             Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
             List<Field> lstField = Field.getFields(manager, tableName, mapRemark);
@@ -126,7 +127,7 @@ public class Table {
     }
 
     private static Map<String, String> getMapRemark(List<String> lstLine) {
-        String regStr = "\\s+`(\\S+)`[\\s\\S]+COMMENT\\s'(\\S+)'[\\s\\S]+";
+        String regStr = "\\s+`(\\S+)`[\\s\\S]+COMMENT\\s'(.*)'[\\s\\S]+";
         Map<String, String> mapRemark = new HashMap<>();
         Pattern pattern = Pattern.compile(regStr);
         for (String line : lstLine) {

@@ -3,13 +3,14 @@ package com.yongkj.applet.dataMigration.pojo.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SQL {
 
     private static String TABLE_DELETE_SQL = "DROP TABLE IF EXISTS `%s`";
-    private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s DEFAULT %s %s %s `%s`";
-    private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s DEFAULT %s %s";
+    private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s %s %s %s";
+    private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s %s %s %s";
     private static String FIELD_DELETE_SQL = "ALTER TABLE `%s` DROP COLUMN `%s`";
     private static String DATA_SELECT_SQL = "SELECT %s FROM %s %s";
     private static String DATA_INSERT_SQL = "INSERT INTO `%s` (%s) VALUE(%s)";
@@ -22,11 +23,18 @@ public class SQL {
 
     public static String getFieldCreateSql(String table, String field, String type, String notNull, String defaultValue, String comment, String position, String positionField) {
         comment = comment.length() == 0 ? comment : String.format("COMMENT '%s'", comment);
-        return String.format(FIELD_CREATE_SQL, table, field, type, notNull, defaultValue, comment, position, positionField);
+        defaultValue = defaultValue == null ? "" : Objects.equals(defaultValue, "NULL") ?
+                String.format("DEFAULT %s", defaultValue) : String.format("DEFAULT '%s'", defaultValue);
+        position = Objects.equals(position, "BEFORE") ? "FIRST" : String.format("%s `%s`", position, positionField);
+        return String.format(FIELD_CREATE_SQL, table, field, type, notNull, defaultValue, comment, position);
     }
 
-    public static String getFieldModifySql(String table, String field, String type, String notNull, String defaultValue, String comment) {
-        return String.format(FIELD_MODIFY_SQL, table, field, type, notNull, defaultValue, comment);
+    public static String getFieldModifySql(String table, String field, String type, String notNull, String defaultValue, String comment, String position, String positionField) {
+        comment = comment.length() == 0 ? comment : String.format("COMMENT '%s'", comment);
+        defaultValue = defaultValue == null ? "" : Objects.equals(defaultValue, "NULL") ?
+                String.format("DEFAULT %s", defaultValue) : String.format("DEFAULT '%s'", defaultValue);
+        position = Objects.equals(position, "BEFORE") ? "FIRST" : String.format("%s `%s`", position, positionField);
+        return String.format(FIELD_MODIFY_SQL, table, field, type, notNull, defaultValue, comment, position);
     }
 
     public static String getFieldDeleteSql(String table, String field) {

@@ -16,6 +16,12 @@ public class GenUtil {
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
+    public static List<String> getRetainData(List<String> srcData, List<String> desData) {
+        List<String> tempData = new ArrayList<>(srcData);
+        tempData.retainAll(desData);
+        return tempData;
+    }
+
     public static List<String> getStrLines(String str) {
         String lineBreak = str.contains("\r\n") ? "\r\n" : "\n";
         return Arrays.asList(str.split(lineBreak));

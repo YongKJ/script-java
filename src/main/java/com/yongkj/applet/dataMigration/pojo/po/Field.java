@@ -49,7 +49,15 @@ public class Field {
 
 
     public static Map<String, Field> getMapField(List<Field> fields, String tableSql, String table) {
-        return packKeyOrIndex(getMapField(fields), tableSql, table);
+        return packKeyOrIndex(getMapField(packDefaultValue(fields, tableSql)), tableSql, table);
+    }
+
+    private static List<Field> packDefaultValue(List<Field> lstField, String tableSql) {
+        Map<String, String> mapDefault = getMapDefault(tableSql);
+        for (Field field : lstField) {
+            field.setDefaultValue(mapDefault.get(field.getName()));
+        }
+        return lstField;
     }
 
     public static List<Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
@@ -75,9 +83,6 @@ public class Field {
                 field.setType(type);
                 field.setNotNull(isNotNull);
                 field.setNotNull(notNull);
-                field.setDefaultValue(
-                        Objects.equals(type, "VARCHAR") ? "''" :
-                                Objects.equals(type, "JSON") ? "NULL" : "'0'");
                 if (Objects.equals(type, "VARCHAR") && length > 0) {
                     field.setLength(length);
                     field.setType(String.format("%s(%s)", type, length));
@@ -92,6 +97,28 @@ public class Field {
             e.printStackTrace();
         }
         return fields;
+    }
+
+    private static Map<String, String> getMapDefault(String tableSql) {
+        List<String> lstLine = GenUtil.getStrLines(tableSql);
+        String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*)'[\\s\\S]+";
+        String tempRegStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s(NULL)[\\s\\S]+";
+        Pattern pattern = Pattern.compile(regStr);
+        Pattern tempPattern = Pattern.compile(tempRegStr);
+        Map<String, String> mapDefault = new HashMap<>();
+        for (String line : lstLine) {
+            Matcher matcher = pattern.matcher(line);
+            if (!matcher.find()) {
+                matcher = tempPattern.matcher(line);
+            }
+            if (!matcher.find()) {
+                continue;
+            }
+            String field = matcher.group(1);
+            String comment = matcher.group(2);
+            mapDefault.put(field, comment);
+        }
+        return mapDefault;
     }
 
     private static Map<String, Field> packKeyOrIndex(Map<String, Field> mapField, String tableSql, String tableName) {
@@ -165,7 +192,9 @@ public class Field {
     private static String getModifySQl(Field field) {
         return SQL.getFieldModifySql(
                 field.getTable(), field.getName(), field.getType(),
-                field.getNotNull(), field.getDefaultValue(), field.getComment());
+                field.getNotNull(), field.getDefaultValue(), field.getComment(),
+                field.getBeforeField().length() == 0 ? "BEFORE" : "AFTER",
+                field.getBeforeField().length() == 0 ? field.getAfterField() : field.getBeforeField());
     }
 
     private static String getDeleteSQl(Field field) {
