@@ -49,11 +49,11 @@ public class SQL {
     public static String getDataUpdateSql(String table, Map<String, Object> mapData, String where) {
         String data = getMapDataStr(mapData);
         where = where.length() == 0 ? where : String.format("WHERE %s", where);
-        return String.join(DATA_UPDATE_SQL, table, data, where);
+        return String.format(DATA_UPDATE_SQL, table, data, where);
     }
 
     public static String getDataRemoveSql(String table, String where) {
-        return String.join(DATA_REMOVE_SQL, table, where);
+        return String.format(DATA_REMOVE_SQL, table, where);
     }
 
     private static String getMapDataStr(Map<String, Object> mapData) {
@@ -62,6 +62,7 @@ public class SQL {
             String data = String.format("`%s`=%s", map.getKey(),
                     map.getValue() instanceof String ?
                             String.format("'%s'", map.getValue()) : map.getValue());
+            lstData.add(data);
         }
         return String.join(", ", lstData);
     }
