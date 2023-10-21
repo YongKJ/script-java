@@ -10,7 +10,7 @@ public class SQL {
     private static String TABLE_DELETE_SQL = "DROP TABLE IF EXISTS `%s`";
     private static String FIELD_CREATE_SQL = "ALTER TABLE `%s` ADD COLUMN `%s` %s %s DEFAULT %s %s %s `%s`";
     private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s DEFAULT %s %s";
-    private static String FIELD_DELETE_SQL = "ALTER TABLE %s DROP COLUMN %s";
+    private static String FIELD_DELETE_SQL = "ALTER TABLE `%s` DROP COLUMN `%s`";
     private static String DATA_SELECT_SQL = "SELECT %s FROM %s %s";
     private static String DATA_INSERT_SQL = "INSERT INTO `%s` (%s) VALUE(%s)";
     private static String DATA_UPDATE_SQL = "UPDATE `%s` SET %s %s";

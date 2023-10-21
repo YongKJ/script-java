@@ -103,7 +103,7 @@ public class Field {
             List<String> fieldNames = getFieldNames(line);
             for (String fieldName : fieldNames) {
                 if (!mapField.containsKey(fieldName)) continue;
-                (lstLine.contains("KEY") ?
+                (line.contains("KEY") ?
                         mapField.get(fieldName).getKeys() :
                         mapField.get(fieldName).getIndexes()).add(sql);
             }
@@ -113,7 +113,7 @@ public class Field {
 
     private static String getKeyOrIndexSql(String line, String tableName) {
         if (line.endsWith(",")) line = line.substring(0, line.length() - 1);
-        return String.format("ALTER TABLE %s ADD %s", tableName, line);
+        return String.format("ALTER TABLE %s ADD %s", tableName, line.trim());
     }
 
     private static List<String> getFieldNames(String line) {
@@ -121,14 +121,15 @@ public class Field {
         Pattern pattern = Pattern.compile(regStr);
         Matcher matcher = pattern.matcher(line);
         if (!matcher.find()) return new ArrayList<>();
-        String fieldNamesStr = matcher.group(1);
-        regStr = "`(\\S+)`";
+        String[] lstFieldName = matcher.group(1).split(",");
+
+        regStr = ".*`(\\S+)`.*";
         pattern = Pattern.compile(regStr);
-        matcher = pattern.matcher(fieldNamesStr);
-        if (!matcher.find()) return new ArrayList<>();
         List<String> fieldNames = new ArrayList<>();
-        for (int i = 1; i <= matcher.groupCount(); i++) {
-            fieldNames.add(matcher.group(i));
+        for (String fieldName : lstFieldName) {
+            matcher = pattern.matcher(fieldName);
+            if (!matcher.find()) continue;
+            fieldNames.add(matcher.group(1));
         }
         return fieldNames;
     }
