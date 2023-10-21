@@ -9,8 +9,10 @@ import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class FieldIncrementMigrationService {
 
@@ -68,11 +70,13 @@ public class FieldIncrementMigrationService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
+        Set<String> keyAndIndexes = new HashSet<>();
         for (String fieldName : srcTable.getFieldNames()) {
             Field srcField = srcTable.getMapField().get(fieldName);
             Field desField = desTable.getMapField().get(fieldName);
-            compareAndMigrationField(srcField, desField);
+            compareAndMigrationField(srcField, desField, keyAndIndexes);
         }
+        createKeyOrIndexes(keyAndIndexes);
         for (String fieldName : desTable.getFieldNames()) {
             Field srcField = srcTable.getMapField().get(fieldName);
             Field desField = desTable.getMapField().get(fieldName);
@@ -86,12 +90,32 @@ public class FieldIncrementMigrationService {
         }
     }
 
-    private void compareAndMigrationField(Field srcField, Field desField) {
+    private void createKeyOrIndexes(Set<String> keyAndIndexes) {
+        if (keyAndIndexes.isEmpty()) return;
+        try {
+            for (String keyAndIndex : keyAndIndexes) {
+                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "keyAndIndex", keyAndIndex));
+
+                Statement statement = desDatabase.getManager().getConnection().createStatement();
+                boolean sqlResult = statement.execute(keyAndIndex);
+
+                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "sqlResult", sqlResult));
+                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "success", "createKeyOrIndexes success!"));
+                System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
+
+                desDatabase.getManager().setStatement(statement);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void compareAndMigrationField(Field srcField, Field desField, Set<String> keyAndIndexes) {
         String fieldOperate = desField == null ? "create" :
                 !fieldTypeCompare(srcField, desField) ? "update" : "";
         switch (fieldOperate) {
             case "create":
-                createDesField(srcField);
+                createDesField(srcField, keyAndIndexes);
                 break;
             case "update":
                 updateDesField(srcField);
@@ -143,7 +167,7 @@ public class FieldIncrementMigrationService {
         }
     }
 
-    private void createDesField(Field srcField) {
+    private void createDesField(Field srcField, Set<String> keyAndIndexes) {
         if (srcField == null) {
             LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "error", "srcField not exist!"));
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
@@ -154,6 +178,8 @@ public class FieldIncrementMigrationService {
 
             Statement statement = desDatabase.getManager().getConnection().createStatement();
             boolean sqlResult = statement.execute(srcField.getCreateSql());
+            keyAndIndexes.addAll(srcField.getIndexes());
+            keyAndIndexes.addAll(srcField.getKeys());
 
             LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "sqlResult", sqlResult));
             LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "success", "createDesTable success!"));
