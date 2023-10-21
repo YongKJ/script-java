@@ -11,10 +11,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,7 +64,42 @@ public class Table {
 
     public static Table getSqlTable(Table table) {
         table.setDeleteSql(SQL.getTableDeleteSql(table.getName()));
+        table.setSelectDataSql(getDataSelectSql(table));
+        table.setInsertDataSql(getDataInsertSql(table));
+        table.setUpdateDataSql(getDataUpdateSql(table));
+        table.setRemoveDataSql(getDataRemoveSql(table));
         return table;
+    }
+
+    private static String getDataRemoveSql(Table table) {
+        return SQL.getDataRemoveSql(
+                table.name,
+                ""
+        );
+    }
+
+    private static String getDataUpdateSql(Table table) {
+        return SQL.getDataUpdateSql(
+                table.name,
+                new HashMap<>(),
+                ""
+        );
+    }
+
+    private static String getDataInsertSql(Table table) {
+        return SQL.getDataInsertSql(
+                table.name,
+                table.fieldNames,
+                new ArrayList<>()
+        );
+    }
+
+    private static String getDataSelectSql(Table table) {
+        return SQL.getDataSelectSql(
+                table.fieldNames,
+                Collections.singletonList(table.name),
+                ""
+        );
     }
 
     private static Map<String, String> getMapRemarkBySql(Manager manager, String table) {

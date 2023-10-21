@@ -20,6 +20,7 @@ public class Database {
     private String username;
     private String password;
     private Manager manager;
+    private List<String> databaseNames;
     private Map<String, Table> mapTable;
 
     private Database() {
@@ -33,6 +34,7 @@ public class Database {
         this.password = password;
         this.manager = new Manager();
         this.mapTable = new HashMap<>();
+        this.databaseNames = new ArrayList<>();
     }
 
     public static Database of(String name, String driver, String url, String username, String password) {
@@ -56,6 +58,7 @@ public class Database {
         Database database = new Database(name, driver, url, username, password);
         database.setManager(SQLUtil.getConnection(database));
         database.setMapTable(Table.getTables(database.getManager()));
+        database.setDatabaseNames(getDatabasesBySql(database.getManager()));
         return database;
     }
 
@@ -143,6 +146,14 @@ public class Database {
 
     public void setManager(Manager manager) {
         this.manager = manager;
+    }
+
+    public List<String> getDatabaseNames() {
+        return databaseNames;
+    }
+
+    public void setDatabaseNames(List<String> databaseNames) {
+        this.databaseNames = databaseNames;
     }
 
     public Map<String, Table> getMapTable() {

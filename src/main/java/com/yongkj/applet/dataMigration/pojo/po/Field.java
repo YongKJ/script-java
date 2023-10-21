@@ -113,7 +113,7 @@ public class Field {
 
     private static String getKeyOrIndexSql(String line, String tableName) {
         if (line.endsWith(",")) line = line.substring(0, line.length() - 1);
-        return String.format("ALTER TABLE %s ADD %s", tableName, line.trim());
+        return String.format("ALTER TABLE `%s` ADD %s", tableName, line.trim());
     }
 
     private static List<String> getFieldNames(String line) {
