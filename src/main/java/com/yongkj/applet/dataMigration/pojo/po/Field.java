@@ -2,11 +2,14 @@ package com.yongkj.applet.dataMigration.pojo.po;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
+import com.yongkj.util.GenUtil;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Field {
 
@@ -18,14 +21,13 @@ public class Field {
     private boolean isNotNull;
     private String defaultValue;
     private String comment;
-    private String primaryKey;
-    private String commonKey;
-    private String uniqueKey;
     private String afterField;
     private String beforeField;
     private String createSql;
     private String modifySql;
     private String deleteSql;
+    private List<String> keys;
+    private List<String> indexes;
 
     private Field() {
         this.table = "";
@@ -36,17 +38,21 @@ public class Field {
         this.isNotNull = false;
         this.defaultValue = "";
         this.comment = "";
-        this.primaryKey = "";
-        this.commonKey = "";
-        this.uniqueKey = "";
         this.afterField = "";
         this.beforeField = "";
         this.createSql = "";
         this.modifySql = "";
         this.deleteSql = "";
+        this.keys = new ArrayList<>();
+        this.indexes = new ArrayList<>();
     }
 
-    public static Map<String, Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
+
+    public static Map<String, Field> getMapField(List<Field> fields, String tableSql, String table) {
+        return packKeyOrIndex(getMapField(fields), tableSql, table);
+    }
+
+    public static List<Field> getFields(Manager manager, String tableName, Map<String, String> mapComment) {
         List<Field> fields = new ArrayList<>();
         try {
             String sql = String.format("SELECT * FROM `%s` WHERE 1=2", tableName);
@@ -74,7 +80,7 @@ public class Field {
                                 Objects.equals(type, "JSON") ? "NULL" : "'0'");
                 if (Objects.equals(type, "VARCHAR") && length > 0) {
                     field.setLength(length);
-                    field.setType(type + "(" + length + ")");
+                    field.setType(String.format("%s(%s)", type, length));
                 }
                 field.setComment(comment);
                 fields.add(field);
@@ -85,10 +91,49 @@ public class Field {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return getMapField(fields);
+        return fields;
     }
 
-    public static Map<String, Field> getMapField(List<Field> lstField) {
+    private static Map<String, Field> packKeyOrIndex(Map<String, Field> mapField, String tableSql, String tableName) {
+        if (tableSql == null || tableSql.length() == 0) return mapField;
+        List<String> lstLine = GenUtil.getStrLines(tableSql);
+        for (String line : lstLine) {
+            if (!line.contains("KEY") && !line.contains("INDEX")) continue;
+            String sql = getKeyOrIndexSql(line, tableName);
+            List<String> fieldNames = getFieldNames(line);
+            for (String fieldName : fieldNames) {
+                if (!mapField.containsKey(fieldName)) continue;
+                (lstLine.contains("KEY") ?
+                        mapField.get(fieldName).getKeys() :
+                        mapField.get(fieldName).getIndexes()).add(sql);
+            }
+        }
+        return mapField;
+    }
+
+    private static String getKeyOrIndexSql(String line, String tableName) {
+        if (line.endsWith(",")) line = line.substring(0, line.length() - 1);
+        return String.format("ALTER TABLE %s ADD %s", tableName, line);
+    }
+
+    private static List<String> getFieldNames(String line) {
+        String regStr = ".*\\((.*)\\).*";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(line);
+        if (!matcher.find()) return new ArrayList<>();
+        String fieldNamesStr = matcher.group(1);
+        regStr = "`(\\S+)`";
+        pattern = Pattern.compile(regStr);
+        matcher = pattern.matcher(fieldNamesStr);
+        if (!matcher.find()) return new ArrayList<>();
+        List<String> fieldNames = new ArrayList<>();
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            fieldNames.add(matcher.group(i));
+        }
+        return fieldNames;
+    }
+
+    private static Map<String, Field> getMapField(List<Field> lstField) {
         Map<String, Field> mapField = new HashMap<>();
         for (int i = 0; i < lstField.size(); i++) {
             String beforeField = i == 0 ? "" : lstField.get(i - 1).name;
@@ -206,30 +251,6 @@ public class Field {
         this.beforeField = beforeField;
     }
 
-    public String getPrimaryKey() {
-        return primaryKey;
-    }
-
-    public void setPrimaryKey(String primaryKey) {
-        this.primaryKey = primaryKey;
-    }
-
-    public String getCommonKey() {
-        return commonKey;
-    }
-
-    public void setCommonKey(String commonKey) {
-        this.commonKey = commonKey;
-    }
-
-    public String getUniqueKey() {
-        return uniqueKey;
-    }
-
-    public void setUniqueKey(String uniqueKey) {
-        this.uniqueKey = uniqueKey;
-    }
-
     public String getCreateSql() {
         return createSql;
     }
@@ -252,5 +273,21 @@ public class Field {
 
     public void setDeleteSql(String deleteSql) {
         this.deleteSql = deleteSql;
+    }
+
+    public List<String> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(List<String> keys) {
+        this.keys = keys;
+    }
+
+    public List<String> getIndexes() {
+        return indexes;
+    }
+
+    public void setIndexes(List<String> indexes) {
+        this.indexes = indexes;
     }
 }

@@ -4,15 +4,20 @@ import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Table {
 
@@ -23,6 +28,7 @@ public class Table {
     private String insertDataSql;
     private String updateDataSql;
     private String removeDataSql;
+    private List<String> fieldNames;
     private Map<String, Field> mapField;
 
     private Table() {
@@ -34,6 +40,7 @@ public class Table {
         this.updateDataSql = "";
         this.removeDataSql = "";
         this.mapField = new HashMap<>();
+        this.fieldNames = new ArrayList<>();
     }
 
     public static Map<String, Table> getTables(Manager manager) {
@@ -43,11 +50,15 @@ public class Table {
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
         for (String tableName : lstTableName) {
             Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
+            List<Field> lstField = Field.getFields(manager, tableName, mapRemark);
             String createSqs = mapRemark.get("createSql");
+            List<String> fieldNames = lstField.stream().map(Field::getName).collect(Collectors.toList());
+
             Table table = new Table();
             table.setName(tableName);
             table.setCreateSql(createSqs);
-            table.setMapField(Field.getFields(manager, tableName, mapRemark));
+            table.setFieldNames(fieldNames);
+            table.setMapField(Field.getMapField(lstField, createSqs, tableName));
             mapTable.put(tableName, getSqlTable(table));
         }
         SQLUtil.close(manager);
@@ -69,8 +80,7 @@ public class Table {
             while (sqlResult.next()) {
                 String createTableSql = sqlResult.getString("Create Table");
 
-                String lineBreak = createTableSql.contains("\r\n") ? "\r\n" : "\n";
-                List<String> lstLine = Arrays.asList(createTableSql.split(lineBreak));
+                List<String> lstLine = GenUtil.getStrLines(createTableSql);
                 mapRemark = getMapRemark(lstLine);
                 mapRemark.put("createSql", createTableSql);
             }
@@ -221,5 +231,13 @@ public class Table {
 
     public void setMapField(Map<String, Field> mapField) {
         this.mapField = mapField;
+    }
+
+    public List<String> getFieldNames() {
+        return fieldNames;
+    }
+
+    public void setFieldNames(List<String> fieldNames) {
+        this.fieldNames = fieldNames;
     }
 }

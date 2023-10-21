@@ -16,6 +16,11 @@ public class GenUtil {
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
+    public static List<String> getStrLines(String str) {
+        String lineBreak = str.contains("\r\n") ? "\r\n" : "\n";
+        return Arrays.asList(str.split(lineBreak));
+    }
+
     public static int strToInt(String value) {
         try {
             return Integer.parseInt(value);
