@@ -6,9 +6,11 @@ import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
+import java.util.Objects;
 
 public class IncrementMigrationService {
 
+    private final boolean tableDelete;
     private final Database srcDatabase;
     private final Database desDatabase;
     private final List<String> tableNames;
@@ -17,6 +19,7 @@ public class IncrementMigrationService {
         this.srcDatabase = srcDatabase;
         this.desDatabase = desDatabase;
         this.tableNames = GenUtil.getList("table-names");
+        this.tableDelete = Objects.equals(GenUtil.getValue("table-delete"), "true");
     }
 
     public void apply() {
@@ -26,15 +29,19 @@ public class IncrementMigrationService {
     }
 
     private void compareAndMigrationTable(String tableName) {
-        if (!srcDatabase.getTableNames().contains(tableName)) {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "compareAndMigrationTable", "error", "srcTable 不存在！"));
+        if (!tableDelete && !srcDatabase.getTableNames().contains(tableName)) {
+            LogUtil.loggerLine(Log.of("IncrementMigrationService", "compareAndMigrationTable", "error", "srcTable no exist!"));
             return;
         }
-        String tableOperate = !srcDatabase.getTableNames().contains(tableName) ? "create" :
-                desDatabase.getTableNames().;
+        String tableOperate = !desDatabase.getTableNames().contains(tableName) ? "create" : "update";
+        if (tableDelete && !srcDatabase.getTableNames().contains(tableName)) {
+            tableOperate = "delete";
+        }
         switch (tableOperate) {
             case "add":
             case "update":
+            case "delete":
+            default:
         }
     }
 

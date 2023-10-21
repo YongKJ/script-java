@@ -14,7 +14,7 @@ des:
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
+table-delete: false
+
 table-names:
   - "admin_user"
-
-delete-operate: false
