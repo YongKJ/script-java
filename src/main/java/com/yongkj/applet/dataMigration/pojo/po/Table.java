@@ -139,7 +139,7 @@ public class Table {
         return mapRemark;
     }
 
-    private static List<String> getTableNamesBySql(Manager manager) {
+    public static List<String> getTableNamesBySql(Manager manager) {
         List<String> tables = new ArrayList<>();
         try {
             String sql = "SHOW TABLES";

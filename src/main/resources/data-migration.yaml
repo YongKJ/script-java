@@ -16,3 +16,5 @@ des:
 
 table-names:
   - "admin_user"
+
+delete-operate: false
