@@ -18,6 +18,9 @@ public class Field {
     private boolean isNotNull;
     private String defaultValue;
     private String comment;
+    private String primaryKey;
+    private String commonKey;
+    private String uniqueKey;
     private String afterField;
     private String beforeField;
     private String createSql;
@@ -33,6 +36,9 @@ public class Field {
         this.isNotNull = false;
         this.defaultValue = "";
         this.comment = "";
+        this.primaryKey = "";
+        this.commonKey = "";
+        this.uniqueKey = "";
         this.afterField = "";
         this.beforeField = "";
         this.createSql = "";
@@ -53,7 +59,7 @@ public class Field {
                 String fieldName = sqlResultMeta.getColumnName(col);
                 String type = sqlResultMeta.getColumnTypeName(col);
                 int length = sqlResultMeta.getColumnDisplaySize(col);
-                String comment = mapComment.get(fieldName) == null ? "" : String.format("COMMENT '%s'", mapComment.get(fieldName));
+                String comment = mapComment.get(fieldName) == null ? "" : mapComment.get(fieldName);
                 boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;
                 String notNull = Objects.equals(type, "JSON") || !isNotNull ? "" : "NOT NULL";
 
@@ -98,6 +104,7 @@ public class Field {
     private static Field getSqlField(Field field) {
         field.setCreateSql(getCreateSQl(field));
         field.setModifySql(getModifySQl(field));
+        field.setDeleteSql(getDeleteSQl(field));
         return field;
     }
 
@@ -113,6 +120,10 @@ public class Field {
         return SQL.getFieldModifySql(
                 field.getTable(), field.getName(), field.getType(),
                 field.getNotNull(), field.getDefaultValue(), field.getComment());
+    }
+
+    private static String getDeleteSQl(Field field) {
+        return SQL.getFieldDeleteSql(field.getTable(), field.getName());
     }
 
     public String getTable() {
@@ -193,6 +204,30 @@ public class Field {
 
     public void setBeforeField(String beforeField) {
         this.beforeField = beforeField;
+    }
+
+    public String getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(String primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    public String getCommonKey() {
+        return commonKey;
+    }
+
+    public void setCommonKey(String commonKey) {
+        this.commonKey = commonKey;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     public String getCreateSql() {
