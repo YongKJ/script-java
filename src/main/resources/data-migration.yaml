@@ -15,6 +15,7 @@ des:
     password: "HHhda@%DSAs"
 
 table-delete: false
+field-delete: false
 
 table-names:
   - "admin_user"

@@ -11,6 +11,7 @@ import java.util.Objects;
 public class IncrementMigrationService {
 
     private final boolean tableDelete;
+    private final boolean fieldDelete;
     private final Database srcDatabase;
     private final Database desDatabase;
     private final List<String> tableNames;
@@ -20,6 +21,7 @@ public class IncrementMigrationService {
         this.desDatabase = desDatabase;
         this.tableNames = GenUtil.getList("table-names");
         this.tableDelete = Objects.equals(GenUtil.getValue("table-delete"), "true");
+        this.fieldDelete = Objects.equals(GenUtil.getValue("field-delete"), "true");
     }
 
     public void apply() {
