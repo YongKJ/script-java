@@ -1,5 +1,6 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Field;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
@@ -14,17 +15,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class FieldIncrementMigrationService {
+public class FieldIncrementMigrationService extends BaseService {
 
     private final boolean tableDelete;
     private final boolean fieldDelete;
-    private final Database srcDatabase;
-    private final Database desDatabase;
     private final List<String> tableNames;
 
     public FieldIncrementMigrationService(Database srcDatabase, Database desDatabase) {
-        this.srcDatabase = srcDatabase;
-        this.desDatabase = desDatabase;
+        super(srcDatabase, desDatabase);
         this.tableNames = GenUtil.getList("table-names");
         this.tableDelete = Objects.equals(GenUtil.getValue("table-delete"), "true");
         this.fieldDelete = Objects.equals(GenUtil.getValue("field-delete"), "true");

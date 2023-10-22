@@ -1,6 +1,7 @@
 package com.yongkj.applet.dataMigration;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
+import com.yongkj.applet.dataMigration.service.DataIncrementMigrationService;
 import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
@@ -12,11 +13,15 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
+    private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
+        this.dataIncrementMigrationService = new DataIncrementMigrationService(
+                this.srcDatabase, this.desDatabase
+        );
         this.fieldIncrementMigrationService = new FieldIncrementMigrationService(
                 this.srcDatabase, this.desDatabase
         );
@@ -44,7 +49,11 @@ public class DataMigration {
             return;
         }
 
-        fieldIncrementMigrationService.apply();
+//        fieldIncrementMigrationService.apply();
+
+        String selectSql = dataIncrementMigrationService.dataSelectTest("广州", "city");
+        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectSql", selectSql));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
 
         SQLUtil.closeAll(srcDatabase.getManager());
         SQLUtil.closeAll(desDatabase.getManager());
