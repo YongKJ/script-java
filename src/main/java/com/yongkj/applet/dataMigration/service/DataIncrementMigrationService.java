@@ -35,11 +35,16 @@ public class DataIncrementMigrationService extends BaseService {
     private void compareAndMigrationData(String tableName) {
         Table srcTable = srcDatabase.getMapTable().get(tableName);
         Table desTable = desDatabase.getMapTable().get(tableName);
-        Map<Long, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
-        Map<Long, Map<String, Object>> desTableData = getMapData(desList(desTable));
+        if (srcTable == null || desTable == null) {
+            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationData", "error", "srcTable or desTable not exist!"));
+            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
+            return;
+        }
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
 
-        List<Long> ids = getRetainIds(srcTableData, desTableData);
-        for (Long id : ids) {
+        List<String> ids = getRetainIds(srcTableData, desTableData);
+        for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
             insertDesData(desTable, srcData);
         }
