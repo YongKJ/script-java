@@ -101,22 +101,24 @@ public class Field {
 
     private static Map<String, String> getMapDefault(String tableSql) {
         List<String> lstLine = GenUtil.getStrLines(tableSql);
-        String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*)'[\\s\\S]+";
+        String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*?)'[\\s\\S]+";
         String tempRegStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s(NULL)[\\s\\S]+";
         Pattern pattern = Pattern.compile(regStr);
         Pattern tempPattern = Pattern.compile(tempRegStr);
         Map<String, String> mapDefault = new HashMap<>();
         for (String line : lstLine) {
             Matcher matcher = pattern.matcher(line);
-            if (!matcher.find()) {
-                matcher = tempPattern.matcher(line);
+            if (matcher.find()) {
+                String field = matcher.group(1);
+                String comment = matcher.group(2);
+                mapDefault.put(field, comment);
             }
-            if (!matcher.find()) {
-                continue;
+            Matcher tempMatcher = tempPattern.matcher(line);
+            if (tempMatcher.find()) {
+                String field = tempMatcher.group(1);
+                String comment = tempMatcher.group(2);
+                mapDefault.put(field, comment);
             }
-            String field = matcher.group(1);
-            String comment = matcher.group(2);
-            mapDefault.put(field, comment);
         }
         return mapDefault;
     }

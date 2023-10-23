@@ -8,6 +8,8 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataMigration {
 
@@ -55,8 +57,24 @@ public class DataMigration {
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectSql", selectSql));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
+        test();
+
         SQLUtil.closeAll(srcDatabase.getManager());
         SQLUtil.closeAll(desDatabase.getManager());
+    }
+
+    private void test() {
+        String line = "  `sort` int NOT NULL DEFAULT '0' COMMENT '排序 越大越靠前',";
+        String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*?)'[\\s\\S]+";
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            String field = matcher.group(1);
+            String defaultValue = matcher.group(2);
+            LogUtil.loggerLine(Log.of("DataMigration", "test", "field", field));
+            LogUtil.loggerLine(Log.of("DataMigration", "test", "defaultValue", defaultValue));
+            System.out.println("------------------------------------------------------------------------------------------------------------");
+        }
     }
 
     public static void run(String[] args) {
