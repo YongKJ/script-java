@@ -58,6 +58,7 @@ public class DataIncrementMigrationService extends BaseService {
             Map<String, Object> srcData = srcTableData.get(id);
             insertDesData(desTable, srcData);
         }
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataByMd5", "ids.size()", ids.size()));
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
@@ -76,6 +77,7 @@ public class DataIncrementMigrationService extends BaseService {
             Map<String, Object> srcData = srcTableData.get(id);
             insertDesData(desTable, srcData);
         }
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataById", "ids.size()", ids.size()));
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
