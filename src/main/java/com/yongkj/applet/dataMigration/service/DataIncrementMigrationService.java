@@ -61,7 +61,7 @@ public class DataIncrementMigrationService extends BaseService {
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
             LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataByMd5", "srcData", srcData));
-//            insertDesData(desTable, srcData);
+            insertDesData(desTable, srcData);
         }
         LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataByMd5", "ids.size()", ids.size()));
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
@@ -81,7 +81,7 @@ public class DataIncrementMigrationService extends BaseService {
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
             LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataById", "srcData", srcData));
-//            insertDesData(desTable, srcData);
+            insertDesData(desTable, srcData);
         }
         LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataById", "ids.size()", ids.size()));
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");

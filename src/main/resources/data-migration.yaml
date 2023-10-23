@@ -22,19 +22,19 @@ field-migration:
     - "certificate"
 
 data-migration:
-  enable: true
-  table-names:
-    #    - "admin_apply"
-    - "admin_apply_menu"
-    #    - "admin_apply_organization"
-    - "admin_menu"
-    - "admin_role_menu"
-#    - "admin_role_users"
-#    - "admin_roles"
-
-admin-menu-data-migration:
   enable: false
   table-names:
+    - "admin_apply"
     - "admin_apply_menu"
+    - "admin_apply_organization"
     - "admin_menu"
     - "admin_role_menu"
+    - "admin_role_users"
+    - "admin_roles"
+
+admin-menu-data-migration:
+  enable: true
+  table-names:
+    - "admin_menu"
+    - "admin_role_menu"
+    - "admin_apply_menu"

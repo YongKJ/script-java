@@ -5,6 +5,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
 import java.security.MessageDigest;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +19,10 @@ public class GenUtil {
     }
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+    public static LocalDateTime timestampToLocalDateTime(Long timestamp) {
+        return Instant.ofEpochMilli(timestamp).atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+    }
 
     public static String getMd5Str(String dataStr) {
         try {
