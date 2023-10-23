@@ -14,17 +14,21 @@ des:
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
-data-migration: true
-field-migration: false
+field-migration:
+  enable: false
+  table-delete: false
+  field-delete: false
+  table-names:
+    - "certificate"
 
-table-delete: false
-field-delete: false
+data-migration:
+  enable: true
+  table-names:
+    - "admin_apply"
+    - "admin_apply_menu"
+    - "admin_apply_organization"
+    - "admin_menu"
+    - "admin_role_menu"
+    - "admin_role_users"
+    - "admin_roles"
 
-table-names:
-  - "admin_apply"
-  - "admin_apply_menu"
-  - "admin_apply_organization"
-  - "admin_menu"
-  - "admin_role_menu"
-  - "admin_role_users"
-  - "admin_roles"

@@ -10,25 +10,26 @@ import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class FieldIncrementMigrationService extends BaseService {
 
+    private final boolean enable;
     private final boolean tableDelete;
     private final boolean fieldDelete;
     private final List<String> tableNames;
 
     public FieldIncrementMigrationService(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
-        this.tableNames = GenUtil.getList("table-names");
-        this.tableDelete = GenUtil.getBoolean("table-delete");
-        this.fieldDelete = GenUtil.getBoolean("field-delete");
+        Map<String, Object> fieldMigration = GenUtil.getMap("field-migration");
+        this.tableDelete = GenUtil.objToBoolean(fieldMigration.get("table-delete"));
+        this.fieldDelete = GenUtil.objToBoolean(fieldMigration.get("field-delete"));
+        this.tableNames = (List<String>) fieldMigration.get("table-names");
+        this.enable = GenUtil.objToBoolean(fieldMigration.get("enable"));
     }
 
     public void apply() {
+        if (!enable) return;
         for (String tableName : tableNames) {
             compareAndMigrationTable(tableName);
         }

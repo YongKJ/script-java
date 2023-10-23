@@ -19,14 +19,18 @@ import java.util.stream.Collectors;
 
 public class DataIncrementMigrationService extends BaseService {
 
+    private final boolean enable;
     private final List<String> tableNames;
 
     public DataIncrementMigrationService(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
-        this.tableNames = GenUtil.getList("table-names");
+        Map<String, Object> dataMigration = GenUtil.getMap("data-migration");
+        this.tableNames = (List<String>) dataMigration.get("table-names");
+        this.enable = GenUtil.objToBoolean(dataMigration.get("enable"));
     }
 
     public void apply() {
+        if (!enable) return;
         for (String tableName : tableNames) {
             compareAndMigrationData(tableName);
         }

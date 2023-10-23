@@ -87,6 +87,10 @@ public class GenUtil {
         }
     }
 
+    public static Boolean objToBoolean(Object value) {
+        return value != null ? Boolean.parseBoolean(value.toString()) : null;
+    }
+
     public static Long objToLong(Object value) {
         return value != null ? Long.parseLong(objToStr(value)) : null;
     }
@@ -111,6 +115,12 @@ public class GenUtil {
         Object value = getConfig(getProfile() + ".yaml").get(key);
         if (value instanceof List) return (List<Map<String, Object>>) value;
         return new ArrayList<>();
+    }
+
+    public static Map<String, Object> getMap(String key) {
+        Object value = getConfig(getProfile() + ".yaml").get(key);
+        if (value instanceof Map) return (Map<String, Object>) value;
+        return new HashMap<>();
     }
 
     public static List<String> getList(String key) {
