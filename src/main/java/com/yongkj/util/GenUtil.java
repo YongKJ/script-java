@@ -27,6 +27,30 @@ public class GenUtil {
         return Arrays.asList(str.split(lineBreak));
     }
 
+    public static Double strToDouble(String value) {
+        try {
+            return Double.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Long strToLong(String value) {
+        try {
+            return Long.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Integer strToInteger(String value) {
+        try {
+            return Integer.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static int strToInt(String value) {
         try {
             return Integer.parseInt(value);
