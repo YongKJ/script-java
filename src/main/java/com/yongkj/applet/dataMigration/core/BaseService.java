@@ -131,4 +131,13 @@ public abstract class BaseService {
         return GenUtil.getMd5Str(String.join("", lstData));
     }
 
+    protected List<String> getRetainIds(Map<String, Map<String, Object>> srcTableData, Map<String, Map<String, Object>> desTableData) {
+        List<String> lstId = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : srcTableData.entrySet()) {
+            if (desTableData.containsKey(map.getKey())) continue;
+            lstId.add(map.getKey());
+        }
+        return lstId;
+    }
+
 }

@@ -12,6 +12,7 @@ import com.yongkj.util.LogUtil;
 
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,20 +42,41 @@ public class DataIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
+        if (srcTable.getFieldNames().contains("id")) {
+            compareAndMigrationDataById(desTable);
+        } else {
+            compareAndMigrationDataByMd5(srcTable, desTable);
+        }
+    }
+
+    private void compareAndMigrationDataByMd5(Table srcTable, Table desTable) {
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
+
+        List<String> ids = getRetainIds(srcTableData, desTableData);
+        for (String id : ids) {
+            Map<String, Object> srcData = srcTableData.get(id);
+            insertDesData(desTable, srcData);
+        }
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
+    }
+
+    private void compareAndMigrationDataById(Table desTable) {
+        String tableName = desTable.getName();
         Map<String, Map<String, Object>> desTableData = getMapData(desList(
                 Wrappers.lambdaQuery(tableName).select("id")
         ));
         List<Long> lstId = desTableData.values().stream()
-                .map(v -> (Long) v.get("id")).collect(Collectors.toList());
-        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(
+                .map(v -> GenUtil.objToLong(v.get("id"))).collect(Collectors.toList());
+        Map<String, Map<String, Object>> srcTableData = lstId.isEmpty() ? new HashMap<>() : getMapData(srcList(
                 Wrappers.lambdaQuery(tableName).notIn("id", lstId)
         ));
-
         List<String> ids = new ArrayList<>(srcTableData.keySet());
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
             insertDesData(desTable, srcData);
         }
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private void insertDesData(Table table, Map<String, Object> data) {
