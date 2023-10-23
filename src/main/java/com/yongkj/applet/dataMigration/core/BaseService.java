@@ -2,7 +2,7 @@ package com.yongkj.applet.dataMigration.core;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
-import com.yongkj.applet.dataMigration.util.Wrapper;
+import com.yongkj.applet.dataMigration.util.Wrappers;
 
 import java.util.Collections;
 
@@ -16,15 +16,15 @@ public abstract class BaseService {
         this.desDatabase = desDatabase;
     }
 
-    protected String srcList(Wrapper query) {
+    protected String srcList(Wrappers query) {
         return list(srcDatabase, query);
     }
 
-    protected String desList(Wrapper query) {
+    protected String desList(Wrappers query) {
         return list(desDatabase, query);
     }
 
-    private String list(Database database, Wrapper query) {
+    private String list(Database database, Wrappers query) {
         return SQL.getDataSelectSql(
                 database.getMapTable().get(query.getTableName()).getFieldNames(),
                 Collections.singletonList(query.getTableName()),

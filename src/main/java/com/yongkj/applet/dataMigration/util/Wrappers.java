@@ -3,21 +3,24 @@ package com.yongkj.applet.dataMigration.util;
 import com.yongkj.applet.dataMigration.pojo.dict.SQLOperate;
 import com.yongkj.applet.dataMigration.pojo.dto.SQLValue;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
-public class Wrapper {
+public class Wrappers {
 
     private final String tableName;
     private final List<SQLValue> sqlValues;
 
-    private Wrapper(String tableName) {
+    private Wrappers(String tableName) {
         this.tableName = tableName;
         this.sqlValues = new ArrayList<>();
     }
 
-    public static Wrapper query(String tableName) {
-        return new Wrapper(tableName);
+    public static Wrappers query(String tableName) {
+        return new Wrappers(tableName);
     }
 
     public String getSqlSegment() {
@@ -44,13 +47,13 @@ public class Wrapper {
         return String.join(" ", lstSqlSegment);
     }
 
-    public Wrapper and() {
+    public Wrappers and() {
         sqlValues.add(SQLValue.of(SQLOperate.and));
         return this;
     }
 
-    public Wrapper and(Consumer<Wrapper> consumer) {
-        Wrapper query = Wrapper.query(tableName);
+    public Wrappers and(Consumer<Wrappers> consumer) {
+        Wrappers query = Wrappers.query(tableName);
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.andWrapper,
@@ -59,13 +62,13 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper or() {
+    public Wrappers or() {
         sqlValues.add(SQLValue.of(SQLOperate.or));
         return this;
     }
 
-    public Wrapper or(Consumer<Wrapper> consumer) {
-        Wrapper query = Wrapper.query(tableName);
+    public Wrappers or(Consumer<Wrappers> consumer) {
+        Wrappers query = Wrappers.query(tableName);
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.orWrapper,
@@ -74,7 +77,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper eq(String field, Object value) {
+    public Wrappers eq(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.eq,
@@ -83,7 +86,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper ne(String field, Object value) {
+    public Wrappers ne(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.ne,
@@ -92,7 +95,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper gt(String field, Object value) {
+    public Wrappers gt(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.gt,
@@ -101,7 +104,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper ge(String field, Object value) {
+    public Wrappers ge(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.ge,
@@ -110,7 +113,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper lt(String field, Object value) {
+    public Wrappers lt(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.lt,
@@ -119,7 +122,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper le(String field, Object value) {
+    public Wrappers le(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.le,
@@ -128,7 +131,7 @@ public class Wrapper {
         return this;
     }
 
-    public <T> Wrapper in(String field, T... values) {
+    public <T> Wrappers in(String field, T... values) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.in,
@@ -137,7 +140,7 @@ public class Wrapper {
         return this;
     }
 
-    public <T> Wrapper notIn(String field, T... values) {
+    public <T> Wrappers notIn(String field, T... values) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.le,
@@ -146,7 +149,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper isNull(String field) {
+    public Wrappers isNull(String field) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.isNull,
@@ -155,7 +158,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper isNotNUll(String field) {
+    public Wrappers isNotNUll(String field) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.isNotNUll,
@@ -164,7 +167,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper like(String field, Object value) {
+    public Wrappers like(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.like,
@@ -173,7 +176,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper notLike(String field, Object value) {
+    public Wrappers notLike(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.notLike,
@@ -182,7 +185,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper likeLeft(String field, Object value) {
+    public Wrappers likeLeft(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.likeLeft,
@@ -191,7 +194,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper likeRight(String field, Object value) {
+    public Wrappers likeRight(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.likeRight,
@@ -200,7 +203,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper between(String field, Object value) {
+    public Wrappers between(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.between,
@@ -209,7 +212,7 @@ public class Wrapper {
         return this;
     }
 
-    public Wrapper notBetween(String field, Object value) {
+    public Wrappers notBetween(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.notBetween,

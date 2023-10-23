@@ -2,7 +2,7 @@ package com.yongkj.applet.dataMigration.service;
 
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
-import com.yongkj.applet.dataMigration.util.Wrapper;
+import com.yongkj.applet.dataMigration.util.Wrappers;
 
 public class DataIncrementMigrationService extends BaseService {
 
@@ -11,7 +11,7 @@ public class DataIncrementMigrationService extends BaseService {
     }
 
     public String dataSelectTest(String keyword, String level) {
-        return desList(Wrapper.query("amap_district")
+        return desList(Wrappers.query("amap_district")
                 .eq("level", level)
                 .and(w -> w
                         .eq("id", keyword)
