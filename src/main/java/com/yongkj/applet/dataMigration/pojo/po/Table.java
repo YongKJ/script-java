@@ -26,6 +26,7 @@ public class Table {
     private String updateDataSql;
     private String removeDataSql;
     private List<String> fieldNames;
+    private List<String> subFieldNames;
     private Map<String, Field> mapField;
 
     private Table() {
@@ -38,6 +39,7 @@ public class Table {
         this.removeDataSql = "";
         this.mapField = new HashMap<>();
         this.fieldNames = new ArrayList<>();
+        this.subFieldNames = new ArrayList<>();
     }
 
     public static Map<String, Table> getTables(Manager manager) {
@@ -272,5 +274,13 @@ public class Table {
 
     public void setFieldNames(List<String> fieldNames) {
         this.fieldNames = fieldNames;
+    }
+
+    public List<String> getSubFieldNames() {
+        return subFieldNames;
+    }
+
+    public void setSubFieldNames(List<String> subFieldNames) {
+        this.subFieldNames = subFieldNames;
     }
 }

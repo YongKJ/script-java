@@ -44,8 +44,11 @@ public abstract class BaseService {
 
     private List<Map<String, Object>> list(Database database, Wrappers query) {
         Table table = database.getMapTable().get(query.getTableName());
+        table.setSubFieldNames(query.getFields());
         String selectSql = getSelectSql(table, query);
-        return list(database, table, selectSql);
+        List<Map<String, Object>> lstData = list(database, table, selectSql);
+        table.setSubFieldNames(new ArrayList<>());
+        return lstData;
     }
 
     private List<Map<String, Object>> list(Database database, Table table, String selectSql) {
@@ -69,9 +72,10 @@ public abstract class BaseService {
 
     private Map<String, Object> getRowData(Table table, ResultSet resultSet) {
         Map<String, Object> mapData = new LinkedHashMap<>();
+        List<String> subFieldNames = table.getSubFieldNames();
         for (String fieldName : table.getFieldNames()) {
             Field field = table.getMapField().get(fieldName);
-            if (field == null) continue;
+            if (field == null || subFieldNames.size() > 0 && !subFieldNames.contains(fieldName)) continue;
             try {
                 String dataStr = resultSet.getString(fieldName);
                 Object data = getTypeChangeData(dataStr, field.getType());
@@ -99,8 +103,13 @@ public abstract class BaseService {
     }
 
     private String getSelectSql(Table table, Wrappers query) {
+        List<String> fieldNames = new ArrayList<>();
+        for (String fieldName : table.getFieldNames()) {
+            if (!table.getSubFieldNames().contains(fieldName)) continue;
+            fieldNames.add(fieldName);
+        }
         return SQL.getDataSelectSql(
-                table.getFieldNames(),
+                fieldNames,
                 Collections.singletonList(query.getTableName()),
                 query.getSqlSegment()
         );

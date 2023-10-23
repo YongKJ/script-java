@@ -12,10 +12,12 @@ import java.util.function.Consumer;
 public class Wrappers {
 
     private final String tableName;
+    private final List<String> fields;
     private final List<SQLValue> sqlValues;
 
     private Wrappers(String tableName) {
         this.tableName = tableName;
+        this.fields = new ArrayList<>();
         this.sqlValues = new ArrayList<>();
     }
 
@@ -45,6 +47,11 @@ public class Wrappers {
         }
         lstSqlSegment.removeLast();
         return String.join(" ", lstSqlSegment);
+    }
+
+    public Wrappers select(String... field) {
+        fields.addAll(Arrays.asList(field));
+        return this;
     }
 
     public Wrappers and() {
@@ -223,5 +230,9 @@ public class Wrappers {
 
     public String getTableName() {
         return tableName;
+    }
+
+    public List<String> getFields() {
+        return fields;
     }
 }
