@@ -40,7 +40,7 @@ public class DataIncrementMigrationService extends BaseService {
     }
 
     public List<Map<String, Object>> dataSelectTest(String keyword, String level) {
-        return desList(Wrappers.query("amap_district")
+        return desList(Wrappers.lambdaQuery("amap_district")
                 .eq("level", level)
                 .and(w -> w
                         .eq("id", keyword)

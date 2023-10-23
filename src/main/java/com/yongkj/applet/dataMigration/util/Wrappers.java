@@ -19,7 +19,7 @@ public class Wrappers {
         this.sqlValues = new ArrayList<>();
     }
 
-    public static Wrappers query(String tableName) {
+    public static Wrappers lambdaQuery(String tableName) {
         return new Wrappers(tableName);
     }
 
@@ -53,7 +53,7 @@ public class Wrappers {
     }
 
     public Wrappers and(Consumer<Wrappers> consumer) {
-        Wrappers query = Wrappers.query(tableName);
+        Wrappers query = Wrappers.lambdaQuery(tableName);
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.andWrapper,
@@ -68,7 +68,7 @@ public class Wrappers {
     }
 
     public Wrappers or(Consumer<Wrappers> consumer) {
-        Wrappers query = Wrappers.query(tableName);
+        Wrappers query = Wrappers.lambdaQuery(tableName);
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.orWrapper,
