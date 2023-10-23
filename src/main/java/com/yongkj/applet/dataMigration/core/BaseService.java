@@ -12,6 +12,8 @@ import com.yongkj.util.LogUtil;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class BaseService {
 
@@ -101,6 +103,19 @@ public abstract class BaseService {
                 Collections.singletonList(query.getTableName()),
                 query.getSqlSegment()
         );
+    }
+
+    protected Map<Long, Map<String, Object>> getMapData(List<Map<String, Object>> lstData) {
+        return lstData.stream().collect(Collectors.toMap(po -> GenUtil.objToLong(po.get("id")), Function.identity()));
+    }
+
+    protected List<Long> getRetainIds(Map<Long, Map<String, Object>> srcTableData, Map<Long, Map<String, Object>> desTableData) {
+        List<Long> lstId = new ArrayList<>();
+        for (Map.Entry<Long, Map<String, Object>> map : srcTableData.entrySet()) {
+            if (desTableData.containsKey(map.getKey())) continue;
+            lstId.add(map.getKey());
+        }
+        return lstId;
     }
 
 }
