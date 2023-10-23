@@ -8,7 +8,6 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,12 +52,13 @@ public class DataMigration {
         }
 
 //        fieldIncrementMigrationService.apply();
+        dataIncrementMigrationService.apply();
 
-        List<Map<String, Object>> selectData = dataIncrementMigrationService.dataSelectTest("广州", "city");
-        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectData", selectData));
-        System.out.println("------------------------------------------------------------------------------------------------------------");
+//        List<Map<String, Object>> selectData = dataIncrementMigrationService.dataSelectTest("广州", "city");
+//        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectData", selectData));
+//        System.out.println("------------------------------------------------------------------------------------------------------------");
 
-        test();
+//        test();
 
         SQLUtil.closeAll(srcDatabase.getManager());
         SQLUtil.closeAll(desDatabase.getManager());

@@ -5,7 +5,9 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.applet.dataMigration.util.Wrappers;
+import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
+import com.yongkj.util.LogUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,11 @@ public class DataIncrementMigrationService extends BaseService {
     private void compareAndMigrationData(String tableName) {
         Table srcTable = srcDatabase.getMapTable().get(tableName);
         Table desTable = desDatabase.getMapTable().get(tableName);
-
+        List<Map<String, Object>> srcTableData = srcList(srcTable);
+        List<Map<String, Object>> desTableData = srcList(desTable);
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationData", "srcTableData", srcTableData));
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationData", "desTableData", desTableData));
+        System.out.println("--------------------------------------------------------------------------------------");
     }
 
     public List<Map<String, Object>> dataSelectTest(String keyword, String level) {

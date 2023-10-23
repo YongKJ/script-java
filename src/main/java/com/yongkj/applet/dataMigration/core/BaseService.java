@@ -27,14 +27,26 @@ public abstract class BaseService {
         return list(srcDatabase, query);
     }
 
+    protected List<Map<String, Object>> srcList(Table table) {
+        return list(srcDatabase, table, table.getSelectDataSql());
+    }
+
     protected List<Map<String, Object>> desList(Wrappers query) {
         return list(desDatabase, query);
     }
 
+    protected List<Map<String, Object>> desList(Table table) {
+        return list(desDatabase, table, table.getSelectDataSql());
+    }
+
     private List<Map<String, Object>> list(Database database, Wrappers query) {
         Table table = database.getMapTable().get(query.getTableName());
-        List<Map<String, Object>> lstData = new ArrayList<>();
         String selectSql = getSelectSql(table, query);
+        return list(database, table, selectSql);
+    }
+
+    private List<Map<String, Object>> list(Database database, Table table, String selectSql) {
+        List<Map<String, Object>> lstData = new ArrayList<>();
         LogUtil.loggerLine(Log.of("BaseService", "list", "selectSql", selectSql));
         try {
             Statement statement = database.getManager().getConnection().createStatement();
