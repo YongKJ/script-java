@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DataIncrementMigrationService extends BaseService {
+public class AdminMenuDataMigration extends BaseService {
 
     private final boolean enable;
     private final List<String> tableNames;
 
-    public DataIncrementMigrationService(Database srcDatabase, Database desDatabase) {
+    public AdminMenuDataMigration(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
-        Map<String, Object> dataMigration = GenUtil.getMap("data-migration");
+        Map<String, Object> dataMigration = GenUtil.getMap("admin-menu-data-migration");
         this.tableNames = (List<String>) dataMigration.get("table-names");
         this.enable = GenUtil.objToBoolean(dataMigration.get("enable"));
     }
@@ -41,11 +41,40 @@ public class DataIncrementMigrationService extends BaseService {
     private void compareAndMigrationData(String tableName) {
         Table srcTable = srcDatabase.getMapTable().get(tableName);
         Table desTable = desDatabase.getMapTable().get(tableName);
-        if (srcTable == null || desTable == null) {
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationData", "error", "srcTable or desTable not exist!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-            return;
+        switch (tableName) {
+            case "admin_apply_menu":
+                adminApplyMenuMigrationData(srcTable, desTable);
+                break;
+            case "admin_menu":
+                adminMenuMigrationData(srcTable, desTable);
+                break;
+            case "admin_role_menu":
+                adminRoleMenuMigrationData(srcTable, desTable);
+                break;
+            default:
         }
+    }
+
+    private void adminRoleMenuMigrationData(Table srcTable, Table desTable) {
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
+
+        List<String> ids = getRetainIds(srcTableData, desTableData);
+    }
+
+    private List<String> getAdminRoleMenuIds(Map<String, Map<String, Object>> srcTableData, Map<String, Map<String, Object>> desTableData) {
+        List<String> lstFieldName =
+    }
+
+    private void adminMenuMigrationData(Table srcTable, Table desTable) {
+        if (srcTable.getFieldNames().contains("id")) {
+            compareAndMigrationDataById(desTable);
+        } else {
+            compareAndMigrationDataByMd5(srcTable, desTable);
+        }
+    }
+
+    private void adminApplyMenuMigrationData(Table srcTable, Table desTable) {
         if (srcTable.getFieldNames().contains("id")) {
             compareAndMigrationDataById(desTable);
         } else {
@@ -60,7 +89,6 @@ public class DataIncrementMigrationService extends BaseService {
         List<String> ids = getRetainIds(srcTableData, desTableData);
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataByMd5", "srcData", srcData));
 //            insertDesData(desTable, srcData);
         }
         LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataByMd5", "ids.size()", ids.size()));
@@ -80,7 +108,6 @@ public class DataIncrementMigrationService extends BaseService {
         List<String> ids = new ArrayList<>(srcTableData.keySet());
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataById", "srcData", srcData));
 //            insertDesData(desTable, srcData);
         }
         LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "compareAndMigrationDataById", "ids.size()", ids.size()));
@@ -129,15 +156,6 @@ public class DataIncrementMigrationService extends BaseService {
             }
         }
         return lstData;
-    }
-
-    public List<Map<String, Object>> dataSelectTest(String keyword, String level) {
-        return desList(Wrappers.lambdaQuery("amap_district")
-                .eq("level", level)
-                .and(w -> w
-                        .eq("id", keyword)
-                        .or()
-                        .like("name", keyword)));
     }
 
 }

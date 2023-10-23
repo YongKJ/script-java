@@ -117,15 +117,20 @@ public abstract class BaseService {
     }
 
     protected Map<String, Map<String, Object>> getMapData(List<Map<String, Object>> lstData) {
-        return lstData.stream().collect(Collectors.toMap(this::getMd5, Function.identity()));
+        return getMapData(lstData, new ArrayList<>());
     }
 
-    protected String getMd5(Map<String, Object> mapData) {
-        if (mapData.containsKey("id")) {
+    protected Map<String, Map<String, Object>> getMapData(List<Map<String, Object>> lstData, List<String> lstField) {
+        return lstData.stream().collect(Collectors.toMap(d -> getMd5Key(d, lstField), Function.identity()));
+    }
+
+    protected String getMd5Key(Map<String, Object> mapData, List<String> lstField) {
+        if ((lstField == null || lstField.isEmpty()) && mapData.containsKey("id")) {
             return mapData.get("id").toString();
         }
         List<String> lstData = new ArrayList<>();
         for (Map.Entry<String, Object> map : mapData.entrySet()) {
+            if (lstField != null && !lstField.isEmpty() && !lstField.contains(map.getKey())) continue;
             lstData.add(map.getValue() == null ? "null" : map.getValue().toString());
         }
         return GenUtil.getMd5Str(String.join("", lstData));
