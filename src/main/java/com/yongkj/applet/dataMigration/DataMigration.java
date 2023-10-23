@@ -64,7 +64,7 @@ public class DataMigration {
         SQLUtil.closeAll(desDatabase.getManager());
     }
 
-    private void test() {
+    public void test() {
         String line = "  `sort` int NOT NULL DEFAULT '0' COMMENT '排序 越大越靠前',";
         String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*?)'[\\s\\S]+";
         Pattern pattern = Pattern.compile(regStr);
@@ -78,8 +78,21 @@ public class DataMigration {
         }
     }
 
+    public void test1() {
+        String line = "  `score` decimal(3,2) NOT NULL COMMENT '评分',";
+        String regStr = String.format("\\s+`%s`\\s\\S+?\\((.*?)\\)[\\s\\S]+", "score");
+        Pattern pattern = Pattern.compile(regStr);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            String decimalType = matcher.group(1);
+            LogUtil.loggerLine(Log.of("DataMigration", "test1", "decimalType", decimalType));
+            System.out.println("------------------------------------------------------------------------------------------------------------");
+        }
+    }
+
     public static void run(String[] args) {
         new DataMigration().apply();
+//        new DataMigration().test1();
     }
 
 }

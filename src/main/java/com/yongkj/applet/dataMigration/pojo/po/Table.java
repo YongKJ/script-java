@@ -49,14 +49,14 @@ public class Table {
         for (String tableName : lstTableName) {
             Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
             List<Field> lstField = Field.getFields(manager, tableName, mapRemark);
-            String createSqs = mapRemark.get("createSql");
+            String createSql = mapRemark.get("createSql");
             List<String> fieldNames = lstField.stream().map(Field::getName).collect(Collectors.toList());
 
             Table table = new Table();
             table.setName(tableName);
-            table.setCreateSql(createSqs);
+            table.setCreateSql(createSql);
             table.setFieldNames(fieldNames);
-            table.setMapField(Field.getMapField(lstField, createSqs, tableName));
+            table.setMapField(Field.getMapField(lstField, createSql, tableName));
             mapTable.put(tableName, getSqlTable(table));
         }
         SQLUtil.close(manager);

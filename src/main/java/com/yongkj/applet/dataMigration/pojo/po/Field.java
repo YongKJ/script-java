@@ -87,6 +87,9 @@ public class Field {
                     field.setLength(length);
                     field.setType(String.format("%s(%s)", type, length));
                 }
+                if (Objects.equals(type, "DECIMAL")) {
+                    field.setType(String.format("%s%s", type, getLengthStr(field, mapComment)));
+                }
                 field.setComment(comment);
                 fields.add(field);
             }
@@ -97,6 +100,20 @@ public class Field {
             e.printStackTrace();
         }
         return fields;
+    }
+
+    private static String getLengthStr(Field field, Map<String, String> mapRemark) {
+        String regStr = String.format("\\s+`%s`\\s\\S+?\\((.*?)\\)[\\s\\S]+", field.getName());
+        Pattern pattern = Pattern.compile(regStr);
+        String createSql = mapRemark.get("createSql");
+        List<String> lstLine = GenUtil.getStrLines(createSql);
+        for (String line : lstLine) {
+            if (!line.contains(field.getName())) continue;
+            Matcher matcher = pattern.matcher(line);
+            if (!matcher.find()) continue;
+            return String.format("(%s)", matcher.group(1));
+        }
+        return "";
     }
 
     private static Map<String, String> getMapDefault(String tableSql) {
