@@ -5,9 +5,11 @@ import com.yongkj.applet.dataMigration.service.DataIncrementMigrationService;
 import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
 import com.yongkj.applet.dataMigration.util.SQLUtil;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +17,16 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
+    private final boolean dataMigration;
+    private final boolean fieldMigration;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
+        this.dataMigration = GenUtil.getBoolean("data-migration");
+        this.fieldMigration = GenUtil.getBoolean("field-migration");
         this.dataIncrementMigrationService = new DataIncrementMigrationService(
                 this.srcDatabase, this.desDatabase
         );
@@ -51,20 +57,24 @@ public class DataMigration {
             return;
         }
 
-//        fieldIncrementMigrationService.apply();
-        dataIncrementMigrationService.apply();
-
-//        List<Map<String, Object>> selectData = dataIncrementMigrationService.dataSelectTest("广州", "city");
-//        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectData", selectData));
-//        System.out.println("------------------------------------------------------------------------------------------------------------");
-
-//        test();
+        if (fieldMigration) {
+            fieldIncrementMigrationService.apply();
+        }
+        if (dataMigration) {
+            dataIncrementMigrationService.apply();
+        }
 
         SQLUtil.closeAll(srcDatabase.getManager());
         SQLUtil.closeAll(desDatabase.getManager());
     }
 
     public void test() {
+        List<Map<String, Object>> selectData = dataIncrementMigrationService.dataSelectTest("广州", "city");
+        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectData", selectData));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
+    public void test1() {
         String line = "  `sort` int NOT NULL DEFAULT '0' COMMENT '排序 越大越靠前',";
         String regStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s'(.*?)'[\\s\\S]+";
         Pattern pattern = Pattern.compile(regStr);
@@ -78,7 +88,7 @@ public class DataMigration {
         }
     }
 
-    public void test1() {
+    public void test2() {
         String line = "  `score` decimal(3,2) NOT NULL COMMENT '评分',";
         String regStr = String.format("\\s+`%s`\\s\\S+?\\((.*?)\\)[\\s\\S]+", "score");
         Pattern pattern = Pattern.compile(regStr);

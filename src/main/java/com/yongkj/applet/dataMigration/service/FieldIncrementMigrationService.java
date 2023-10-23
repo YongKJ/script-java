@@ -24,8 +24,8 @@ public class FieldIncrementMigrationService extends BaseService {
     public FieldIncrementMigrationService(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
         this.tableNames = GenUtil.getList("table-names");
-        this.tableDelete = Objects.equals(GenUtil.getValue("table-delete"), "true");
-        this.fieldDelete = Objects.equals(GenUtil.getValue("field-delete"), "true");
+        this.tableDelete = GenUtil.getBoolean("table-delete");
+        this.fieldDelete = GenUtil.getBoolean("field-delete");
     }
 
     public void apply() {

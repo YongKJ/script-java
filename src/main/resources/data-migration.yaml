@@ -14,8 +14,17 @@ des:
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
+data-migration: true
+field-migration: false
+
 table-delete: false
 field-delete: false
 
 table-names:
-  - "admin_user"
+  - "admin_apply"
+  - "admin_apply_menu"
+  - "admin_apply_organization"
+  - "admin_menu"
+  - "admin_role_menu"
+  - "admin_role_users"
+  - "admin_roles"

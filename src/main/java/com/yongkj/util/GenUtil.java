@@ -95,6 +95,10 @@ public class GenUtil {
         return value != null ? value.toString() : "";
     }
 
+    public static boolean getBoolean(String key) {
+        return Objects.equals(getValue(key), "true");
+    }
+
     public static Object getObject(String key) {
         return getConfig(getProfile() + ".yaml").get(key);
     }
