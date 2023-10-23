@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataIncrementMigrationService extends BaseService {
 
@@ -40,10 +41,16 @@ public class DataIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desList(
+                Wrappers.lambdaQuery(tableName).select("id")
+        ));
+        List<Long> lstId = desTableData.values().stream()
+                .map(v -> (Long) v.get("id")).collect(Collectors.toList());
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(
+                Wrappers.lambdaQuery(tableName).notIn("id", lstId)
+        ));
 
-        List<String> ids = getRetainIds(srcTableData, desTableData);
+        List<String> ids = new ArrayList<>(srcTableData.keySet());
         for (String id : ids) {
             Map<String, Object> srcData = srcTableData.get(id);
             insertDesData(desTable, srcData);

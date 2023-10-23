@@ -45,7 +45,9 @@ public class Wrappers {
                     lstSqlSegment.addLast("and");
             }
         }
-        lstSqlSegment.removeLast();
+        if (lstSqlSegment.size() > 0) {
+            lstSqlSegment.removeLast();
+        }
         return String.join(" ", lstSqlSegment);
     }
 
@@ -150,8 +152,17 @@ public class Wrappers {
     public <T> Wrappers notIn(String field, T... values) {
         sqlValues.add(SQLValue.of(
                 field,
-                SQLOperate.le,
+                SQLOperate.notIn,
                 Arrays.asList(values)
+        ));
+        return this;
+    }
+
+    public <T> Wrappers notIn(String field, List<T> values) {
+        sqlValues.add(SQLValue.of(
+                field,
+                SQLOperate.notIn,
+                values
         ));
         return this;
     }
