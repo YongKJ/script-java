@@ -1,5 +1,6 @@
 package com.yongkj.util;
 
+import com.yongkj.pojo.dto.Coords;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
@@ -83,42 +84,6 @@ public class PoiExcelUtil {
         return cellStyle;
     }
 
-    public static void writeCellData(SXSSFSheet sheet, int rowIndex, int colIndex, List<CellStyle> lstCellStyle, int dataRow, Object cellData) {
-        Cell cell = GenUtil.setCellValue(sheet, rowIndex, colIndex, GenUtil.objToStr(cellData));
-        //设置单元格样式
-        setCellStyle(cell, lstCellStyle, dataRow);
-        if (colIndex == 0) {
-            //设置行高
-            sheet.getRow(rowIndex).setHeightInPoints(180);
-            sheet.getRow(rowIndex).setHeight((short) (4 * 180));
-        }
-    }
-
-    private static void setCellStyle(Cell cell, List<CellStyle> lstCellStyle, int dataRow) {
-        //设置行单元格样式：带斑马纹表格
-        if (dataRow % 2 == 0) {
-            if (cell.getRowIndex() % 2 == 0) {
-                cell.setCellStyle(lstCellStyle.get(2));
-            } else {
-                cell.setCellStyle(lstCellStyle.get(1));
-            }
-        } else {
-            if (cell.getRowIndex() % 2 != 0) {
-                cell.setCellStyle(lstCellStyle.get(2));
-            } else {
-                cell.setCellStyle(lstCellStyle.get(1));
-            }
-        }
-    }
-
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle) {
-        writeHeader(sheet, lstHeader, lstCellStyle, 0);
-    }
-
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol) {
-        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, null);
-    }
-
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {
         writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, null);
     }
@@ -195,43 +160,31 @@ public class PoiExcelUtil {
         }
     }
 
-    private static class Coords {
-        private String value;
-        private Integer x;
-        private Integer y;
-
-        private Coords(List<List<String>> lstHeader, int row, int col) {
-            this.x = row;
-            this.y = col;
-            this.value = lstHeader.get(col).get(row);
+    public static void writeCellData(SXSSFSheet sheet, int rowIndex, int colIndex, List<CellStyle> lstCellStyle, int dataRow, Object cellData) {
+        Cell cell = GenUtil.setCellValue(sheet, rowIndex, colIndex, GenUtil.objToStr(cellData));
+        //设置单元格样式
+        setCellStyle(cell, lstCellStyle, dataRow);
+        if (colIndex == 0) {
+            //设置行高
+            sheet.getRow(rowIndex).setHeightInPoints(180);
+            sheet.getRow(rowIndex).setHeight((short) (4 * 180));
         }
+    }
 
-        public static Coords of(List<List<String>> lstHeader, int row, int col) {
-            return new Coords(lstHeader, row, col);
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public Integer getX() {
-            return x;
-        }
-
-        public void setX(Integer x) {
-            this.x = x;
-        }
-
-        public Integer getY() {
-            return y;
-        }
-
-        public void setY(Integer y) {
-            this.y = y;
+    private static void setCellStyle(Cell cell, List<CellStyle> lstCellStyle, int dataRow) {
+        //设置行单元格样式：带斑马纹表格
+        if (dataRow % 2 == 0) {
+            if (cell.getRowIndex() % 2 == 0) {
+                cell.setCellStyle(lstCellStyle.get(2));
+            } else {
+                cell.setCellStyle(lstCellStyle.get(1));
+            }
+        } else {
+            if (cell.getRowIndex() % 2 != 0) {
+                cell.setCellStyle(lstCellStyle.get(2));
+            } else {
+                cell.setCellStyle(lstCellStyle.get(1));
+            }
         }
     }
 
