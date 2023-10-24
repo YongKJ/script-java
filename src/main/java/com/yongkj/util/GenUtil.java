@@ -2,6 +2,9 @@ package com.yongkj.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -19,6 +22,20 @@ public class GenUtil {
     }
 
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+    public static SXSSFCell setCellValue(SXSSFSheet sheet, int rowIndex, int colIndex, String value) {
+        SXSSFRow row = sheet.getRow(rowIndex);
+        if (row == null) {
+            row = sheet.createRow(rowIndex);
+        }
+        SXSSFCell cell = row.getCell(colIndex);
+        if (cell == null) {
+            cell = row.createCell(colIndex);
+        }
+        cell.setCellValue(value);
+
+        return cell;
+    }
 
     public static LocalDateTime timestampToLocalDateTime(Long timestamp) {
         return Instant.ofEpochMilli(timestamp).atZone(ZoneOffset.systemDefault()).toLocalDateTime();
