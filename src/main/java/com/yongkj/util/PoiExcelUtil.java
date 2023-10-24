@@ -4,6 +4,7 @@ import com.yongkj.util.excel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.*;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,10 @@ public class PoiExcelUtil {
     private static int dataRow = 1;
 
     private PoiExcelUtil() {
+    }
+
+    public static List<Map<String, String>> toMap(String excelName) {
+        return toMap(excelName, 0);
     }
 
     public static <T> List<Map<String, String>> toMap(String excelName, T sheetName) {
@@ -40,6 +45,14 @@ public class PoiExcelUtil {
 
     public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
         return ExcelReader.toMap(excelName, sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
+    }
+
+    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook) {
+        return ExcelHeader.getCellStyles(workbook);
+    }
+
+    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook, Color headerBackgroundColor, Color dataBackgroundColor, Color borderColor) {
+        return ExcelHeader.getCellStyles(workbook, headerBackgroundColor, dataBackgroundColor, borderColor);
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader) {
