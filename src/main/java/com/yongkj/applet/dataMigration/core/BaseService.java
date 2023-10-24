@@ -145,4 +145,13 @@ public abstract class BaseService {
         return lstId;
     }
 
+    protected String getValueStr(Object value) {
+        if (value == null) return "";
+        if (value instanceof String) {
+            return String.format("'%s'", value);
+        } else {
+            return GenUtil.objToStr(value);
+        }
+    }
+
 }

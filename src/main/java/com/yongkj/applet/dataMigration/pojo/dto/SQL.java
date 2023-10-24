@@ -67,7 +67,7 @@ public class SQL {
     private static String getMapDataStr(Map<String, Object> mapData) {
         List<String> lstData = new ArrayList<>();
         for (Map.Entry<String, Object> map : mapData.entrySet()) {
-            String data = String.format("`%s`=%s", map.getKey(),
+            String data = String.format("`%s` = %s", map.getKey(),
                     map.getValue() instanceof String ?
                             String.format("'%s'", map.getValue()) : map.getValue());
             lstData.add(data);
