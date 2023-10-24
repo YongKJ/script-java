@@ -1,19 +1,15 @@
 package com.yongkj.util;
 
 import com.yongkj.pojo.dto.Coords;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.streaming.SXSSFDrawing;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,63 +21,6 @@ public class PoiExcelUtil {
     private static int dataRow = 1;
 
     private PoiExcelUtil() {
-    }
-
-    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook) {
-        return getCellStyles(workbook, new Color(242, 242, 242), new Color(250, 250, 250), new Color(212, 212, 212));
-//        return getCellStyles(workbook, new Color(239, 243, 245), new Color(247, 247, 247), new Color(221, 221, 221));
-    }
-
-    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook, Color headerBackColor, Color dataBackColor, Color borderColor) {
-        List<XSSFColor> lstColor = Arrays.asList(
-                new XSSFColor(headerBackColor, null),
-                new XSSFColor(dataBackColor, null),
-                new XSSFColor(borderColor, null)
-        );
-        return Arrays.asList(
-                getCellStyle(workbook, lstColor, 0),
-                getCellStyle(workbook, lstColor, 1),
-                getCellStyle(workbook, lstColor, 2)
-        );
-    }
-
-    private static XSSFCellStyle getCellStyle(SXSSFWorkbook workbook, List<XSSFColor> lstColor, int choose) {
-        XSSFFont font = (XSSFFont) workbook.createFont();
-        XSSFCellStyle cellStyle = (XSSFCellStyle) workbook.createCellStyle();
-        if (choose == 0) {
-            //设置表头字体样式：粗体、大小
-            font.setBold(true);
-            font.setFontHeightInPoints((short) 11);
-            //设置背景色
-            cellStyle.setFillForegroundColor(lstColor.get(0));
-            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        } else if (choose == 1) {
-            //设置数据显示字体样式：大小
-            font.setFontHeightInPoints((short) 10);
-            //设置背景色
-            cellStyle.setFillForegroundColor(lstColor.get(1));
-            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        } else if (choose == 2) {
-            //设置数据显示字体样式：大小
-            font.setFontHeightInPoints((short) 10);
-        }
-        //设置字体: 微软雅黑
-        font.setFontName("Microsoft YaHei");
-        cellStyle.setFont(font);
-        //设置居中：垂直居中、水平居中
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-        //设置边框宽度
-        cellStyle.setBorderTop(BorderStyle.THIN);
-        cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);
-        //设置边框颜色
-        cellStyle.setTopBorderColor(lstColor.get(2));
-        cellStyle.setBottomBorderColor(lstColor.get(2));
-        cellStyle.setLeftBorderColor(lstColor.get(2));
-        cellStyle.setRightBorderColor(lstColor.get(2));
-        return cellStyle;
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {

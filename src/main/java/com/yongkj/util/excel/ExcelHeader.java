@@ -1,16 +1,20 @@
 package com.yongkj.util.excel;
 
 import com.yongkj.pojo.dto.Coords;
-import com.yongkj.util.GenUtil;
-import com.yongkj.util.PoiExcelUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +40,7 @@ public class ExcelHeader {
         int rowSize = lstHeader.get(0).size();
         boolean[][] lstFlag = new boolean[rowSize][colSize];
         if (lstCellStyle == null) {
-            lstCellStyle = PoiExcelUtil.getCellStyles(sheet.getWorkbook());
+            lstCellStyle = getCellStyles(sheet.getWorkbook());
         }
         for (int row = 0; row < rowSize; row++) {
             for (int col = 0; col < colSize; col++) {
@@ -58,7 +62,7 @@ public class ExcelHeader {
         sheet.createFreezePane(dataCol, dataRow, dataCol, dataRow);
     }
 
-    private static void checkMergeRange(List<List<String>> lstHeader, boolean[][] lstFlag, List<Coords> lstCoords, int x, int y, String value) {
+    public static void checkMergeRange(List<List<String>> lstHeader, boolean[][] lstFlag, List<Coords> lstCoords, int x, int y, String value) {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
         for (int[] move : MOVE) {
@@ -86,7 +90,7 @@ public class ExcelHeader {
             }
         });
         //表头数据写入到最小坐标的单元格中
-        GenUtil.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
+        setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
         for (Coords coords : lstCoords) {
             //设置列宽
 //            if (coords.getX() > 0) {
@@ -113,7 +117,7 @@ public class ExcelHeader {
         }
     }
 
-    private static void setWidthColByAuto(SXSSFSheet sheet, int col, String value) {
+    public static void setWidthColByAuto(SXSSFSheet sheet, int col, String value) {
         int widthCol = sheet.getColumnWidth(col) / 256;
         int tempWidthCol = getWidthCol(value);
         if (widthCol < tempWidthCol) {
@@ -153,6 +157,77 @@ public class ExcelHeader {
     private static boolean isChineseByScript(char c) {
         Character.UnicodeScript sc = Character.UnicodeScript.of(c);
         return sc == Character.UnicodeScript.HAN;
+    }
+
+    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook) {
+        return getCellStyles(workbook, new Color(242, 242, 242), new Color(250, 250, 250), new Color(212, 212, 212));
+//        return getCellStyles(workbook, new Color(239, 243, 245), new Color(247, 247, 247), new Color(221, 221, 221));
+    }
+
+    public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook, Color headerBackColor, Color dataBackColor, Color borderColor) {
+        List<XSSFColor> lstColor = Arrays.asList(
+                new XSSFColor(headerBackColor, null),
+                new XSSFColor(dataBackColor, null),
+                new XSSFColor(borderColor, null)
+        );
+        return Arrays.asList(
+                getCellStyle(workbook, lstColor, 0),
+                getCellStyle(workbook, lstColor, 1),
+                getCellStyle(workbook, lstColor, 2)
+        );
+    }
+
+    private static XSSFCellStyle getCellStyle(SXSSFWorkbook workbook, List<XSSFColor> lstColor, int choose) {
+        XSSFFont font = (XSSFFont) workbook.createFont();
+        XSSFCellStyle cellStyle = (XSSFCellStyle) workbook.createCellStyle();
+        if (choose == 0) {
+            //设置表头字体样式：粗体、大小
+            font.setBold(true);
+            font.setFontHeightInPoints((short) 11);
+            //设置背景色
+            cellStyle.setFillForegroundColor(lstColor.get(0));
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        } else if (choose == 1) {
+            //设置数据显示字体样式：大小
+            font.setFontHeightInPoints((short) 10);
+            //设置背景色
+            cellStyle.setFillForegroundColor(lstColor.get(1));
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        } else if (choose == 2) {
+            //设置数据显示字体样式：大小
+            font.setFontHeightInPoints((short) 10);
+        }
+        //设置字体: 微软雅黑
+        font.setFontName("Microsoft YaHei");
+        cellStyle.setFont(font);
+        //设置居中：垂直居中、水平居中
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        //设置边框宽度
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        //设置边框颜色
+        cellStyle.setTopBorderColor(lstColor.get(2));
+        cellStyle.setBottomBorderColor(lstColor.get(2));
+        cellStyle.setLeftBorderColor(lstColor.get(2));
+        cellStyle.setRightBorderColor(lstColor.get(2));
+        return cellStyle;
+    }
+
+    public static SXSSFCell setCellValue(SXSSFSheet sheet, int rowIndex, int colIndex, String value) {
+        SXSSFRow row = sheet.getRow(rowIndex);
+        if (row == null) {
+            row = sheet.createRow(rowIndex);
+        }
+        SXSSFCell cell = row.getCell(colIndex);
+        if (cell == null) {
+            cell = row.createCell(colIndex);
+        }
+        cell.setCellValue(value);
+
+        return cell;
     }
 
 }
