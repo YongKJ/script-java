@@ -23,6 +23,14 @@ public class ExcelHeader {
     private ExcelHeader() {
     }
 
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader) {
+        writeHeader(sheet, lstHeader, 0);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, int dataCol) {
+        writeHeader(sheet, lstHeader, dataCol, null);
+    }
+
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, int dataCol, List<Integer> lstExcludeRow) {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
