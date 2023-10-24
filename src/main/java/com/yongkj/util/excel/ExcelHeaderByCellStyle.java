@@ -1,6 +1,7 @@
 package com.yongkj.util.excel;
 
 import com.yongkj.pojo.dto.Coords;
+import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,20 +14,10 @@ import java.util.List;
 
 public class ExcelHeaderByCellStyle {
 
-    private static int dataRow = 1;
-
     private ExcelHeaderByCellStyle() {
     }
 
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle) {
-        writeHeader(sheet, lstHeader, lstCellStyle, 0);
-    }
-
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol) {
-        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, null);
-    }
-
-    private static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, List<Integer> lstExcludeRow) {
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, List<Integer> lstExcludeRow) {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
         boolean[][] lstFlag = new boolean[rowSize][colSize];
@@ -47,7 +38,7 @@ public class ExcelHeaderByCellStyle {
             }
         }
         //单元格冻结：从上往下，冻结 dataRow 行；从左往右，冻结 dataCol 列
-        sheet.createFreezePane(dataCol, dataRow, dataCol, dataRow);
+        sheet.createFreezePane(dataCol, PoiExcelUtil.getDataRow(), dataCol, PoiExcelUtil.getDataRow());
     }
 
     private static void merge(SXSSFSheet sheet, List<Coords> lstCoords, List<CellStyle> lstCellStyle) {
@@ -62,7 +53,7 @@ public class ExcelHeaderByCellStyle {
             }
         });
         //表头数据写入到最小坐标的单元格中
-        ExcelHeader.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
+        ExcelWriter.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
         for (Coords coords : lstCoords) {
             //设置列宽
             ExcelHeader.setWidthColByAuto(sheet, coords.getY(), coords.getValue());
@@ -74,8 +65,8 @@ public class ExcelHeaderByCellStyle {
             Cell cell = CellUtil.getCell(row, coords.getY());
             cell.setCellStyle(lstCellStyle.get(0));
             //设置数据行号
-            if (coords.getX() + 1 > dataRow) {
-                dataRow = coords.getX() + 1;
+            if (coords.getX() + 1 > PoiExcelUtil.getDataRow()) {
+                PoiExcelUtil.setDataRow(coords.getX() + 1);
             }
         }
         //合并单元格

@@ -1,15 +1,15 @@
 package com.yongkj.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,24 +21,44 @@ public class GenUtil {
     private GenUtil() {
     }
 
-    private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
-    public static SXSSFCell setCellValue(SXSSFSheet sheet, int rowIndex, int colIndex, String value) {
-        SXSSFRow row = sheet.getRow(rowIndex);
-        if (row == null) {
-            row = sheet.createRow(rowIndex);
+    public static String toJsonString(Object object) {
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("json generate error", e);
         }
-        SXSSFCell cell = row.getCell(colIndex);
-        if (cell == null) {
-            cell = row.createCell(colIndex);
-        }
-        cell.setCellValue(value);
 
-        return cell;
+        return json;
     }
 
-    public static LocalDateTime timestampToLocalDateTime(Long timestamp) {
-        return Instant.ofEpochMilli(timestamp).atZone(ZoneOffset.systemDefault()).toLocalDateTime();
+    public static double round(double v, int scale) {
+        return round(v, scale, 6);
+    }
+
+    public static double round(double v, int scale, int round_mode) {
+        if (scale < 0) {
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
+        } else {
+            BigDecimal b = new BigDecimal(Double.toString(v));
+            return b.setScale(scale, round_mode).doubleValue();
+        }
+    }
+
+    public static String douToStr(Double value) {
+        return value == null ? "" : BigDecimal.valueOf(value).toPlainString();
+    }
+
+    public static long ldtToTimestamp(LocalDateTime ldt) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant instant = ldt.atZone(zoneId).toInstant();
+        return instant.toEpochMilli();
+    }
+
+    public static LocalDateTime timestampToLdt(long milliseconds) {
+        return LocalDateTime.ofEpochSecond(milliseconds / 1000, 0, ZoneOffset.ofHours(8));
     }
 
     public static String getMd5Str(String dataStr) {
@@ -156,7 +176,7 @@ public class GenUtil {
     public static Map getConfig(String config) {
         try {
             String path = getConfigPath(config);
-            return mapper.readValue(new File(path), Map.class);
+            return objectMapper.readValue(new File(path), Map.class);
         } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<String, Object>();
@@ -166,7 +186,7 @@ public class GenUtil {
     public static void writeConfig(String config, Map<String, Object> mapData) {
         try {
             String path = getConfigPath(config);
-            String content = mapper.writeValueAsString(mapData);
+            String content = objectMapper.writeValueAsString(mapData);
             content = content.substring(4);
             FileUtil.write(path, content);
         } catch (Exception e) {

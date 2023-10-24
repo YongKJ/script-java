@@ -1,11 +1,10 @@
 package com.yongkj.util.excel;
 
 import com.yongkj.pojo.dto.Coords;
+import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.streaming.SXSSFCell;
-import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -20,15 +19,7 @@ import java.util.Objects;
 
 public class ExcelHeader {
 
-    private static final int[][] MOVE = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    private static List<CellStyle> lstCellStyle;
-    private static int dataRow = 1;
-
     private ExcelHeader() {
-    }
-
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader) {
-        writeHeader(sheet, lstHeader, 0);
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, int dataCol) {
@@ -39,8 +30,8 @@ public class ExcelHeader {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
         boolean[][] lstFlag = new boolean[rowSize][colSize];
-        if (lstCellStyle == null) {
-            lstCellStyle = getCellStyles(sheet.getWorkbook());
+        if (PoiExcelUtil.getLstCellStyle() == null) {
+            PoiExcelUtil.setLstCellStyle(getCellStyles(sheet.getWorkbook()));
         }
         for (int row = 0; row < rowSize; row++) {
             for (int col = 0; col < colSize; col++) {
@@ -59,13 +50,13 @@ public class ExcelHeader {
             }
         }
         //单元格冻结：从上往下，冻结 dataRow 行；从左往右，冻结 dataCol 列
-        sheet.createFreezePane(dataCol, dataRow, dataCol, dataRow);
+        sheet.createFreezePane(dataCol, PoiExcelUtil.getDataRow(), dataCol, PoiExcelUtil.getDataRow());
     }
 
     public static void checkMergeRange(List<List<String>> lstHeader, boolean[][] lstFlag, List<Coords> lstCoords, int x, int y, String value) {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
-        for (int[] move : MOVE) {
+        for (int[] move : PoiExcelUtil.getMOVE()) {
             int moveX = x + move[0];
             int moveY = y + move[1];
             if (0 <= moveX && moveX < rowSize && 0 <= moveY && moveY < colSize && !lstFlag[moveX][moveY]) {
@@ -90,7 +81,7 @@ public class ExcelHeader {
             }
         });
         //表头数据写入到最小坐标的单元格中
-        setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
+        ExcelWriter.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
         for (Coords coords : lstCoords) {
             //设置列宽
 //            if (coords.getX() > 0) {
@@ -103,10 +94,10 @@ public class ExcelHeader {
             row.setHeight((short) (4 * 180));
             //设置单元格样式
             Cell cell = CellUtil.getCell(row, coords.getY());
-            cell.setCellStyle(lstCellStyle.get(0));
+            cell.setCellStyle(PoiExcelUtil.getLstCellStyle().get(0));
             //设置数据行号
-            if (coords.getX() + 1 > dataRow) {
-                dataRow = coords.getX() + 1;
+            if (coords.getX() + 1 > PoiExcelUtil.getDataRow()) {
+                PoiExcelUtil.setDataRow(coords.getX() + 1);
             }
         }
         //合并单元格
@@ -214,20 +205,6 @@ public class ExcelHeader {
         cellStyle.setLeftBorderColor(lstColor.get(2));
         cellStyle.setRightBorderColor(lstColor.get(2));
         return cellStyle;
-    }
-
-    public static SXSSFCell setCellValue(SXSSFSheet sheet, int rowIndex, int colIndex, String value) {
-        SXSSFRow row = sheet.getRow(rowIndex);
-        if (row == null) {
-            row = sheet.createRow(rowIndex);
-        }
-        SXSSFCell cell = row.getCell(colIndex);
-        if (cell == null) {
-            cell = row.createCell(colIndex);
-        }
-        cell.setCellValue(value);
-
-        return cell;
     }
 
 }

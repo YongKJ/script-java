@@ -16,10 +16,6 @@ public class ExcelHeaderByWidthColAndCellStyle {
     private ExcelHeaderByWidthColAndCellStyle() {
     }
 
-    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {
-        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, null);
-    }
-
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol, List<Integer> lstExcludeRow) {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
@@ -56,7 +52,7 @@ public class ExcelHeaderByWidthColAndCellStyle {
             }
         });
         //表头数据写入到最小坐标的单元格中
-        ExcelHeader.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
+        ExcelWriter.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
         for (Coords coords : lstCoords) {
             //设置列宽
             sheet.setColumnWidth(coords.getY(), widthCol * 256);

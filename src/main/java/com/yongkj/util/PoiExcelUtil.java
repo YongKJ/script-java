@@ -1,17 +1,12 @@
 package com.yongkj.util;
 
-import com.yongkj.pojo.dto.Coords;
-import org.apache.poi.ss.usermodel.Cell;
+import com.yongkj.util.excel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.streaming.SXSSFDrawing;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 public class PoiExcelUtil {
 
@@ -23,108 +18,143 @@ public class PoiExcelUtil {
     private PoiExcelUtil() {
     }
 
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName) {
+        return toMap(excelName, sheetName, 0);
+    }
+
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow) {
+        return toMap(excelName, sheetName, headerRow, headerRow + 1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int dataRow) {
+        return toMap(excelName, sheetName, headerRow, dataRow, -1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int dataRow, int dataLastRow) {
+        return toMap(excelName, sheetName, headerRow, dataRow, dataLastRow, new HashMap<>());
+    }
+
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return toMap(excelName, sheetName, headerRow, 0, -1, dataRow, dataLastRow, extraData);
+    }
+
+    public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return ExcelReader.toMap(excelName, sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader) {
+        writeHeader(sheet, lstHeader, 0);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, int dataCol) {
+        writeHeader(sheet, lstHeader, dataCol, null);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, int dataCol, List<Integer> lstExcludeRow) {
+        ExcelHeader.writeHeader(sheet, lstHeader, dataCol, lstExcludeRow);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle) {
+        writeHeader(sheet, lstHeader, lstCellStyle, 0);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol) {
+        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, null);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, List<Integer> lstExcludeRow) {
+        ExcelHeaderByCellStyle.writeHeader(sheet, lstHeader, lstCellStyle, dataCol, lstExcludeRow);
+    }
+
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {
         writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, null);
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol, List<Integer> lstExcludeRow) {
-        int colSize = lstHeader.size();
-        int rowSize = lstHeader.get(0).size();
-        boolean[][] lstFlag = new boolean[rowSize][colSize];
-        for (int row = 0; row < rowSize; row++) {
-            for (int col = 0; col < colSize; col++) {
-                if (!lstFlag[row][col]) {
-                    lstFlag[row][col] = true;
-
-                    List<Coords> lstCoords = new ArrayList<>();
-                    lstCoords.add(Coords.of(lstHeader, row, col));
-                    //取消某些行的单元格合并
-                    if (lstExcludeRow == null || lstExcludeRow.isEmpty() || !lstExcludeRow.contains(row)) {
-                        checkMergeRange(lstHeader, lstFlag, lstCoords, row, col, lstHeader.get(col).get(row));
-                    }
-
-                    merge(sheet, lstCoords, lstCellStyle, widthCol);
-                }
-            }
-        }
-        //单元格冻结：从上往下，冻结 dataRow 行；从左往右，冻结 dataCol 列
-        sheet.createFreezePane(dataCol, dataRow, dataCol, dataRow);
+        ExcelHeaderByWidthColAndCellStyle.writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, lstExcludeRow);
     }
 
-    private static void checkMergeRange(List<List<String>> lstHeader, boolean[][] lstFlag, List<Coords> lstCoords, int x, int y, String value) {
-        int colSize = lstHeader.size();
-        int rowSize = lstHeader.get(0).size();
-        for (int[] move : MOVE) {
-            int moveX = x + move[0];
-            int moveY = y + move[1];
-            if (0 <= moveX && moveX < rowSize && 0 <= moveY && moveY < colSize && !lstFlag[moveX][moveY]) {
-                if (Objects.equals(lstHeader.get(moveY).get(moveX), value)) {
-                    lstFlag[moveX][moveY] = true;
-                    lstCoords.add(Coords.of(lstHeader, moveX, moveY));
-                    checkMergeRange(lstHeader, lstFlag, lstCoords, moveX, moveY, value);
-                }
-            }
-        }
+    public static void writePicture(SXSSFSheet sheet, int rowIndex, int colIndex, String filePath) throws Exception {
+        writePicture(sheet, rowIndex, 0, colIndex, 0, filePath);
     }
 
-    private static void merge(SXSSFSheet sheet, List<Coords> lstCoords, List<CellStyle> lstCellStyle, int widthCol) {
-        //单元格坐标排序
-        lstCoords.sort((c1, c2) -> {
-            if (c1.getX() > c2.getX() || c1.getY() > c2.getY()) {
-                return 1;
-            } else if (c1.getX() < c2.getX() || c1.getY() < c2.getY()) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-        //表头数据写入到最小坐标的单元格中
-        GenUtil.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
-        for (Coords coords : lstCoords) {
-            //设置列宽
-            sheet.setColumnWidth(coords.getY(), widthCol * 256);
-            //设置行高
-            Row row = CellUtil.getRow(coords.getX(), sheet);
-            row.setHeightInPoints(180);
-            row.setHeight((short) (4 * 180));
-            //设置单元格样式
-            Cell cell = CellUtil.getCell(row, coords.getY());
-            cell.setCellStyle(lstCellStyle.get(0));
-        }
-        //合并单元格
-        if (lstCoords.size() > 1) {
-            Coords minCoords = lstCoords.get(0);
-            Coords maxCoords = lstCoords.get(lstCoords.size() - 1);
-            sheet.addMergedRegion(new CellRangeAddress(minCoords.getX(), maxCoords.getX(), minCoords.getY(), maxCoords.getY()));
-        }
+    public static void writePicture(SXSSFSheet sheet, int rowIndex, int rowOffset, int colIndex, int colOffset, String filePath) throws Exception {
+        ExcelWriter.writePicture(sheet, rowIndex, rowOffset, colIndex, colOffset, filePath);
     }
 
-    public static void writeCellData(SXSSFSheet sheet, int rowIndex, int colIndex, List<CellStyle> lstCellStyle, int dataRow, Object cellData) {
-        Cell cell = GenUtil.setCellValue(sheet, rowIndex, colIndex, GenUtil.objToStr(cellData));
-        //设置单元格样式
-        setCellStyle(cell, lstCellStyle, dataRow);
-        if (colIndex == 0) {
-            //设置行高
-            sheet.getRow(rowIndex).setHeightInPoints(180);
-            sheet.getRow(rowIndex).setHeight((short) (4 * 180));
-        }
+    public static void writeData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, List<Map<Integer, Object>> lstData) {
+        ExcelWriter.writeData(sheet, lstCellStyle, lstData);
     }
 
-    private static void setCellStyle(Cell cell, List<CellStyle> lstCellStyle, int dataRow) {
-        //设置行单元格样式：带斑马纹表格
-        if (dataRow % 2 == 0) {
-            if (cell.getRowIndex() % 2 == 0) {
-                cell.setCellStyle(lstCellStyle.get(2));
-            } else {
-                cell.setCellStyle(lstCellStyle.get(1));
-            }
-        } else {
-            if (cell.getRowIndex() % 2 != 0) {
-                cell.setCellStyle(lstCellStyle.get(2));
-            } else {
-                cell.setCellStyle(lstCellStyle.get(1));
-            }
-        }
+    public static void writeCellData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, int rowIndex, int colIndex, Object cellData) {
+        ExcelWriter.writeCellData(sheet, lstCellStyle, rowIndex, colIndex, cellData);
     }
 
+    public static void writeData(SXSSFSheet sheet, List<Map<Integer, Object>> lstData) {
+        ExcelWriter.writeData(sheet, lstData);
+    }
+
+    public static void writeRowData(SXSSFSheet sheet, Map<Integer, Object> mapData) {
+        ExcelWriter.writeRowData(sheet, mapData);
+    }
+
+    public static void writeCellData(SXSSFSheet sheet, int rowIndex, int colIndex, Object cellData) {
+        ExcelWriter.writeCellData(sheet, rowIndex, colIndex, cellData);
+    }
+
+    public static void writePartialData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, int dataRow, List<Map<Integer, Object>> lstData) {
+        ExcelWriter.writePartialData(sheet, lstCellStyle, dataRow, lstData);
+    }
+
+    public static void writeRowData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, int dataRow, Map<Integer, Object> mapData) {
+        ExcelWriter.writeRowData(sheet, lstCellStyle, dataRow, mapData);
+    }
+
+    public static void writeCellData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, int dataRow, int rowIndex, int colIndex, Object cellData) {
+        ExcelWriter.writeCellData(sheet, lstCellStyle, dataRow, rowIndex, colIndex, cellData);
+    }
+
+    public static void writeCellData(SXSSFRow row, List<CellStyle> lstCellStyle, int dataRow, int colIndex, Object cellData) {
+        ExcelWriter.writeCellData(row, lstCellStyle, dataRow, colIndex, cellData);
+    }
+
+    public static void writeCellDataByRow(SXSSFRow row, List<CellStyle> lstCellStyle, int dataRow, int rowIndex, int colIndex, Object cellData) {
+        ExcelWriter.writeCellDataByRow(row, lstCellStyle, dataRow, rowIndex, colIndex, cellData);
+    }
+
+    public static void writeCellData(SXSSFCell cell, List<CellStyle> lstCellStyle, int dataRow, Object cellData) {
+        ExcelWriter.writeCellData(cell, lstCellStyle, dataRow, cellData);
+    }
+
+    public static void write(SXSSFWorkbook workbook, String fileName) {
+        ExcelWriter.write(workbook, fileName);
+    }
+
+    public static List<CellStyle> getLstCellStyle() {
+        return lstCellStyle;
+    }
+
+    public static void setLstCellStyle(List<CellStyle> lstCellStyle) {
+        PoiExcelUtil.lstCellStyle = lstCellStyle;
+    }
+
+    public static SXSSFDrawing getDrawing() {
+        return drawing;
+    }
+
+    public static void setDrawing(SXSSFDrawing drawing) {
+        PoiExcelUtil.drawing = drawing;
+    }
+
+    public static int getDataRow() {
+        return dataRow;
+    }
+
+    public static void setDataRow(int dataRow) {
+        PoiExcelUtil.dataRow = dataRow;
+    }
+
+    public static int[][] getMOVE() {
+        return MOVE;
+    }
 }

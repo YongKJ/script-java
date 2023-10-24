@@ -316,7 +316,7 @@ public class AdminMenuDataMigration extends BaseService {
         List<Map<String, Object>> tempLstData = new ArrayList<>();
         for (Map<String, Object> data : lstData) {
             Long timestamp = GenUtil.objToLong(data.get("utc_created")) * 1000;
-            LocalDateTime dateTime = GenUtil.timestampToLocalDateTime(timestamp);
+            LocalDateTime dateTime = GenUtil.timestampToLdt(timestamp);
             if (dateTime.plusDays(14).isBefore(nowTime)) continue;
             tempLstData.add(data);
         }
