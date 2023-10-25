@@ -23,11 +23,13 @@ public class AdminMenuDataMigration extends BaseService {
     private final boolean enable;
     private final List<Long> lstMenuId;
     private final List<String> tableNames;
+    private final List<String> filterNames;
 
     public AdminMenuDataMigration(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
         this.lstMenuId = new ArrayList<>();
         Map<String, Object> menuMigration = GenUtil.getMap("admin-menu-data-migration");
+        this.filterNames = (List<String>) menuMigration.get("filter-names");
         this.tableNames = (List<String>) menuMigration.get("table-names");
         this.enable = GenUtil.objToBoolean(menuMigration.get("enable"));
     }
@@ -47,9 +49,9 @@ public class AdminMenuDataMigration extends BaseService {
         switch (tableName) {
             case "admin_menu":
 //                adminMenuMigrationDataTestOne(srcTable, desTable);
-                adminMenuRouteParamMigrationData(srcTable, desTable);
+//                adminMenuRouteParamMigrationData(srcTable, desTable);
 //                adminMenuMigrationDataTest(desTable);
-//                adminMenuMigrationData(desTable);
+                adminMenuMigrationData(desTable);
                 break;
             case "admin_role_menu":
                 adminRoleMenuMigrationData(srcTable, desTable);
@@ -110,6 +112,8 @@ public class AdminMenuDataMigration extends BaseService {
         );
         List<Map<String, Object>> lstFilterData = getDataByTime(tempSrcListData);
         for (Map<String, Object> data : lstFilterData) {
+            String name = GenUtil.objToStr(data.get("name"));
+            if (filterNames != null && !filterNames.isEmpty() && !filterNames.contains(name)) continue;
             Long id = GenUtil.objToLong(data.get("id"));
             insertDesData(desTable, data);
             lstMenuId.add(id);

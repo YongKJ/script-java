@@ -1,4 +1,4 @@
-src:
+des:
   database:
     name: "dev_user"
     driver: "com.mysql.cj.jdbc.Driver"
@@ -6,7 +6,7 @@ src:
     username: "dev"
     password: "HHhda@%DSAs"
 
-des:
+src:
   database:
     name: "test_user"
     driver: "com.mysql.cj.jdbc.Driver"
@@ -38,3 +38,8 @@ admin-menu-data-migration:
     - "admin_menu"
     - "admin_role_menu"
     - "admin_apply_menu"
+  filter-names:
+    - "市场推广",
+    - "商家运营",
+    - "商家拉新",
+    - "商家促活"
