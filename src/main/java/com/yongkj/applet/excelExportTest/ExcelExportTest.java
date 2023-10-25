@@ -4,6 +4,7 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 import com.yongkj.util.PoiExcelUtil;
+import com.yongkj.util.ThreadUtil;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -21,7 +22,8 @@ public class ExcelExportTest {
     }
 
     private void apply() {
-        readTestOne();
+//        readTestOne();
+        writeTestFour();
 //        writeTestThree();
 //        writeTestTwo();
 //        writeTestOne();
@@ -33,6 +35,48 @@ public class ExcelExportTest {
         LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestOne", "lstData.size()", lstData.size()));
         LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestOne", "lstData", lstData));
         System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
+    private void writeTestFour() {
+        List<List<String>> lstHeader = new ArrayList<>();
+        lstHeader.add(Collections.singletonList("序号"));
+        lstHeader.add(Collections.singletonList("书名"));
+        lstHeader.add(Collections.singletonList("作者"));
+        lstHeader.add(Collections.singletonList("年代"));
+        lstHeader.add(Collections.singletonList("字数"));
+
+        List<List<String>> lstData = new ArrayList<>();
+        lstData.add(Arrays.asList("《水浒传》", "施耐庵", "宋朝", "96 万字"));
+        lstData.add(Arrays.asList("《三国演义》", "罗贯中", "元朝", "73.4 万字"));
+        lstData.add(Arrays.asList("《西游记》", "吴承恩", "明代", "82 万字"));
+        lstData.add(Arrays.asList("《红楼梦》", "曹雪芹", "清代", "107.5 万字"));
+        lstData.add(Arrays.asList("《聊斋志异》", "蒲松龄", "清代", "70.8 万字"));
+
+        int dataRow = lstHeader.get(0).size();
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        List<SXSSFSheet> sheets = getSheets(workbook);
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+        ThreadUtil.executeWithListDataByThreadPool(1, sheets, sheet -> {
+            PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+            ThreadUtil.executeWithListDataByThreadPool(1, sheet, lstData, (row, rowIndex, tempLstData) -> {
+                int colIndex = 0;
+                PoiExcelUtil.writeCellDataByRow(row, lstCellStyle, dataRow, rowIndex, colIndex++, rowIndex);
+                for (String data : tempLstData) {
+                    PoiExcelUtil.writeCellDataByRow(row, lstCellStyle, dataRow, rowIndex, colIndex++, data);
+                }
+            });
+        });
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\demo-test-by-thread.xlsx");
+    }
+
+    private List<SXSSFSheet> getSheets(SXSSFWorkbook workbook) {
+        List<SXSSFSheet> lstSheet = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            String sheetName = String.format("Sheet%s", i);
+            lstSheet.add(workbook.createSheet(sheetName));
+        }
+        return lstSheet;
     }
 
     private void writeTestThree() {

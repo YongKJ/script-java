@@ -1,7 +1,9 @@
 package com.yongkj.util;
 
+import com.yongkj.pojo.dto.TrConsumer;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.List;
@@ -25,6 +27,33 @@ public class ThreadUtil {
                 executor.execute(() -> {
                     try {
                         function.accept(map.getKey(), map.getValue());
+                    } catch (Exception e) {
+                        throw new RuntimeException("数据处理异常！", e);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await(awaitTime, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            throw new RuntimeException("多线程执行异常！", e);
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    public static <T> void executeWithListDataByThreadPool(long awaitTime, SXSSFSheet sheet, List<T> lstData, TrConsumer<SXSSFRow, Integer, T> function) {
+        ThreadPoolTaskExecutor executor = new ExecutorBuilder().prefix("executeWithListDataByThreadPool-pool-").build();
+        CountDownLatch latch = new CountDownLatch(lstData.size());
+        try {
+            int rowIndex = sheet.getLastRowNum() + 1;
+            for (int i = 0; i < lstData.size(); i++, rowIndex++) {
+                T data = lstData.get(i);
+                int finalRowIndex = rowIndex;
+                SXSSFRow row = sheet.createRow(rowIndex);
+                executor.execute(() -> {
+                    try {
+                        function.accept(row, finalRowIndex, data);
                     } catch (Exception e) {
                         throw new RuntimeException("数据处理异常！", e);
                     } finally {
