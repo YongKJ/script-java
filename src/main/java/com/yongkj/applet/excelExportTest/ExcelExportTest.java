@@ -15,15 +15,18 @@ public class ExcelExportTest {
 
     private final String excelReadPath;
     private final String excelWritePath;
+    private final int ROW_ACCESS_WINDOW_SIZE;
 
     private ExcelExportTest() {
+        this.ROW_ACCESS_WINDOW_SIZE = 100;
         this.excelReadPath = GenUtil.getValue("excel-read-path");
         this.excelWritePath = GenUtil.getValue("excel-write-path");
     }
 
     private void apply() {
 //        readTestOne();
-        writeTestFour();
+        writeTestFive();
+//        writeTestFour();
 //        writeTestThree();
 //        writeTestTwo();
 //        writeTestOne();
@@ -35,6 +38,44 @@ public class ExcelExportTest {
         LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestOne", "lstData.size()", lstData.size()));
         LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestOne", "lstData", lstData));
         System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
+    private void writeTestFive() {
+        List<List<String>> lstHeader = new ArrayList<>();
+        lstHeader.add(Collections.singletonList("序号"));
+        lstHeader.add(Collections.singletonList("书名"));
+        lstHeader.add(Collections.singletonList("作者"));
+        lstHeader.add(Collections.singletonList("年代"));
+        lstHeader.add(Collections.singletonList("字数"));
+
+        Map<Integer, List<String>> mapData = new HashMap<>();
+        mapData.put(0, Arrays.asList("《水浒传》", "施耐庵", "宋朝", "96 万字"));
+        mapData.put(1, Arrays.asList("《三国演义》", "罗贯中", "元朝", "73.4 万字"));
+        mapData.put(2, Arrays.asList("《西游记》", "吴承恩", "明代", "82 万字"));
+        mapData.put(3, Arrays.asList("《红楼梦》", "曹雪芹", "清代", "107.5 万字"));
+        mapData.put(4, Arrays.asList("《聊斋志异》", "蒲松龄", "清代", "70.8 万字"));
+
+        int dataRow = lstHeader.get(0).size();
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        List<SXSSFSheet> sheets = getSheets(workbook);
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+        ThreadUtil.executeWithListDataByThreadPool(1, sheets, sheet -> {
+            PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+            for (int i = 0; i < mapData.size(); ) {
+                int dataSize = i + ROW_ACCESS_WINDOW_SIZE;
+                dataSize = Math.min(dataSize, mapData.size());
+                ThreadUtil.executeWithListDataByThreadPool(1, sheet, i, dataSize, (row, index) -> {
+                    int colIndex = 0;
+                    PoiExcelUtil.writeCellData(row, lstCellStyle, dataRow, colIndex++, row.getRowNum());
+                    for (String data : Optional.ofNullable(mapData.get(index)).orElse(new ArrayList<>())) {
+                        PoiExcelUtil.writeCellData(row, lstCellStyle, dataRow, colIndex++, data);
+                    }
+                });
+                i = dataSize;
+            }
+        });
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\demo-test-by-thread-" + System.currentTimeMillis() + ".xlsx");
     }
 
     private void writeTestFour() {
@@ -53,7 +94,7 @@ public class ExcelExportTest {
         lstData.add(Arrays.asList("《聊斋志异》", "蒲松龄", "清代", "70.8 万字"));
 
         int dataRow = lstHeader.get(0).size();
-        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
         List<SXSSFSheet> sheets = getSheets(workbook);
         List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
         ThreadUtil.executeWithListDataByThreadPool(1, sheets, sheet -> {

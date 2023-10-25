@@ -68,6 +68,32 @@ public class ThreadUtil {
         }
     }
 
+    public static <T> void executeWithListDataByThreadPool(long awaitTime, SXSSFSheet sheet, int startIndex, int endIndex, BiConsumer<SXSSFRow, Integer> function) {
+        ThreadPoolTaskExecutor executor = new ExecutorBuilder().prefix("executeWithListDataByThreadPool-pool-").build();
+        CountDownLatch latch = new CountDownLatch(endIndex - startIndex);
+        try {
+            int rowIndex = sheet.getLastRowNum() + 1;
+            for (int index = startIndex; index < endIndex; index++, rowIndex++) {
+                int finalIndex = index;
+                SXSSFRow row = sheet.createRow(rowIndex);
+                executor.execute(() -> {
+                    try {
+                        function.accept(row, finalIndex);
+                    } catch (Exception e) {
+                        throw new RuntimeException("数据处理异常！", e);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await(awaitTime, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            throw new RuntimeException("多线程执行异常！", e);
+        } finally {
+            executor.shutdown();
+        }
+    }
+
     public static <T> void executeWithListDataByThreadPool(long awaitTime, SXSSFSheet sheet, List<T> lstData, TrConsumer<SXSSFRow, Integer, T> function) {
         ThreadPoolTaskExecutor executor = new ExecutorBuilder().prefix("executeWithListDataByThreadPool-pool-").build();
         CountDownLatch latch = new CountDownLatch(lstData.size());
