@@ -58,16 +58,16 @@ public class ExcelExportTest {
         List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
         ThreadUtil.executeWithListDataByThreadPool(1, sheets, sheet -> {
             PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
-            ThreadUtil.executeWithListDataByThreadPool(1, sheet, lstData, (row, rowIndex, tempLstData) -> {
+            ThreadUtil.executeWithListDataByThreadPool(1, sheet, lstData, (row, tempLstData) -> {
                 int colIndex = 0;
-                PoiExcelUtil.writeCellDataByRow(row, lstCellStyle, dataRow, rowIndex, colIndex++, rowIndex);
+                PoiExcelUtil.writeCellData(row, lstCellStyle, dataRow, colIndex++, row.getRowNum());
                 for (String data : tempLstData) {
-                    PoiExcelUtil.writeCellDataByRow(row, lstCellStyle, dataRow, rowIndex, colIndex++, data);
+                    PoiExcelUtil.writeCellData(row, lstCellStyle, dataRow, colIndex++, data);
                 }
             });
         });
 
-        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\demo-test-by-thread.xlsx");
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\demo-test-by-thread-" + System.currentTimeMillis() + ".xlsx");
     }
 
     private List<SXSSFSheet> getSheets(SXSSFWorkbook workbook) {
