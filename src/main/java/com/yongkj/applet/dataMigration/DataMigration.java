@@ -4,7 +4,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.service.AdminMenuDataMigration;
 import com.yongkj.applet.dataMigration.service.DataIncrementMigrationService;
 import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
-import com.yongkj.applet.dataMigration.util.SQLUtil;
+import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
 
@@ -60,8 +60,8 @@ public class DataMigration {
         fieldIncrementMigrationService.apply();
         dataIncrementMigrationService.apply();
         adminMenuDataMigration.apply();
-        SQLUtil.closeAll(srcDatabase.getManager());
-        SQLUtil.closeAll(desDatabase.getManager());
+        JDBCUtil.closeAll(srcDatabase.getManager());
+        JDBCUtil.closeAll(desDatabase.getManager());
     }
 
     public void test() {

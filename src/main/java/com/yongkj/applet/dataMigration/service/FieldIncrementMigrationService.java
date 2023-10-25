@@ -4,7 +4,7 @@ import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Field;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
-import com.yongkj.applet.dataMigration.util.SQLUtil;
+import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
@@ -33,8 +33,8 @@ public class FieldIncrementMigrationService extends BaseService {
         for (String tableName : tableNames) {
             compareAndMigrationTable(tableName);
         }
-        SQLUtil.close(srcDatabase.getManager());
-        SQLUtil.close(desDatabase.getManager());
+        JDBCUtil.close(srcDatabase.getManager());
+        JDBCUtil.close(desDatabase.getManager());
     }
 
     private void compareAndMigrationTable(String tableName) {

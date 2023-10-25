@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration.pojo.dto;
 
 import com.yongkj.applet.dataMigration.pojo.po.Table;
-import com.yongkj.applet.dataMigration.util.SQLUtil;
+import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.util.GenUtil;
 
 import java.sql.DatabaseMetaData;
@@ -58,7 +58,7 @@ public class Database {
         String username = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("username"));
         String password = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("password"));
         Database database = new Database(name, driver, url, username, password);
-        database.setManager(SQLUtil.getConnection(database));
+        database.setManager(JDBCUtil.getConnection(database));
         database.setMapTable(Table.getTables(database.getManager()));
         database.setDatabaseNames(getDatabasesBySql(database.getManager()));
         database.setTableNames(Table.getTableNamesBySql(database.getManager()));

@@ -2,7 +2,7 @@ package com.yongkj.applet.dataMigration.pojo.po;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
-import com.yongkj.applet.dataMigration.util.SQLUtil;
+import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
@@ -61,7 +61,7 @@ public class Table {
             table.setMapField(Field.getMapField(lstField, createSql, tableName));
             mapTable.put(tableName, getSqlTable(table));
         }
-        SQLUtil.close(manager);
+        JDBCUtil.close(manager);
         return mapTable;
     }
 
