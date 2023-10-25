@@ -39,7 +39,7 @@ admin-menu-data-migration:
     - "admin_role_menu"
     - "admin_apply_menu"
   filter-names:
-    - "市场推广",
-    - "商家运营",
-    - "商家拉新",
+    - "市场推广"
+    - "商家运营"
+    - "商家拉新"
     - "商家促活"
