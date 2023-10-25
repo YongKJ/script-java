@@ -76,7 +76,7 @@ public class SQL {
     }
 
     private static String getFieldOrTableStr(List<String> lstData) {
-        lstData = lstData.stream().map(f -> "`" + f + "`").collect(Collectors.toList());
+        lstData = lstData.stream().map(f -> String.format("`%s`", f)).collect(Collectors.toList());
         return String.join(", ", lstData);
     }
 }

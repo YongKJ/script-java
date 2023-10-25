@@ -2,16 +2,15 @@ package com.yongkj.applet.dataMigration.core;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
-import com.yongkj.applet.dataMigration.pojo.po.Field;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.applet.dataMigration.util.Wrappers;
-import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
-import com.yongkj.util.LogUtil;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,19 +24,83 @@ public abstract class BaseService {
         this.desDatabase = desDatabase;
     }
 
-    protected List<Map<String, Object>> srcList(Wrappers query) {
+    protected boolean srcTableCreate(String createSql) {
+        return JDBCUtil.getResult(srcDatabase, createSql);
+    }
+
+    protected boolean desTableCreate(String createSql) {
+        return JDBCUtil.getResult(desDatabase, createSql);
+    }
+
+    protected boolean srcTableDelete(String deleteSql) {
+        return JDBCUtil.getResult(srcDatabase, deleteSql);
+    }
+
+    protected boolean desTableDelete(String deleteSql) {
+        return JDBCUtil.getResult(desDatabase, deleteSql);
+    }
+
+    protected boolean srcFieldCreate(String createSql) {
+        return JDBCUtil.getResult(srcDatabase, createSql);
+    }
+
+    protected boolean desFieldCreate(String createSql) {
+        return JDBCUtil.getResult(desDatabase, createSql);
+    }
+
+    protected boolean srcFieldModify(String modifySql) {
+        return JDBCUtil.getResult(srcDatabase, modifySql);
+    }
+
+    protected boolean desFieldModify(String modifySql) {
+        return JDBCUtil.getResult(desDatabase, modifySql);
+    }
+
+    protected boolean srcFieldDelete(String deleteSql) {
+        return JDBCUtil.getResult(srcDatabase, deleteSql);
+    }
+
+    protected boolean desFieldDelete(String deleteSql) {
+        return JDBCUtil.getResult(desDatabase, deleteSql);
+    }
+
+    protected boolean srcDataInsert(String insertSql) {
+        return JDBCUtil.getResult(srcDatabase, insertSql);
+    }
+
+    protected boolean desDataInsert(String insertSql) {
+        return JDBCUtil.getResult(desDatabase, insertSql);
+    }
+
+    protected boolean srcDataUpdate(String updateSql) {
+        return JDBCUtil.getResult(srcDatabase, updateSql);
+    }
+
+    protected boolean desDataUpdate(String updateSql) {
+        return JDBCUtil.getResult(desDatabase, updateSql);
+    }
+
+    protected boolean srcDataRemove(String removeSql) {
+        return JDBCUtil.getResult(srcDatabase, removeSql);
+    }
+
+    protected boolean desDataRemove(String removeSql) {
+        return JDBCUtil.getResult(desDatabase, removeSql);
+    }
+
+    protected List<Map<String, Object>> srcDataList(Wrappers query) {
         return list(srcDatabase, query);
     }
 
-    protected List<Map<String, Object>> srcList(Table table) {
-        return list(srcDatabase, table, table.getSelectDataSql());
-    }
-
-    protected List<Map<String, Object>> desList(Wrappers query) {
+    protected List<Map<String, Object>> desDataList(Wrappers query) {
         return list(desDatabase, query);
     }
 
-    protected List<Map<String, Object>> desList(Table table) {
+    protected List<Map<String, Object>> srcDataList(Table table) {
+        return list(srcDatabase, table, table.getSelectDataSql());
+    }
+
+    protected List<Map<String, Object>> desDataList(Table table) {
         return list(desDatabase, table, table.getSelectDataSql());
     }
 
@@ -51,54 +114,7 @@ public abstract class BaseService {
     }
 
     private List<Map<String, Object>> list(Database database, Table table, String selectSql) {
-        List<Map<String, Object>> lstData = new ArrayList<>();
-        LogUtil.loggerLine(Log.of("BaseService", "list", "selectSql", selectSql));
-        try {
-            Statement statement = database.getManager().getConnection().createStatement();
-            ResultSet sqlResult = statement.executeQuery(selectSql);
-
-            while (sqlResult.next()) {
-                lstData.add(getRowData(table, sqlResult));
-            }
-
-            database.getManager().setResultSet(sqlResult);
-            database.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return lstData;
-    }
-
-    private Map<String, Object> getRowData(Table table, ResultSet resultSet) {
-        Map<String, Object> mapData = new LinkedHashMap<>();
-        List<String> subFieldNames = table.getSubFieldNames();
-        for (String fieldName : table.getFieldNames()) {
-            Field field = table.getMapField().get(fieldName);
-            if (field == null || subFieldNames.size() > 0 && !subFieldNames.contains(fieldName)) continue;
-            try {
-                String dataStr = resultSet.getString(fieldName);
-                Object data = getTypeChangeData(dataStr, field.getType());
-                mapData.put(fieldName, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return mapData;
-    }
-
-    private Object getTypeChangeData(String data, String type) {
-        switch (type) {
-            case "INT":
-            case "TINYINT":
-                return GenUtil.strToInteger(data);
-            case "BIGINT":
-                return GenUtil.strToLong(data);
-            case "DOUBLE":
-            case "DECIMAL":
-                return GenUtil.strToDouble(data);
-            default:
-                return data;
-        }
+        return JDBCUtil.getResultSet(database, table, selectSql);
     }
 
     private String getSelectSql(Table table, Wrappers query) {
@@ -143,15 +159,6 @@ public abstract class BaseService {
             lstId.add(map.getKey());
         }
         return lstId;
-    }
-
-    protected String getValueStr(Object value) {
-        if (value == null) return "";
-        if (value instanceof String) {
-            return String.format("'%s'", value);
-        } else {
-            return GenUtil.objToStr(value);
-        }
     }
 
 }

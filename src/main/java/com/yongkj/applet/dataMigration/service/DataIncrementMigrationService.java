@@ -10,7 +10,6 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +53,8 @@ public class DataIncrementMigrationService extends BaseService {
     }
 
     private void compareAndMigrationDataByMd5(Table srcTable, Table desTable) {
-        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcDataList(srcTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desDataList(desTable));
 
         List<String> ids = getRetainIds(srcTableData, desTableData);
         for (String id : ids) {
@@ -69,12 +68,12 @@ public class DataIncrementMigrationService extends BaseService {
 
     private void compareAndMigrationDataById(Table desTable) {
         String tableName = desTable.getName();
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(
+        Map<String, Map<String, Object>> desTableData = getMapData(desDataList(
                 Wrappers.lambdaQuery(tableName).select("id")
         ));
         List<Long> lstId = desTableData.values().stream()
                 .map(v -> GenUtil.objToLong(v.get("id"))).collect(Collectors.toList());
-        Map<String, Map<String, Object>> srcTableData = lstId.isEmpty() ? new HashMap<>() : getMapData(srcList(
+        Map<String, Map<String, Object>> srcTableData = lstId.isEmpty() ? new HashMap<>() : getMapData(srcDataList(
                 Wrappers.lambdaQuery(tableName).notIn("id", lstId)
         ));
         List<String> ids = new ArrayList<>(srcTableData.keySet());
@@ -93,21 +92,13 @@ public class DataIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            String insertSql = getInsertSql(table, data);
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "insertSql", insertSql));
+        String insertSql = getInsertSql(table, data);
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "insertSql", insertSql));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(insertSql);
-
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "success", "insert data success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desDataInsert(insertSql);
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("DataIncrementMigrationService", "insertDesData", "success", "insert data success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private String getInsertSql(Table table, Map<String, Object> data) {
@@ -132,7 +123,7 @@ public class DataIncrementMigrationService extends BaseService {
     }
 
     public List<Map<String, Object>> dataSelectTest(String keyword, String level) {
-        return desList(Wrappers.lambdaQuery("amap_district")
+        return desDataList(Wrappers.lambdaQuery("amap_district")
                 .eq("level", level)
                 .and(w -> w
                         .eq("id", keyword)

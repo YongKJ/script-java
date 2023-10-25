@@ -9,7 +9,6 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.sql.Statement;
 import java.util.*;
 
 public class FieldIncrementMigrationService extends BaseService {
@@ -91,21 +90,13 @@ public class FieldIncrementMigrationService extends BaseService {
 
     private void createKeyOrIndexes(Set<String> keyAndIndexes) {
         if (keyAndIndexes.isEmpty()) return;
-        try {
-            for (String keyAndIndex : keyAndIndexes) {
-                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "keyAndIndex", keyAndIndex));
+        for (String keyAndIndex : keyAndIndexes) {
+            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "keyAndIndex", keyAndIndex));
 
-                Statement statement = desDatabase.getManager().getConnection().createStatement();
-                boolean sqlResult = statement.execute(keyAndIndex);
-
-                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "sqlResult", sqlResult));
-                LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "success", "createKeyOrIndexes success!"));
-                System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-                desDatabase.getManager().setStatement(statement);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            boolean sqlResult = desFieldCreate(keyAndIndex);
+            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "sqlResult", sqlResult));
+            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createKeyOrIndexes", "success", "createKeyOrIndexes success!"));
+            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
         }
     }
 
@@ -129,20 +120,12 @@ public class FieldIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "desField.getDeleteSql()", desField.getDeleteSql()));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "desField.getDeleteSql()", desField.getDeleteSql()));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(desField.getDeleteSql());
-
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "success", "createDesTable success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desFieldDelete(desField.getDeleteSql());
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesField", "success", "createDesTable success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private void updateDesField(Field srcField) {
@@ -150,20 +133,12 @@ public class FieldIncrementMigrationService extends BaseService {
             LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "error", "srcField not exist!"));
             return;
         }
-        try {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "srcField.getModifySql()", srcField.getModifySql()));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "srcField.getModifySql()", srcField.getModifySql()));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(srcField.getModifySql());
-
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "success", "createDesTable success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desFieldModify(srcField.getModifySql());
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "updateDesField", "success", "createDesTable success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private void createDesField(Field srcField, Set<String> keyAndIndexes) {
@@ -172,22 +147,14 @@ public class FieldIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "srcField.getCreateSql()", srcField.getCreateSql()));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "srcField.getCreateSql()", srcField.getCreateSql()));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(srcField.getCreateSql());
-            keyAndIndexes.addAll(srcField.getIndexes());
-            keyAndIndexes.addAll(srcField.getKeys());
-
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "success", "createDesTable success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desFieldCreate(srcField.getCreateSql());
+        keyAndIndexes.addAll(srcField.getIndexes());
+        keyAndIndexes.addAll(srcField.getKeys());
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesField", "success", "createDesTable success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private boolean fieldTypeCompare(Field srcField, Field desField) {
@@ -205,20 +172,12 @@ public class FieldIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "desTable.getDeleteSql()", desTable.getDeleteSql()));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "desTable.getDeleteSql()", desTable.getDeleteSql()));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(desTable.getDeleteSql());
-
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "success", "deleteDesTable success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desTableDelete(desTable.getDeleteSql());
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "deleteDesTable", "success", "deleteDesTable success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private void createDesTable(Table srcTable) {
@@ -227,20 +186,12 @@ public class FieldIncrementMigrationService extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "srcTable.getCreateSql()", srcTable.getCreateSql()));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "srcTable.getCreateSql()", srcTable.getCreateSql()));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(srcTable.getCreateSql());
-
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "success", "createDesTable success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desTableCreate(srcTable.getCreateSql());
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("IncrementMigrationService", "createDesTable", "success", "createDesTable success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
 }

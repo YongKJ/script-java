@@ -10,7 +10,6 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,10 +63,10 @@ public class AdminMenuDataMigration extends BaseService {
     }
 
     private void adminMenuRouteParamMigrationData(Table srcTable, Table desTable) {
-        List<Map<String, Object>> srcListData = srcList(
+        List<Map<String, Object>> srcListData = srcDataList(
                 Wrappers.lambdaQuery(srcTable.getName())
                         .ne("route_param", ""));
-        List<Map<String, Object>> desListData = desList(desTable);
+        List<Map<String, Object>> desListData = srcDataList(desTable);
 
         List<String> lstField = Arrays.asList("pid", "name", "apply_id", "route", "route_param");
         Map<String, Map<String, Object>> srcMapData = getMapData(srcListData, lstField);
@@ -165,21 +164,13 @@ public class AdminMenuDataMigration extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            String updateSql = getUpdateSql(table, data);
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "updateSql", updateSql));
+        String updateSql = getUpdateSql(table, data);
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "updateSql", updateSql));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(updateSql);
-
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "success", "update data success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desDataUpdate(updateSql);
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "updateDesData", "success", "update data success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private String getUpdateSql(Table table, Map<String, Object> data) {
@@ -198,21 +189,13 @@ public class AdminMenuDataMigration extends BaseService {
             System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
             return;
         }
-        try {
-            String insertSql = getInsertSql(table, data);
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "insertSql", insertSql));
+        String insertSql = getInsertSql(table, data);
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "insertSql", insertSql));
 
-            Statement statement = desDatabase.getManager().getConnection().createStatement();
-            boolean sqlResult = statement.execute(insertSql);
-
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "sqlResult", sqlResult));
-            LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "success", "insert data success!"));
-            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
-
-            desDatabase.getManager().setStatement(statement);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean sqlResult = desDataInsert(insertSql);
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "sqlResult", sqlResult));
+        LogUtil.loggerLine(Log.of("AdminMenuDataMigration", "insertDesData", "success", "insert data success!"));
+        System.out.println("-------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     private String getInsertSql(Table table, Map<String, Object> data) {
@@ -277,11 +260,11 @@ public class AdminMenuDataMigration extends BaseService {
     }
 
     private void adminMenuMigrationDataTestOne(Table srcTable, Table desTable) {
-        List<Map<String, Object>> srcListData = srcList(
+        List<Map<String, Object>> srcListData = srcDataList(
                 Wrappers.lambdaQuery(srcTable.getName())
                         .ne("route_param", "")
         );
-        List<Map<String, Object>> desListData = desList(
+        List<Map<String, Object>> desListData = desDataList(
                 Wrappers.lambdaQuery(desTable.getName())
                         .ne("route_param", "")
         );
@@ -329,7 +312,7 @@ public class AdminMenuDataMigration extends BaseService {
 
     private List<Map<String, Object>> compareDataByMd5(List<Map<String, Object>> lstData, Table desTable, List<String> fields) {
         Map<String, Map<String, Object>> srcTableData = getMapData(lstData, fields);
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable), fields);
+        Map<String, Map<String, Object>> desTableData = getMapData(desDataList(desTable), fields);
 
         List<Map<String, Object>> tempLstData = new ArrayList<>();
         List<String> ids = getRetainIds(srcTableData, desTableData);
@@ -340,8 +323,8 @@ public class AdminMenuDataMigration extends BaseService {
     }
 
     private List<Map<String, Object>> compareDataByMd5(Table srcTable, Table desTable) {
-        Map<String, Map<String, Object>> srcTableData = getMapData(srcList(srcTable));
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(desTable));
+        Map<String, Map<String, Object>> srcTableData = getMapData(srcDataList(srcTable));
+        Map<String, Map<String, Object>> desTableData = getMapData(desDataList(desTable));
 
         List<Map<String, Object>> lstData = new ArrayList<>();
         List<String> ids = getRetainIds(srcTableData, desTableData);
@@ -353,12 +336,12 @@ public class AdminMenuDataMigration extends BaseService {
 
     private List<Map<String, Object>> compareDataById(Table desTable) {
         String tableName = desTable.getName();
-        Map<String, Map<String, Object>> desTableData = getMapData(desList(
+        Map<String, Map<String, Object>> desTableData = getMapData(desDataList(
                 Wrappers.lambdaQuery(tableName).select("id")
         ));
         List<Long> lstId = desTableData.values().stream()
                 .map(v -> GenUtil.objToLong(v.get("id"))).collect(Collectors.toList());
-        return lstId.isEmpty() ? new ArrayList<>() : srcList(
+        return lstId.isEmpty() ? new ArrayList<>() : srcDataList(
                 Wrappers.lambdaQuery(tableName).notIn("id", lstId)
         );
     }
