@@ -20,10 +20,22 @@ public class CsvDataTest {
     }
 
     private void apply() {
+        readTestTwo();
 //        readTestOne();
-        writeTestThree();
+//        writeTestFour();
+//        writeTestThree();
 //        writeTestTwo();
 //        writeTestOne();
+    }
+
+    private void readTestTwo() {
+        String path = "C:\\Users\\Admin\\Desktop\\csv-demo-test-1698282154448.csv";
+        List<String> lstHeader = CsvUtil.getHeaders(path);
+        LogUtil.loggerLine(Log.of("CsvDataTest", "readTestTwo", "lstHeader", lstHeader));
+        List<CSVRecord> lstRecord = CsvUtil.getRecords(path);
+        LogUtil.loggerLine(Log.of("CsvDataTest", "readTestTwo", "lstRecord", lstRecord));
+        List<Map<String, String>> lstData = CsvUtil.toMap(path);
+        LogUtil.loggerLine(Log.of("CsvDataTest", "readTestTwo", "lstData", lstData));
     }
 
     private void readTestOne() {
@@ -33,6 +45,13 @@ public class CsvDataTest {
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstRecord", lstRecord));
         List<Map<String, String>> lstData = CsvUtil.toMap(csvReadPath);
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstData", lstData));
+    }
+
+    private void writeTestFour() {
+        String path = "C:\\Users\\Admin\\Desktop\\csv-demo-test-" + System.currentTimeMillis() + ".csv";
+        String[] headers = new String[]{"序号", "书名", "作者", "年代", "字数"};
+        List<Map<String, String>> lstData = getMapData(Arrays.asList(headers));
+        CsvUtil.printRecords(path, lstData, headers);
     }
 
     private void writeTestThree() {

@@ -8,7 +8,12 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class CsvUtil {
@@ -20,10 +25,9 @@ public class CsvUtil {
         try {
             InputStream stream = Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
                     new ClassPathResource(fileName).getInputStream() :
-                    new FileInputStream(fileName);
+                    Files.newInputStream(Paths.get(fileName));
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             return CSVFormat.Builder.create()
-                    .setSkipHeaderRecord(true)
                     .setHeader().build()
                     .parse(reader)
                     .getHeaderNames();
@@ -38,10 +42,10 @@ public class CsvUtil {
         try {
             InputStream stream = Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
                     new ClassPathResource(fileName).getInputStream() :
-                    new FileInputStream(fileName);
+                    Files.newInputStream(Paths.get(fileName));
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             return CSVFormat.Builder.create()
-                    .setSkipHeaderRecord(true)
+                    .setTrim(true)
                     .setHeader().build()
                     .parse(reader)
                     .getRecords();
@@ -56,27 +60,30 @@ public class CsvUtil {
         try {
             InputStream stream = Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
                     new ClassPathResource(fileName).getInputStream() :
-                    new FileInputStream(fileName);
+                    Files.newInputStream(Paths.get(fileName));
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            List<String> lstHeader = getHeaders(fileName);
-            List<CSVRecord> lstRecord = CSVFormat.Builder.create()
-                    .setSkipHeaderRecord(true)
-                    .setHeader().build()
+            return toMap(CSVFormat.Builder.create()
+                    .setTrim(true)
+                    .build()
                     .parse(reader)
-                    .getRecords();
-            return toMap(lstRecord, lstHeader);
+                    .getRecords());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();
     }
 
-    private static List<Map<String, String>> toMap(List<CSVRecord> lstRecord, List<String> lstHeader) {
+    private static List<Map<String, String>> toMap(List<CSVRecord> lstRecord) {
+        CSVRecord headers = null;
         List<Map<String, String>> lstData = new ArrayList<>();
         for (CSVRecord record : lstRecord) {
+            if (headers == null) {
+                headers = record;
+                continue;
+            }
             Map<String, String> mapData = new HashMap<>();
-            for (int i = 0; i < lstHeader.size(); i++) {
-                String key = lstHeader.get(i);
+            for (int i = 0; i < headers.size(); i++) {
+                String key = headers.get(i);
                 String value = record.get(i);
                 mapData.put(key, value);
             }
@@ -97,8 +104,9 @@ public class CsvUtil {
     }
 
     public static void printRecords(String fileName, List<Map<String, String>> lstRecord, String... headers) {
+        CSVPrinter printer = getPrinter(fileName, headers);
+        if (printer == null) return;
         try {
-            CSVPrinter printer = getPrinter(fileName, headers);
             for (Map<String, String> record : lstRecord) {
                 Object[] datas = new String[headers.length];
                 for (int i = 0; i < headers.length; i++) {
