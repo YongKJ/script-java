@@ -149,7 +149,7 @@ public abstract class BaseService {
             if (lstField != null && !lstField.isEmpty() && !lstField.contains(map.getKey())) continue;
             lstData.add(map.getValue() == null ? "null" : map.getValue().toString());
         }
-        return GenUtil.getMd5Str(String.join("", lstData));
+        return lstData.size() == 1 ? lstData.get(0) : GenUtil.getMd5Str(String.join("", lstData));
     }
 
     protected List<String> getRetainIds(Map<String, Map<String, Object>> srcTableData, Map<String, Map<String, Object>> desTableData) {

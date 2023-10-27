@@ -4,6 +4,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.service.AdminMenuDataMigration;
 import com.yongkj.applet.dataMigration.service.DataIncrementMigrationService;
 import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
+import com.yongkj.applet.dataMigration.service.ShopWorkerDataExport;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
@@ -17,6 +18,7 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
+    private final ShopWorkerDataExport shopWorkerDataExport;
     private final AdminMenuDataMigration adminMenuDataMigration;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
@@ -24,6 +26,9 @@ public class DataMigration {
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
+        this.shopWorkerDataExport = new ShopWorkerDataExport(
+                this.srcDatabase, this.desDatabase
+        );
         this.adminMenuDataMigration = new AdminMenuDataMigration(
                 this.srcDatabase, this.desDatabase
         );
@@ -57,9 +62,10 @@ public class DataMigration {
             return;
         }
 
-        fieldIncrementMigrationService.apply();
-        dataIncrementMigrationService.apply();
+        shopWorkerDataExport.apply();
         adminMenuDataMigration.apply();
+        dataIncrementMigrationService.apply();
+        fieldIncrementMigrationService.apply();
         JDBCUtil.closeAll(srcDatabase.getManager());
         JDBCUtil.closeAll(desDatabase.getManager());
     }
