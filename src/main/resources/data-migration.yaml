@@ -15,7 +15,7 @@ des:
     password: "HHhda@%DSAs"
 
 shop-worker-data-export:
-  enable: true
+  enable: false
   environment: test
   path: "C:\\Users\\admin\\Desktop\\shop-worker-data-export"
   tables:
@@ -85,7 +85,7 @@ shop-worker-data-export:
         - "name"
 
 admin-menu-data-migration:
-  enable: false
+  enable: true
   table-names:
     - "admin_menu"
     - "admin_role_menu"

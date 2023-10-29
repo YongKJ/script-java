@@ -49,14 +49,14 @@ public class AdminMenuDataMigration extends BaseService {
             case "admin_menu":
 //                adminMenuMigrationDataTestOne(srcTable, desTable);
 //                adminMenuRouteParamMigrationData(srcTable, desTable);
-//                adminMenuMigrationDataTest(desTable);
-                adminMenuMigrationData(desTable);
+                adminMenuMigrationDataTest(desTable);
+//                adminMenuMigrationData(desTable);
                 break;
             case "admin_role_menu":
-                adminRoleMenuMigrationData(srcTable, desTable);
+//                adminRoleMenuMigrationData(srcTable, desTable);
                 break;
             case "admin_apply_menu":
-                adminApplyMenuMigrationData(srcTable, desTable);
+//                adminApplyMenuMigrationData(srcTable, desTable);
                 break;
             default:
         }
