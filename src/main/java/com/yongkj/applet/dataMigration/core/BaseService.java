@@ -5,7 +5,9 @@ import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.applet.dataMigration.util.Wrappers;
+import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
+import com.yongkj.util.LogUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,6 +110,10 @@ public abstract class BaseService {
         Table table = database.getMapTable().get(query.getTableName());
         table.setSubFieldNames(query.getFields());
         String selectSql = getSelectSql(table, query);
+
+        LogUtil.loggerLine(Log.of("BaseService", "list", "selectSql", selectSql));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+
         List<Map<String, Object>> lstData = list(database, table, selectSql);
         table.setSubFieldNames(new ArrayList<>());
         return lstData;
