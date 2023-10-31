@@ -108,10 +108,16 @@ public class DataMigration {
         System.out.println("------------------------------------------------------------------------------------------------------------");
     }
 
+    public void test4() {
+        List<Map<String, Object>> selectData = dataIncrementMigrationService.setDataSelectTestOne();
+        LogUtil.loggerLine(Log.of("DataMigration", "test4", "selectData", selectData));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
     public static void run(String[] args) {
 //        new DataMigration().apply();
 //        new DataMigration().test1();
-        new DataMigration().test3();
+        new DataMigration().test4();
     }
 
 }
