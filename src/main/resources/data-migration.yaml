@@ -85,7 +85,8 @@ shop-worker-data-export:
         - "name"
 
 admin-menu-data-migration:
-  enable: false
+  enable: true
+  offset-days: 1
   table-names:
     - "admin_menu"
     - "admin_role_menu"
@@ -108,7 +109,7 @@ data-migration:
     - "admin_roles"
 
 field-migration:
-  enable: true
+  enable: false
   table-delete: false
   field-delete: false
   table-names:

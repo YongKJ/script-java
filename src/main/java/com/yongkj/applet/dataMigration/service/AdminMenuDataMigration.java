@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class AdminMenuDataMigration extends BaseService {
 
     private final boolean enable;
+    private final Integer offsetDays;
     private final List<Long> lstMenuId;
     private final List<String> tableNames;
     private final List<String> filterNames;
@@ -31,6 +32,7 @@ public class AdminMenuDataMigration extends BaseService {
         this.filterNames = (List<String>) menuMigration.get("filter-names");
         this.tableNames = (List<String>) menuMigration.get("table-names");
         this.enable = GenUtil.objToBoolean(menuMigration.get("enable"));
+        this.offsetDays = (Integer) menuMigration.get("offset-days");
     }
 
     public void apply() {
@@ -302,9 +304,9 @@ public class AdminMenuDataMigration extends BaseService {
         LocalDateTime nowTime = LocalDateTime.now();
         List<Map<String, Object>> tempLstData = new ArrayList<>();
         for (Map<String, Object> data : lstData) {
-            Long timestamp = GenUtil.objToLong(data.get("utc_created")) * 1000;
+            long timestamp = GenUtil.objToLong(data.get("utc_created")) * 1000;
             LocalDateTime dateTime = GenUtil.timestampToLdt(timestamp);
-            if (dateTime.plusDays(14).isBefore(nowTime)) continue;
+            if (dateTime.plusDays(offsetDays).isBefore(nowTime)) continue;
             tempLstData.add(data);
         }
         return tempLstData;
