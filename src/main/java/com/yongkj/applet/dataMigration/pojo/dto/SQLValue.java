@@ -51,6 +51,11 @@ public class SQLValue {
             case andWrapper:
             case orWrapper:
                 return String.format(operate.getValue(), value);
+            case groupBy:
+            case orderByAsc:
+            case orderByDesc:
+                List<Object> lstValue = (List<Object>) value;
+                return String.format(operate.getValue(), getListValueStr(lstValue));
             default:
                 return String.format("`%s` %s", fieldName, getOperateValue());
         }

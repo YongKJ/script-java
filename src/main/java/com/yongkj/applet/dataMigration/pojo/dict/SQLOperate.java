@@ -22,7 +22,10 @@ public enum SQLOperate {
     likeLeft("LIKE '%%%s'"),
     likeRight("LIKE '%s%%'"),
     between("BETWEEN %s AND %s"),
-    notBetween("NOT BETWEEN %s AND %s");
+    notBetween("NOT BETWEEN %s AND %s"),
+    groupBy("GROUP BY %s"),
+    orderByAsc("ORDER BY %s ASC"),
+    orderByDesc("ORDER BY %s DESC");
 
     private final String value;
 

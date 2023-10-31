@@ -15,10 +15,20 @@ public class Wrappers {
     private final List<String> fields;
     private final List<SQLValue> sqlValues;
 
+    private Wrappers() {
+        this.tableName = "";
+        this.fields = new ArrayList<>();
+        this.sqlValues = new ArrayList<>();
+    }
+
     private Wrappers(String tableName) {
         this.tableName = tableName;
         this.fields = new ArrayList<>();
         this.sqlValues = new ArrayList<>();
+    }
+
+    public static Wrappers lambdaQuery() {
+        return new Wrappers();
     }
 
     public static Wrappers lambdaQuery(String tableName) {
@@ -36,6 +46,9 @@ public class Wrappers {
                     break;
                 case andWrapper:
                 case orWrapper:
+                case groupBy:
+                case orderByAsc:
+                case orderByDesc:
                     lstSqlSegment.removeLast();
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
                     lstSqlSegment.addLast("and");
@@ -235,6 +248,33 @@ public class Wrappers {
                 field,
                 SQLOperate.notBetween,
                 value
+        ));
+        return this;
+    }
+
+    public Wrappers groupBy(String... fields) {
+        sqlValues.add(SQLValue.of(
+                "",
+                SQLOperate.groupBy,
+                Arrays.asList(fields)
+        ));
+        return this;
+    }
+
+    public Wrappers orderByAsc(String... fields) {
+        sqlValues.add(SQLValue.of(
+                "",
+                SQLOperate.orderByAsc,
+                Arrays.asList(fields)
+        ));
+        return this;
+    }
+
+    public Wrappers orderByDesc(String... fields) {
+        sqlValues.add(SQLValue.of(
+                "",
+                SQLOperate.orderByDesc,
+                Arrays.asList(fields)
         ));
         return this;
     }
