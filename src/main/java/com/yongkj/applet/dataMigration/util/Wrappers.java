@@ -51,11 +51,11 @@ public class Wrappers {
                 case orderByDesc:
                     lstSqlSegment.removeLast();
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
-                    lstSqlSegment.addLast("and");
+                    lstSqlSegment.addLast(SQLOperate.and.getValue());
                     break;
                 default:
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
-                    lstSqlSegment.addLast("and");
+                    lstSqlSegment.addLast(SQLOperate.and.getValue());
             }
         }
         if (lstSqlSegment.size() > 0) {
