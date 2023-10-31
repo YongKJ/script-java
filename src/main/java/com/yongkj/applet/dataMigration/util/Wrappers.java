@@ -11,20 +11,27 @@ import java.util.function.Consumer;
 
 public class Wrappers {
 
-    private final String tableName;
     private final List<String> fields;
+    private final List<String> tableNames;
     private final List<SQLValue> sqlValues;
 
     private Wrappers() {
-        this.tableName = "";
         this.fields = new ArrayList<>();
         this.sqlValues = new ArrayList<>();
+        this.tableNames = new ArrayList<>();
     }
 
     private Wrappers(String tableName) {
-        this.tableName = tableName;
         this.fields = new ArrayList<>();
         this.sqlValues = new ArrayList<>();
+        this.tableNames = new ArrayList<>();
+        this.tableNames.add(tableName);
+    }
+
+    private Wrappers(String[] tableNames) {
+        this.fields = new ArrayList<>();
+        this.sqlValues = new ArrayList<>();
+        this.tableNames = Arrays.asList(tableNames);
     }
 
     public static Wrappers lambdaQuery() {
@@ -33,6 +40,10 @@ public class Wrappers {
 
     public static Wrappers lambdaQuery(String tableName) {
         return new Wrappers(tableName);
+    }
+
+    public static Wrappers lambdaQuery(String... tableNames) {
+        return new Wrappers(tableNames);
     }
 
     public String getSqlSegment() {
@@ -75,7 +86,7 @@ public class Wrappers {
     }
 
     public Wrappers and(Consumer<Wrappers> consumer) {
-        Wrappers query = Wrappers.lambdaQuery(tableName);
+        Wrappers query = Wrappers.lambdaQuery();
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.andWrapper,
@@ -90,7 +101,7 @@ public class Wrappers {
     }
 
     public Wrappers or(Consumer<Wrappers> consumer) {
-        Wrappers query = Wrappers.lambdaQuery(tableName);
+        Wrappers query = Wrappers.lambdaQuery();
         consumer.accept(query);
         sqlValues.add(SQLValue.of(
                 SQLOperate.orWrapper,
@@ -279,8 +290,12 @@ public class Wrappers {
         return this;
     }
 
+    public List<String> getTableNames() {
+        return tableNames;
+    }
+
     public String getTableName() {
-        return tableName;
+        return tableNames.size() == 0 ? "" : tableNames.get(0);
     }
 
     public List<String> getFields() {
