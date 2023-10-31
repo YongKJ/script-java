@@ -122,6 +122,36 @@ public class DataIncrementMigrationService extends BaseService {
         return lstData;
     }
 
+    public List<Map<String, Object>> setDataSelectTest() {
+        return desSetDataList(
+                Wrappers.lambdaQuery(
+                        "`organization_worker` `ow`",
+                        "`shop` `s`",
+                        "`worker` `w`",
+                        "`rel_worker__worker_type` `rwt`",
+                        "`worker_type` `wt`"
+                )
+                        .eq("`ow`.`worker_id`", "`w`.`id`")
+                        .eq("`ow`.`organization_id`", "`s`.`organization_id`")
+                        .eq("`ow`.`worker_id`", "`rwt`.`worker_id`")
+                        .eq("`ow`.`organization_id`", "`rwt`.`organization_id`")
+                        .eq("`rwt`.`type_id`", "`wt`.`id`")
+                        .groupBy("`ow`.`worker_id`", "`ow`.`organization_id`")
+                        .orderByDesc("`ow`.`utc_created`", "`ow`.`utc_modified`")
+                        .select(
+                                "`w`.`id`",
+                                "`w`.`name`",
+                                "`s`.`organization_id` `organization_id`",
+                                "`s`.`name` `shop_name`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`wt`.`id`), ']') AS JSON) `worker_types`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`wt`.`name` SEPARATOR '\",\"'), '\"]') AS JSON) `worker_names`",
+                                "`w`.`mobile`",
+                                "`ow`.`status`",
+                                "`ow`.`utc_modified`"
+                        )
+        );
+    }
+
     public List<Map<String, Object>> dataSelectTest(String keyword, String level) {
         return desDataList(Wrappers.lambdaQuery("amap_district")
                 .eq("level", level)
