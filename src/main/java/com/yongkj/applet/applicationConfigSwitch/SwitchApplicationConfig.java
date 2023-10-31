@@ -11,10 +11,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.JschConfigSessionFactory;
-import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.Transport;
+import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.util.FS;
 
 import java.io.File;
@@ -99,6 +96,12 @@ public class SwitchApplicationConfig {
                         .setFastForward(MergeCommand.FastForwardMode.NO_FF)
                         .setTransportConfigCallback(this::setSshSessionFactory).call();
                 pullRemoteResultFlag = pullRemoteResult.isSuccessful();
+
+                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                for (PushResult pushResult : pushResults) {
+                    LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pushResult.getMessages()", pushResult.getMessages()));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
             }
 
             String url = git.getRepository().getConfig().getString("remote", "origin", "url");
