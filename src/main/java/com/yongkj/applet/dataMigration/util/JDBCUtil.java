@@ -4,6 +4,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.po.Field;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.util.GenUtil;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -72,29 +73,73 @@ public class JDBCUtil {
         for (String fieldName : table.getFieldNames()) {
             Field field = table.getMapField().get(fieldName);
             if (field == null || subFieldNames.size() > 0 && !subFieldNames.contains(fieldName)) continue;
-            try {
-                Object data;
-                switch (field.getType()) {
-                    case "INT":
-                    case "TINYINT":
-                        data = Integer.valueOf(resultSet.getInt(fieldName));
-                        break;
-                    case "BIGINT":
-                        data = Long.valueOf(resultSet.getLong(fieldName));
-                        break;
-                    case "DOUBLE":
-                    case "DECIMAL":
-                        data = Double.valueOf(resultSet.getDouble(fieldName));
-                        break;
-                    default:
-                        data = resultSet.getString(fieldName);
-                }
-                mapData.put(fieldName, data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapData.put(fieldName, getValue(field.getType(), fieldName, resultSet));
         }
         return mapData;
+    }
+
+    public static List<Map<String, Object>> getResultSet(Database database, String sql) {
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        try {
+            statement = database.getManager().getConnection().createStatement();
+            resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                lstData.add(getRowData(resultSet));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(resultSet, statement);
+        }
+        return lstData;
+    }
+
+    private static Map<String, Object> getRowData(ResultSet resultSet) {
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        List<Field> lstField = Field.getFields(resultSet);
+        for (Field field : lstField) {
+            mapData.put(field.getName(), getValue(field.getType(), field.getName(), resultSet));
+        }
+        return mapData;
+    }
+
+    private static Object getValue(String fieldType, String fieldName, ResultSet resultSet) {
+        Object data = null;
+        try {
+            switch (fieldType) {
+                case "INT":
+                case "TINYINT":
+                    data = Integer.valueOf(resultSet.getInt(fieldName));
+                    break;
+                case "BIGINT":
+                    data = Long.valueOf(resultSet.getLong(fieldName));
+                    break;
+                case "DOUBLE":
+                case "DECIMAL":
+                    data = Double.valueOf(resultSet.getDouble(fieldName));
+                    break;
+                case "JSON":
+                    data = getJsonData(resultSet.getString(fieldName));
+                default:
+                    data = resultSet.getString(fieldName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    private static Object getJsonData(String jsonStr) {
+        if (!(jsonStr.startsWith("[") && jsonStr.endsWith("]")) &&
+                !(jsonStr.startsWith("{") && jsonStr.endsWith("}"))) return jsonStr;
+        if (jsonStr.startsWith("[") && jsonStr.endsWith("]")) {
+            return GenUtil.fromJsonString(jsonStr, List.class);
+        } else {
+            return GenUtil.fromJsonString(jsonStr, Map.class);
+        }
     }
 
     public static void close(ResultSet resultSet, PreparedStatement preparedStatement) {

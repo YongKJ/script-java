@@ -102,6 +102,37 @@ public class Field {
         return fields;
     }
 
+    public static List<Field> getFields(ResultSet resultSet) {
+        List<Field> fields = new ArrayList<>();
+        try {
+            ResultSetMetaData sqlResultMeta = resultSet.getMetaData();
+
+            int count = sqlResultMeta.getColumnCount();
+            for (int col = 1; col <= count; col++) {
+                String fieldName = sqlResultMeta.getColumnName(col);
+                String type = sqlResultMeta.getColumnTypeName(col);
+                int length = sqlResultMeta.getColumnDisplaySize(col);
+                boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;
+                String notNull = Objects.equals(type, "JSON") || !isNotNull ? "" : "NOT NULL";
+
+                Field field = new Field();
+                field.setName(fieldName);
+                field.setType(type);
+                field.setNotNull(isNotNull);
+                field.setNotNull(notNull);
+                if (Objects.equals(type, "VARCHAR") && length > 0) {
+                    field.setLength(length);
+                    field.setType(String.format("%s(%s)", type, length));
+                }
+                fields.add(field);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fields;
+    }
+
     private static String getLengthStr(Field field, Map<String, String> mapRemark) {
         String regStr = String.format("\\s+`%s`\\s\\S+?\\((.*?)\\)[\\s\\S]+", field.getName());
         Pattern pattern = Pattern.compile(regStr);

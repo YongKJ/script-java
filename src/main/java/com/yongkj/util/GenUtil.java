@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -22,6 +23,18 @@ public class GenUtil {
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+
+    public static <T> T fromJsonString(String strJson, Class<T> c) {
+        T value = null;
+        if (strJson != null) {
+            try {
+                value = objectMapper.readValue(strJson, c);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return value;
+    }
 
     public static String toJsonString(Object object) {
         String json;

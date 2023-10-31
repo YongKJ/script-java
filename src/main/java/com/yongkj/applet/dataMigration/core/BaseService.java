@@ -90,6 +90,14 @@ public abstract class BaseService {
         return JDBCUtil.getResult(desDatabase, removeSql);
     }
 
+    protected List<Map<String, Object>> srcSetDataList(Wrappers query) {
+        return listSet(srcDatabase, query);
+    }
+
+    protected List<Map<String, Object>> desSetDataList(Wrappers query) {
+        return listSet(desDatabase, query);
+    }
+
     protected List<Map<String, Object>> srcDataList(Wrappers query) {
         return list(srcDatabase, query);
     }
@@ -104,6 +112,15 @@ public abstract class BaseService {
 
     protected List<Map<String, Object>> desDataList(Table table) {
         return list(desDatabase, table, table.getSelectDataSql());
+    }
+
+    private List<Map<String, Object>> listSet(Database database, Wrappers query) {
+        String selectSql = getSelectSql(query);
+
+        LogUtil.loggerLine(Log.of("BaseService", "listSet", "selectSql", selectSql));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+
+        return JDBCUtil.getResultSet(database, selectSql);
     }
 
     private List<Map<String, Object>> list(Database database, Wrappers query) {
@@ -121,6 +138,14 @@ public abstract class BaseService {
 
     private List<Map<String, Object>> list(Database database, Table table, String selectSql) {
         return JDBCUtil.getResultSet(database, table, selectSql);
+    }
+
+    private String getSelectSql(Wrappers query) {
+        return SQL.getDataSelectSql(
+                query.getFields(),
+                query.getTableNames(),
+                query.getSqlSegment()
+        );
     }
 
     private String getSelectSql(Table table, Wrappers query) {
