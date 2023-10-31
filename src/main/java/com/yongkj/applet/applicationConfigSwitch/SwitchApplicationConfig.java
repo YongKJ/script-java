@@ -8,6 +8,7 @@ import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
@@ -18,24 +19,37 @@ import org.eclipse.jgit.util.FS;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SwitchApplicationConfig {
 
     private final String branch;
+    private final boolean isTest;
+    private final boolean isFilter;
+    private final String pullBranch;
     private final String configName;
     private final String configPath;
     private final String projectPath;
+    private final String filterBranch;
     private final String privateKeyPath;
     private final List<String> projectNames;
+    private final List<String> filterProjectNames;
 
     private SwitchApplicationConfig() {
         branch = GenUtil.getValue("branch");
+        isTest = branch.contains("test");
         configPath = GenUtil.getValue("config-path");
         projectNames = GenUtil.getList("project-name");
         projectPath = GenUtil.getValue("project-path");
         privateKeyPath = GenUtil.getValue("private-key-path");
-        configName = "application-" + (branch.contains("test") ? "test" : "dev") + ".yml";
+        configName = "application-" + (isTest ? "test" : "dev") + ".yml";
+
+        Map<String, Object> mapFilter = GenUtil.getMap("filter");
+        filterProjectNames = (List<String>) mapFilter.get("project-name");
+        pullBranch = GenUtil.objToStr(mapFilter.get("pullBranch"));
+        filterBranch = GenUtil.objToStr(mapFilter.get("branch"));
+        isFilter = (Boolean) mapFilter.get("enable");
     }
 
     private void apply() {
@@ -66,6 +80,11 @@ public class SwitchApplicationConfig {
         try {
             Git git = Git.open(new File(gitPath));
 
+            String branch = this.branch;
+            if (isTest && isFilter && filterProjectNames.contains(projectName)) {
+                branch = filterBranch;
+            }
+
             String refName = "";
             String branchName = git.getRepository().getBranch();
             if (!Objects.equals(branchName, branch)) {
@@ -73,11 +92,23 @@ public class SwitchApplicationConfig {
                 refName = ref.getName();
             }
 
+            boolean pullRemoteResultFlag = false;
             PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
+            if (isTest && isFilter && filterProjectNames.contains(projectName)) {
+                PullResult pullRemoteResult = git.pull().setRemoteBranchName(pullBranch)
+                        .setFastForward(MergeCommand.FastForwardMode.NO_FF)
+                        .setTransportConfigCallback(this::setSshSessionFactory).call();
+                pullRemoteResultFlag = pullRemoteResult.isSuccessful();
+            }
 
             String url = git.getRepository().getConfig().getString("remote", "origin", "url");
 
             git.close();
+
+            if (isTest && isFilter && filterProjectNames.contains(projectName)) {
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullRemoteResult.isSuccessful()", pullRemoteResultFlag));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
 
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullResult.isSuccessful()", pullResult.isSuccessful()));
             System.out.println("---------------------------------------------------------------------------------------------");

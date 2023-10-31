@@ -4,7 +4,8 @@ private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
 filter:
   enable: true
-  branch: test-1.2
+  branch: test-1.2-dxj
+  pullBranch: test-1.2
   project-name:
     - service-housekeeping
     - service-user
