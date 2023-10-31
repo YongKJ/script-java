@@ -85,7 +85,7 @@ shop-worker-data-export:
         - "name"
 
 admin-menu-data-migration:
-  enable: true
+  enable: false
   table-names:
     - "admin_menu"
     - "admin_role_menu"
@@ -108,9 +108,11 @@ data-migration:
     - "admin_roles"
 
 field-migration:
-  enable: false
+  enable: true
   table-delete: false
   field-delete: false
   table-names:
-    - "certificate"
+    - "organization"
+    - "organization_log"
+    - "shop_log"
 
