@@ -97,10 +97,12 @@ public class SwitchApplicationConfig {
                         .setTransportConfigCallback(this::setSshSessionFactory).call();
                 pullRemoteResultFlag = pullRemoteResult.isSuccessful();
 
-                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
-                for (PushResult pushResult : pushResults) {
-                    LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pushResult.getMessages()", pushResult.getMessages()));
-                    System.out.println("---------------------------------------------------------------------------------------------");
+                if (pullRemoteResultFlag) {
+                    Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                    for (PushResult pushResult : pushResults) {
+                        LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pushResult.getMessages()", pushResult.getMessages()));
+                        System.out.println("---------------------------------------------------------------------------------------------");
+                    }
                 }
             }
 
