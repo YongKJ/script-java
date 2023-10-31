@@ -57,7 +57,9 @@ public class SQLValue {
                 List<Object> lstValue = (List<Object>) value;
                 return String.format(operate.getValue(), getListValueStr(lstValue));
             default:
-                return String.format("`%s` %s", fieldName, getOperateValue());
+                return fieldName.contains("`") ?
+                        String.format("%s %s", fieldName, getOperateValue()) :
+                        String.format("`%s` %s", fieldName, getOperateValue());
         }
     }
 
@@ -109,7 +111,7 @@ public class SQLValue {
     private String getValueStr(Object value) {
         if (value == null) return "";
         if (value instanceof String) {
-            return String.format("'%s'", value);
+            return ((String) value).contains("`") ? (String) value : String.format("'%s'", value);
         } else {
             return GenUtil.objToStr(value);
         }
