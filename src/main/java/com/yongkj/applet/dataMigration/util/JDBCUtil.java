@@ -3,7 +3,6 @@ package com.yongkj.applet.dataMigration.util;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.Manager;
 import com.yongkj.applet.dataMigration.pojo.po.Field;
-import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.util.GenUtil;
 
 import java.sql.DriverManager;
@@ -48,7 +47,7 @@ public class JDBCUtil {
         return result;
     }
 
-    public static List<Map<String, Object>> getResultSet(Database database, Table table, String sql) {
+    public static List<Map<String, Object>> getResultSet(Database database, String sql, List<String> filterFields) {
         Statement statement = null;
         ResultSet resultSet = null;
         List<Map<String, Object>> lstData = new ArrayList<>();
@@ -57,7 +56,7 @@ public class JDBCUtil {
             resultSet = statement.executeQuery(sql);
 
             while (resultSet.next()) {
-                lstData.add(getRowData(table, resultSet));
+                lstData.add(getRowData(resultSet, filterFields));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,13 +66,12 @@ public class JDBCUtil {
         return lstData;
     }
 
-    private static Map<String, Object> getRowData(Table table, ResultSet resultSet) {
+    private static Map<String, Object> getRowData(ResultSet resultSet, List<String> filterFields) {
         Map<String, Object> mapData = new LinkedHashMap<>();
-        List<String> subFieldNames = table.getSubFieldNames();
-        for (String fieldName : table.getFieldNames()) {
-            Field field = table.getMapField().get(fieldName);
-            if (field == null || subFieldNames.size() > 0 && !subFieldNames.contains(fieldName)) continue;
-            mapData.put(fieldName, getValue(field.getType(), fieldName, resultSet));
+        List<Field> lstField = Field.getFields(resultSet);
+        for (Field field : lstField) {
+            if (field == null || filterFields.size() > 0 && !filterFields.contains(field.getName())) continue;
+            mapData.put(field.getName(), getValue(field.getType(), field.getName(), resultSet));
         }
         return mapData;
     }

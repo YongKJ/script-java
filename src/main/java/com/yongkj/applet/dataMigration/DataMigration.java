@@ -72,7 +72,7 @@ public class DataMigration {
 
     public void test() {
         List<Map<String, Object>> selectData = dataIncrementMigrationService.dataSelectTest("广州", "city");
-        LogUtil.loggerLine(Log.of("DataMigration", "apply", "selectData", selectData));
+        LogUtil.loggerLine(Log.of("DataMigration", "test", "selectData", selectData));
         System.out.println("------------------------------------------------------------------------------------------------------------");
     }
 
@@ -116,8 +116,9 @@ public class DataMigration {
 
     public static void run(String[] args) {
 //        new DataMigration().apply();
+        new DataMigration().test();
 //        new DataMigration().test1();
-        new DataMigration().test4();
+//        new DataMigration().test4();
     }
 
 }

@@ -107,11 +107,11 @@ public abstract class BaseService {
     }
 
     protected List<Map<String, Object>> srcDataList(Table table) {
-        return list(srcDatabase, table, table.getSelectDataSql());
+        return list(srcDatabase, table.getSelectDataSql(), new ArrayList<>());
     }
 
     protected List<Map<String, Object>> desDataList(Table table) {
-        return list(desDatabase, table, table.getSelectDataSql());
+        return list(desDatabase, table.getSelectDataSql(), new ArrayList<>());
     }
 
     private List<Map<String, Object>> listSet(Database database, Wrappers query) {
@@ -125,19 +125,16 @@ public abstract class BaseService {
 
     private List<Map<String, Object>> list(Database database, Wrappers query) {
         Table table = database.getMapTable().get(query.getTableName());
-        table.setSubFieldNames(query.getFields());
         String selectSql = getSelectSql(table, query);
 
         LogUtil.loggerLine(Log.of("BaseService", "list", "selectSql", selectSql));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
-        List<Map<String, Object>> lstData = list(database, table, selectSql);
-        table.setSubFieldNames(new ArrayList<>());
-        return lstData;
+        return list(database, selectSql, query.getFields());
     }
 
-    private List<Map<String, Object>> list(Database database, Table table, String selectSql) {
-        return JDBCUtil.getResultSet(database, table, selectSql);
+    private List<Map<String, Object>> list(Database database, String selectSql, List<String> filterFields) {
+        return JDBCUtil.getResultSet(database, selectSql, filterFields);
     }
 
     private String getSelectSql(Wrappers query) {
@@ -150,10 +147,9 @@ public abstract class BaseService {
 
     private String getSelectSql(Table table, Wrappers query) {
         List<String> fieldNames = new ArrayList<>();
-        List<String> subFieldNames = table.getSubFieldNames();
         for (String fieldName : table.getFieldNames()) {
-            if (!subFieldNames.isEmpty() &&
-                    !subFieldNames.contains(fieldName)) continue;
+            if (!query.getFields().isEmpty() &&
+                    !query.getFields().contains(fieldName)) continue;
             fieldNames.add(fieldName);
         }
         return SQL.getDataSelectSql(
