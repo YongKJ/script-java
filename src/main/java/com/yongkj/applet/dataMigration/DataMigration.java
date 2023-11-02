@@ -115,8 +115,8 @@ public class DataMigration {
     }
 
     public static void run(String[] args) {
-//        new DataMigration().apply();
-        new DataMigration().test();
+        new DataMigration().apply();
+//        new DataMigration().test();
 //        new DataMigration().test1();
 //        new DataMigration().test4();
     }
