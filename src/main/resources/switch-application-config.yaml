@@ -5,12 +5,15 @@ private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 filter:
   enable: true
   branch: test-1.2-dxj
-  pullBranch: test-1.2
+  pull-branch: test-1.2
   project-name:
     - service-housekeeping
     - service-user
 
-branch: test-1.1
+branch: dev-1.1
+pull-branchs:
+  - test-1.1
+  - test-1.2
 project-name:
   - api-gateway
   - framework-core
