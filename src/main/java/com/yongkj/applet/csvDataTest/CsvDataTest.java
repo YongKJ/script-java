@@ -20,8 +20,9 @@ public class CsvDataTest {
     }
 
     private void apply() {
-        readTestTwo();
+//        readTestTwo();
 //        readTestOne();
+        writeTestFive();
 //        writeTestFour();
 //        writeTestThree();
 //        writeTestTwo();
@@ -45,6 +46,10 @@ public class CsvDataTest {
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstRecord", lstRecord));
         List<Map<String, String>> lstData = CsvUtil.toMap(csvReadPath);
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstData", lstData));
+    }
+
+    private void writeTestFive() {
+        CsvUtil.csvToExcel("/csv/类目-角色-工种-证书.csv", 1);
     }
 
     private void writeTestFour() {

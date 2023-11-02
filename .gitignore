@@ -29,3 +29,6 @@ target
 META-INF
 libs
 testoutput
+
+# XLSX
+*.xlsx

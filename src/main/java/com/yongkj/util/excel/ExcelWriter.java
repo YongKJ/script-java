@@ -1,5 +1,6 @@
 package com.yongkj.util.excel;
 
+import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -210,6 +212,9 @@ public class ExcelWriter {
 
     public static void write(SXSSFWorkbook workbook, String fileName) {
         try {
+            if (Arrays.asList("/", "\\").contains(fileName.substring(0, 1))) {
+                fileName = FileUtil.getAbsPath(false, "src", "main", "resources", fileName);
+            }
             workbook.write(new FileOutputStream(fileName));
         } catch (Exception e) {
             e.printStackTrace();
