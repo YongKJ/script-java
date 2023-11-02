@@ -148,10 +148,8 @@ public class SwitchApplicationConfig {
             System.out.println("---------------------------------------------------------------------------------------------");
 
             for (String branchName : pullBranchs) {
-                if (filterProjectNames.contains(projectName) && !Objects.equals(branchName, filterPullBranch)) {
-                    continue;
-                }
-                if (!filterProjectNames.contains(projectName) && Objects.equals(branchName, filterPullBranch)) {
+                if (filterProjectNames.contains(projectName) && !Objects.equals(branchName, filterPullBranch) ||
+                        !filterProjectNames.contains(projectName) && Objects.equals(branchName, filterPullBranch)) {
                     continue;
                 }
                 for (String tempBranchName : branchNames) {
