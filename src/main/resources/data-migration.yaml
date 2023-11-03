@@ -113,5 +113,5 @@ field-migration:
   table-delete: false
   field-delete: false
   table-names:
-    - "worker_type_rel_category"
+    - "worker_certificate"
 
