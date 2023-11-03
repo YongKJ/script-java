@@ -122,6 +122,68 @@ public class DataIncrementMigrationService extends BaseService {
         return lstData;
     }
 
+    public List<Map<String, Object>> setDataSelectTestThree() {
+        return desSetDataList(
+                Wrappers.lambdaQuery(
+                        "comment_detail d"
+                )
+                        .eq("d.utc_deleted", 0)
+                        .eq("d.apply_id", 2)
+                        .select(
+                                "d.user_id",
+                                "d.user_name",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.id), ']') AS JSON) ids",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.item_id), ']') AS JSON) item_ids",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(d.item_name SEPARATOR '\",\"'), '\"]') AS JSON) item_names",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(d.item_sub_name SEPARATOR '\",\"'), '\"]') AS JSON) item_sub_names",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(d.item_thumb SEPARATOR '\",\"'), '\"]') AS JSON) item_thumbs",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.order_entity_id), ']') AS JSON) order_entity_ids",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.shop_id), ']') AS JSON) shop_ids",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.price), ']') AS JSON) prices",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(d.comment SEPARATOR '\",\"'), '\"]') AS JSON) comments",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(d.reply SEPARATOR '\",\"'), '\"]') AS JSON) replies",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.type_id), ']') AS JSON) type_ids",
+                                "CAST(CONCAT('[\"', REPLACE(GROUP_CONCAT(d.images SEPARATOR '\",\"'), '\"', '\\\\\"'), '\"]') AS JSON) images_list",
+                                "CAST(CONCAT('[', GROUP_CONCAT(d.utc_created), ']') AS JSON) utc_createds",
+                                "d.apply_id",
+                                "d.order_serial_no",
+                                "d.order_id",
+                                "d.order_time"
+                        )
+        );
+    }
+
+    public List<Map<String, Object>> setDataSelectTestTwo() {
+        return desSetDataList(
+                Wrappers.lambdaQuery(
+                        "`comment_detail` `d`"
+                )
+                        .eq("`d`.`utc_deleted`", 0)
+                        .eq("`d`.`apply_id`", 2)
+                        .select(
+                                "`d`.`user_id`",
+                                "`d`.`user_name`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`id`), ']') AS JSON) `ids`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`item_id`), ']') AS JSON) `item_ids`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`d`.`item_name` SEPARATOR '\",\"'), '\"]') AS JSON) `item_names`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`d`.`item_sub_name` SEPARATOR '\",\"'), '\"]') AS JSON) `item_sub_names`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`d`.`item_thumb` SEPARATOR '\",\"'), '\"]') AS JSON) `item_thumbs`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`order_entity_id`), ']') AS JSON) `order_entity_ids`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`shop_id`), ']') AS JSON) `shop_ids`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`price`), ']') AS JSON) `prices`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`d`.`comment` SEPARATOR '\",\"'), '\"]') AS JSON) `comments`",
+                                "CAST(CONCAT('[\"', GROUP_CONCAT(`d`.`reply` SEPARATOR '\",\"'), '\"]') AS JSON) `replies`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`type_id`), ']') AS JSON) `type_ids`",
+                                "CAST(CONCAT('[\"', REPLACE(GROUP_CONCAT(`d`.`images` SEPARATOR '\",\"'), '\"', '\\\\\"'), '\"]') AS JSON) `images_list`",
+                                "CAST(CONCAT('[', GROUP_CONCAT(`d`.`utc_created`), ']') AS JSON) `utc_createds`",
+                                "`d`.`apply_id`",
+                                "`d`.`order_serial_no`",
+                                "`d`.`order_id`",
+                                "`d`.`order_time`"
+                        )
+        );
+    }
+
     public List<Map<String, Object>> setDataSelectTestOne() {
         return desSetDataList(
                 Wrappers.lambdaQuery(

@@ -114,11 +114,25 @@ public class DataMigration {
         System.out.println("------------------------------------------------------------------------------------------------------------");
     }
 
+    public void test5() {
+        List<Map<String, Object>> selectData = dataIncrementMigrationService.setDataSelectTestTwo();
+        LogUtil.loggerLine(Log.of("DataMigration", "test5", "selectData", selectData));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
+    public void test6() {
+        List<Map<String, Object>> selectData = dataIncrementMigrationService.setDataSelectTestThree();
+        LogUtil.loggerLine(Log.of("DataMigration", "test6", "selectData", selectData));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
+    }
+
     public static void run(String[] args) {
-        new DataMigration().apply();
+//        new DataMigration().apply();
 //        new DataMigration().test();
 //        new DataMigration().test1();
 //        new DataMigration().test4();
+//        new DataMigration().test5();
+        new DataMigration().test6();
     }
 
 }
