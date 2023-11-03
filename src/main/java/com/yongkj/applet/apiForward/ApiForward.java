@@ -1,5 +1,8 @@
 package com.yongkj.applet.apiForward;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -18,14 +21,141 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ApiForward {
 
+    private static String TOKEN = null;
+
+    public static List<Object> getAdminTreeOneData(String applyCode) {
+        if (TOKEN == null) {
+            TOKEN = getPlatformToken();
+        }
+        return ApiController.adminTree1(TOKEN, applyCode);
+    }
+
+    private static String getPlatformToken() {
+        Map<String, Object> mapData = ApiController.accountLogin(
+                Global.getAPPLY(), Global.getMOBILE(), Global.getPASSWORD()
+        );
+        return GenUtil.objToStr(mapData.get("token"));
+    }
+
+}
+
+class ApiController {
+
+    private ApiController() {
+    }
+
+    public static List<Object> adminTree1(String token, String applyCode) {
+        String responseData = ApiService.adminTree1(token, applyCode);
+        Map<String, Object> mapData = GenUtil.toMap(responseData);
+        return (List<Object>) mapData.get("data");
+    }
+
+    public static Map<String, Object> accountLogin(Integer apply, String mobile, String password) {
+        String responseData = ApiService.accountLogin(apply, mobile, password);
+        Map<String, Object> mapData = GenUtil.toMap(responseData);
+        return (Map<String, Object>) mapData.get("data");
+    }
+
+}
+
+class ApiService {
+
+    private final static String BASE_URL = Global.getBaseHost();
+    private final static String ADMIN_ONE = BASE_URL + "/api/user/v1/bc/admin/menu/tree/admin1";
+    private final static String ACCOUNT_LOGIN = BASE_URL + "/api/user/v1/bc/company/admin/accountLogin";
+
+    private ApiService() {
+    }
+
+    public static String adminTree1(String token, String applyCode) {
+        Map<String, String> mapHeader = new HashMap<>();
+        mapHeader.put("token", token);
+
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("applyCode", applyCode);
+
+        return ApiUtil.requestByPostWithHeaderAndMapData(ADMIN_ONE, mapHeader, mapData);
+    }
+
+    public static String accountLogin(Integer apply, String mobile, String password) {
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("apply", apply);
+        mapData.put("mobile", mobile);
+        mapData.put("password", password);
+        return ApiUtil.requestByPostWithParamsAndMapData(ACCOUNT_LOGIN, new HashMap<>(), mapData);
+    }
+
+}
+
+class GenUtil {
+
+    private GenUtil() {
+    }
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static <T> T fromJsonString(String strJson, Class<T> c) {
+        T value = null;
+        if (strJson != null) {
+            try {
+                value = objectMapper.readValue(strJson, c);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return value;
+    }
+
+    public static String toJsonString(Object object) {
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("json generate error", e);
+        }
+
+        return json;
+    }
+
+    private String toJsonStringPretty(Object object) {
+        String json;
+        try {
+            json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("json generate error", e);
+        }
+
+        return json;
+    }
+
+    public static Map<String, Object> toMap(@Nullable String json) {
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+        };
+        Map<String, Object> map = new HashMap<>();
+        if (json != null) {
+            try {
+                map = objectMapper.readValue(json, typeRef);
+            } catch (IOException e) {
+                throw new RuntimeException("json parse error:" + json, e);
+            }
+        }
+        return map;
+    }
+
+    public static String objToStr(Object value) {
+        return value != null ? value.toString() : "";
+    }
 
 }
 
@@ -36,38 +166,46 @@ class ApiUtil {
 
     private static boolean proxyEnable = Global.isProxyEnable();
     private static final RestTemplate REST_TEMPLATE = getRestTemplate(false);
-    private static final RestTemplate SOCKS_RESTTEMPLATE = getRestTemplate(true);
+    private static final RestTemplate SOCKS_REST_TEMPLATE = getRestTemplate(true);
 
     public static String requestByGetWithParams(String api, Map<String, Object> params) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), String.class);
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), String.class);
     }
 
-    public static String requestByGetWithHeaderParams(String api, Map<String, Object> params, Map<String, String> mapHeader) {
+    public static String requestByGetWithHeaderAndParams(String api, Map<String, Object> params, Map<String, String> mapHeader) {
         HttpHeaders headers = new HttpHeaders();
-        for (Map.Entry<String, String> map : mapHeader.entrySet()) {
-            headers.set(map.getKey(), map.getValue());
-        }
+        mapHeader.forEach(headers::set);
         return requestByGetWithHeaderAndData(getUrl(api, params), headers, null, String.class);
     }
 
-    public static <T> T requestByGetWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), clazz);
+    public static String requestByPostWithParams(String api, Map<String, Object> params) {
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, String.class);
     }
 
-    public static String requestByPostWithParams(String api, Map<String, Object> params) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, String.class);
+    public static String requestByPostWithHeaderAndMapData(String api, Map<String, String> mapHeader, Map<String, Object> data) {
+        HttpHeaders headers = new HttpHeaders();
+        mapHeader.forEach(headers::set);
+        return requestByPostWithHeaderAndData(api, headers, GenUtil.toJsonString(data), String.class);
+    }
+
+    public static String requestByPostWithParamsAndMapData(String api, Map<String, Object> params, Map<String, Object> data) {
+        return requestByPostWithHeaderAndData(getUrl(api, params), null, GenUtil.toJsonString(data), String.class);
+    }
+
+    public static <T> T requestByGetWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), clazz);
     }
 
     public static <T> T requestByPostWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, clazz);
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, clazz);
     }
 
     private static <T> T requestByGetWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.GET, new HttpEntity<>(data, headers), responseType).getBody();
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.GET, new HttpEntity<>(data, headers), responseType).getBody();
     }
 
     private static <T> T requestByPostWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
-        return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers), responseType).getBody();
+        return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers), responseType).getBody();
     }
 
     public static String getUrl(String api, Map<String, Object> params) {
@@ -148,10 +286,30 @@ class Global {
     private Global() {
     }
 
+    private static final int APPLY = 1;
     private static final int PROXY_PORT = 51837;
+    private static final String MOBILE = "18888888888";
+    private static final String PASSWORD = "123123";
     private static final boolean LOG_ENABLE = true;
     private static final boolean PROXY_ENABLE = false;
     private static final String PROXY_HOST = "127.0.0.1";
+    private static final String BASE_HOST = "https://test.ydchun.com";
+
+    public static String getBaseHost() {
+        return BASE_HOST;
+    }
+
+    public static int getAPPLY() {
+        return APPLY;
+    }
+
+    public static String getMOBILE() {
+        return MOBILE;
+    }
+
+    public static String getPASSWORD() {
+        return PASSWORD;
+    }
 
     public static boolean isProxyEnable() {
         return PROXY_ENABLE;
