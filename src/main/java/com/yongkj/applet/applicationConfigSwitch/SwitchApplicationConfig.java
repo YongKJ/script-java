@@ -82,8 +82,8 @@ public class SwitchApplicationConfig {
             Git git = Git.open(new File(gitPath));
 
             String branch = this.branch;
-//            String pullBranch = getPullBranch(git, projectName);
             String pullBranch = getPullBranch(git);
+//            String pullBranch = getPullBranch(git, projectName);
             if (isTest && isFilter && filterProjectNames.contains(projectName)) {
                 branch = filterBranch;
                 pullBranch = filterPullBranch;
