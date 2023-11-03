@@ -4,13 +4,13 @@ private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
 filter:
   enable: true
-  branch: test-1.2-dxj
-  pull-branch: test-1.2
+  branch: test-1.1-dxj
+  pull-branch: test-1.1
   project-name:
     - service-housekeeping
     - service-user
 
-branch: dev-1.1
+branch: test-1.1
 pull-branchs:
   - test-1.1
   - test-1.2

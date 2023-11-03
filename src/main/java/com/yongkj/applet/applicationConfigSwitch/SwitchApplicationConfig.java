@@ -82,7 +82,8 @@ public class SwitchApplicationConfig {
             Git git = Git.open(new File(gitPath));
 
             String branch = this.branch;
-            String pullBranch = getPullBranch(git, projectName);
+//            String pullBranch = getPullBranch(git, projectName);
+            String pullBranch = getPullBranch(git);
             if (isTest && isFilter && filterProjectNames.contains(projectName)) {
                 branch = filterBranch;
                 pullBranch = filterPullBranch;
@@ -134,6 +135,33 @@ public class SwitchApplicationConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getPullBranch(Git git) {
+        try {
+            List<Ref> lstBranch = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
+            List<String> branchNames = lstBranch.stream().map(Ref::getName).collect(Collectors.toList());
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "getPullBranch", "branchNames.size()", branchNames.size()));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "getPullBranch", "branchNames", branchNames));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            for (String branchName : pullBranchs) {
+                if (!Objects.equals(branchName, filterPullBranch)) {
+                    continue;
+                }
+                for (String tempBranchName : branchNames) {
+                    if (tempBranchName.endsWith(branchName)) {
+                        return branchName;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pullBranchs.get(0);
     }
 
     private String getPullBranch(Git git, String projectName) {
