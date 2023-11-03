@@ -18,6 +18,7 @@ import org.apache.http.ssl.SSLContexts;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,6 +35,9 @@ public class ApiForward {
 
     private static String TOKEN = null;
 
+    private ApiForward() {
+    }
+
     public static Object getAdminTreeOneData(String applyCode) {
         if (TOKEN == null) {
             TOKEN = getPlatformToken();
@@ -46,6 +50,17 @@ public class ApiForward {
                 Global.getAPPLY(), Global.getMOBILE(), Global.getPASSWORD()
         );
         return GenUtil.objToStr(mapData.get("token"));
+    }
+
+    private void apply() {
+        List<Map<String, Object>> lstData = (List<Map<String, Object>>) getAdminTreeOneData("platform");
+        System.out.println("---------------------[ApiForward] apply -> lstData.size: " + lstData.size());
+        System.out.println("---------------------[ApiForward] apply -> lstData: " + lstData);
+        System.out.println("-------------------------------------------------------------------------------------------");
+    }
+
+    public static void run(String[] args) {
+        new ApiForward().apply();
     }
 
 }
@@ -82,10 +97,10 @@ class ApiService {
         Map<String, String> mapHeader = new HashMap<>();
         mapHeader.put("token", token);
 
-        Map<String, Object> mapData = new HashMap<>();
-        mapData.put("applyCode", applyCode);
+        Map<String, Object> mapParams = new HashMap<>();
+        mapParams.put("applyCode", applyCode);
 
-        return ApiUtil.requestByPostWithHeaderAndMapData(ADMIN_ONE, mapHeader, mapData);
+        return ApiUtil.requestByGetWithParamsAndHeader(ADMIN_ONE, mapParams, mapHeader);
     }
 
     public static String accountLogin(Integer apply, String mobile, String password) {
@@ -172,7 +187,7 @@ class ApiUtil {
         return (proxyEnable ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), String.class);
     }
 
-    public static String requestByGetWithHeaderAndParams(String api, Map<String, Object> params, Map<String, String> mapHeader) {
+    public static String requestByGetWithParamsAndHeader(String api, Map<String, Object> params, Map<String, String> mapHeader) {
         HttpHeaders headers = new HttpHeaders();
         mapHeader.forEach(headers::set);
         return requestByGetWithHeaderAndData(getUrl(api, params), headers, null, String.class);
@@ -189,7 +204,9 @@ class ApiUtil {
     }
 
     public static String requestByPostWithParamsAndMapData(String api, Map<String, Object> params, Map<String, Object> data) {
-        return requestByPostWithHeaderAndData(getUrl(api, params), null, GenUtil.toJsonString(data), String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return requestByPostWithHeaderAndData(getUrl(api, params), headers, GenUtil.toJsonString(data), String.class);
     }
 
     public static <T> T requestByGetWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
