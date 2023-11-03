@@ -120,6 +120,20 @@ public class ShopWorkerDataExport extends BaseService {
     }
 
     private List<Map<String, Object>> getShopData() {
+        List<Map<String, Object>> lstRowData = new ArrayList<>();
+        Map<String, Map<String, Object>> mapAdminUser = mapTableData.get("admin_user");
+        for (Map.Entry<String, Map<String, Object>> map : mapAdminUser.entrySet()) {
+            Map<String, Object> adminUser = map.getValue();
+            Long adminUserId = (Long) adminUser.get("id");
+            Integer applyId = (Integer) adminUser.get("applyId");
+            String username = (String) adminUser.get("username");
+            String password = (String) adminUser.get("password");
+            String mobile = (String) adminUser.get("mobile");
+            Integer status = (Integer) adminUser.get("status");
+            Long utc_created = (Long) adminUser.get("utc_created");
+
+            Map<String, Object> mapRowData = new HashMap<>();
+        }
         return new ArrayList<>();
     }
 
