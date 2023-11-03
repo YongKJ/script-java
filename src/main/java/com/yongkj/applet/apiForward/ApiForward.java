@@ -34,7 +34,7 @@ public class ApiForward {
 
     private static String TOKEN = null;
 
-    public static List<Object> getAdminTreeOneData(String applyCode) {
+    public static Object getAdminTreeOneData(String applyCode) {
         if (TOKEN == null) {
             TOKEN = getPlatformToken();
         }
@@ -55,10 +55,10 @@ class ApiController {
     private ApiController() {
     }
 
-    public static List<Object> adminTree1(String token, String applyCode) {
+    public static List<Map<String, Object>> adminTree1(String token, String applyCode) {
         String responseData = ApiService.adminTree1(token, applyCode);
         Map<String, Object> mapData = GenUtil.toMap(responseData);
-        return (List<Object>) mapData.get("data");
+        return (List<Map<String, Object>>) mapData.get("data");
     }
 
     public static Map<String, Object> accountLogin(Integer apply, String mobile, String password) {
