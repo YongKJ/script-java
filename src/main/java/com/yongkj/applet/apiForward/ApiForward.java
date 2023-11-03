@@ -100,6 +100,8 @@ class ApiService {
         Map<String, Object> mapParams = new HashMap<>();
         mapParams.put("applyCode", applyCode);
 
+        System.out.println("-----------[ApiService] adminTree1 -> url: " + ADMIN_ONE);
+
         return ApiUtil.requestByGetWithParamsAndHeader(ADMIN_ONE, mapParams, mapHeader);
     }
 
@@ -108,6 +110,9 @@ class ApiService {
         mapData.put("apply", apply);
         mapData.put("mobile", mobile);
         mapData.put("password", password);
+
+        System.out.println("-----------[ApiService] accountLogin -> url: " + ACCOUNT_LOGIN);
+
         return ApiUtil.requestByPostWithParamsAndMapData(ACCOUNT_LOGIN, new HashMap<>(), mapData);
     }
 
