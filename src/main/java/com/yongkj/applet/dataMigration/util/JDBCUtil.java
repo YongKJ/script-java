@@ -9,10 +9,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JDBCUtil {
 
@@ -131,6 +128,9 @@ public class JDBCUtil {
     }
 
     private static Object getJsonData(String jsonStr) {
+        if (jsonStr == null) {
+            return new HashMap<>();
+        }
         if (!(jsonStr.startsWith("[") && jsonStr.endsWith("]")) &&
                 !(jsonStr.startsWith("{") && jsonStr.endsWith("}"))) return jsonStr;
         if (jsonStr.startsWith("[") && jsonStr.endsWith("]")) {

@@ -4,7 +4,7 @@ import com.yongkj.util.excel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.*;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +77,10 @@ public class PoiExcelUtil {
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, List<Integer> lstExcludeRow) {
         ExcelHeaderByCellStyle.writeHeader(sheet, lstHeader, lstCellStyle, dataCol, lstExcludeRow);
+    }
+
+    public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int widthCol) {
+        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, null);
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {

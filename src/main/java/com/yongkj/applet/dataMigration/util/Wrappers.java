@@ -173,6 +173,15 @@ public class Wrappers {
         return this;
     }
 
+    public <T> Wrappers in(String field, List<T> values) {
+        sqlValues.add(SQLValue.of(
+                field,
+                SQLOperate.in,
+                values
+        ));
+        return this;
+    }
+
     public <T> Wrappers notIn(String field, T... values) {
         sqlValues.add(SQLValue.of(
                 field,

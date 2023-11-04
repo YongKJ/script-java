@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -172,6 +173,22 @@ public class GenUtil {
         Object value = getConfig(getProfile() + ".yaml").get(key);
         if (value instanceof List) return (List<Map<String, Object>>) value;
         return new ArrayList<>();
+    }
+
+    public static String localDateTimeToStr(LocalDateTime value) {
+        return localDateTimeToStr(value, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public static String localDateTimeToStr(LocalDateTime value, String format) {
+        String dateString;
+        if (value == null) {
+            dateString = "";
+        } else {
+            DateTimeFormatter formatDate = DateTimeFormatter.ofPattern(format);
+            dateString = value.format(formatDate);
+        }
+
+        return dateString;
     }
 
     public static Map<String, Object> getMap(String key) {

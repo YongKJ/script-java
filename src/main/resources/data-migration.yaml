@@ -15,7 +15,7 @@ des:
     password: "HHhda@%DSAs"
 
 shop-worker-data-export:
-  enable: false
+  enable: true
   environment: test
   path: "C:\\Users\\admin\\Desktop\\shop-worker-data-export"
   tables:
@@ -32,6 +32,8 @@ shop-worker-data-export:
       fields:
         - "user_id"
         - "role_id"
+        - "utc_created"
+        - "utc_deleted"
     - name: "admin_roles"
       fields:
         - "id"
@@ -47,6 +49,10 @@ shop-worker-data-export:
         - "address"
         - "organization_status"
         - "administrator_id"
+    - name: "id_card"
+      fields:
+        - "id"
+        - "name"
     - name: "shop"
       fields:
         - "id"
@@ -79,6 +85,8 @@ shop-worker-data-export:
         - "organization_id"
         - "worker_id"
         - "type_id"
+        - "utc_created"
+        - "utc_deleted"
     - name: "worker_type"
       fields:
         - "id"
@@ -109,7 +117,7 @@ data-migration:
     - "admin_roles"
 
 field-migration:
-  enable: true
+  enable: false
   table-delete: false
   field-delete: false
   table-names:
