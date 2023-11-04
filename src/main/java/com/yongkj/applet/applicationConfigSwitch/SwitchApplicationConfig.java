@@ -99,7 +99,8 @@ public class SwitchApplicationConfig {
             PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
 
             if (pullResult.isSuccessful()) {
-                PullResult pullRemoteResult = git.pull().setRemoteBranchName(pullBranch)
+                PullResult pullRemoteResult = git.pull()
+                        .setRemoteBranchName(pullBranch)
                         .setFastForward(MergeCommand.FastForwardMode.NO_FF)
                         .setTransportConfigCallback(this::setSshSessionFactory).call();
 
