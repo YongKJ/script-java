@@ -212,10 +212,10 @@ public class ExcelWriter {
 
     public static void write(SXSSFWorkbook workbook, String fileName) {
         try {
-            if (Arrays.asList("/", "\\").contains(fileName.substring(0, 1))) {
-                fileName = FileUtil.getAbsPath(false, "src", "main", "resources", fileName);
-            }
-            workbook.write(new FileOutputStream(fileName));
+            workbook.write(
+                    new FileOutputStream(
+                            Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
+                                    FileUtil.getAbsPath(false, "src", "main", "resources", fileName) : fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }
