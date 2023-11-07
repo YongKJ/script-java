@@ -11,6 +11,7 @@ import com.yongkj.util.LogUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ShopCancelLogoutService extends BaseService {
 
@@ -30,6 +31,7 @@ public class ShopCancelLogoutService extends BaseService {
             shopCancelLogout(mobile);
         }
         LogUtil.loggerLine(Log.of("ShopCancelLogoutService", "apply", "mobiles", mobiles));
+//        test1();
     }
 
     private void shopCancelLogout(Long mobile) {
@@ -94,6 +96,16 @@ public class ShopCancelLogoutService extends BaseService {
         LogUtil.loggerLine(Log.of("ShopCancelLogoutService", "shopCancelLogout", "adminRoles", adminRoles));
         LogUtil.loggerLine(Log.of("ShopCancelLogoutService", "shopCancelLogout", "organization", organization));
         LogUtil.loggerLine(Log.of("ShopCancelLogoutService", "shopCancelLogout", "shop", shop));
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
+    }
+
+    private void test1() {
+        List<Map<String, Object>> lstShop = desDataList(
+                Wrappers.lambdaQuery("shop")
+                        .ne("utc_deleted", 0L)
+                        .select("id"));
+        List<Long> lstShopId = lstShop.stream().map(po -> (Long) po.get("id")).collect(Collectors.toList());
+        LogUtil.loggerLine(Log.of("ShopCancelLogoutService", "test1", "lstShopId", lstShopId));
         System.out.println("------------------------------------------------------------------------------------------------------------------");
     }
 
