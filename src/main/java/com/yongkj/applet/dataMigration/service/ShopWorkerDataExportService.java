@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ShopWorkerDataExport extends BaseService {
+public class ShopWorkerDataExportService extends BaseService {
 
     private final String path;
     private final boolean enable;
@@ -26,7 +26,7 @@ public class ShopWorkerDataExport extends BaseService {
     private final Map<String, List<String>> mapTables;
     private final Map<String, Map<String, Map<String, Object>>> mapTableData;
 
-    public ShopWorkerDataExport(Database srcDatabase, Database desDatabase) {
+    public ShopWorkerDataExportService(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
         this.ROW_ACCESS_WINDOW_SIZE = 100;
         this.mapTableData = new HashMap<>();

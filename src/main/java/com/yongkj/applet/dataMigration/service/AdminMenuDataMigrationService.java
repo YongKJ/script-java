@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AdminMenuDataMigration extends BaseService {
+public class AdminMenuDataMigrationService extends BaseService {
 
     private final boolean enable;
     private final Integer offsetDays;
@@ -25,7 +25,7 @@ public class AdminMenuDataMigration extends BaseService {
     private final List<String> tableNames;
     private final List<String> filterNames;
 
-    public AdminMenuDataMigration(Database srcDatabase, Database desDatabase) {
+    public AdminMenuDataMigrationService(Database srcDatabase, Database desDatabase) {
         super(srcDatabase, desDatabase);
         this.lstMenuId = new ArrayList<>();
         Map<String, Object> menuMigration = GenUtil.getMap("admin-menu-data-migration");

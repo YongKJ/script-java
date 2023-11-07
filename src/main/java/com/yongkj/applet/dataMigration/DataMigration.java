@@ -1,10 +1,7 @@
 package com.yongkj.applet.dataMigration;
 
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
-import com.yongkj.applet.dataMigration.service.AdminMenuDataMigration;
-import com.yongkj.applet.dataMigration.service.DataIncrementMigrationService;
-import com.yongkj.applet.dataMigration.service.FieldIncrementMigrationService;
-import com.yongkj.applet.dataMigration.service.ShopWorkerDataExport;
+import com.yongkj.applet.dataMigration.service.*;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.LogUtil;
@@ -18,18 +15,22 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
-    private final ShopWorkerDataExport shopWorkerDataExport;
-    private final AdminMenuDataMigration adminMenuDataMigration;
+    private final ShopCancelLogoutService shopCancelLogoutService;
+    private final ShopWorkerDataExportService shopWorkerDataExportService;
+    private final AdminMenuDataMigrationService adminMenuDataMigrationService;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
-        this.shopWorkerDataExport = new ShopWorkerDataExport(
+        this.shopCancelLogoutService = new ShopCancelLogoutService(
                 this.srcDatabase, this.desDatabase
         );
-        this.adminMenuDataMigration = new AdminMenuDataMigration(
+        this.shopWorkerDataExportService = new ShopWorkerDataExportService(
+                this.srcDatabase, this.desDatabase
+        );
+        this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(
                 this.srcDatabase, this.desDatabase
         );
         this.dataIncrementMigrationService = new DataIncrementMigrationService(
@@ -62,8 +63,9 @@ public class DataMigration {
             return;
         }
 
-        shopWorkerDataExport.apply();
-        adminMenuDataMigration.apply();
+        shopCancelLogoutService.apply();
+        shopWorkerDataExportService.apply();
+        adminMenuDataMigrationService.apply();
         dataIncrementMigrationService.apply();
         fieldIncrementMigrationService.apply();
         JDBCUtil.closeAll(srcDatabase.getManager());

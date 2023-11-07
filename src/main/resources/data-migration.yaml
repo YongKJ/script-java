@@ -14,8 +14,13 @@ des:
     username: "pre_chun"
     password: "HHhda@%DSAs"
 
-shop-worker-data-export:
+shop-cancel-logout:
   enable: true
+  mobiles:
+    - 15655589781
+
+shop-worker-data-export:
+  enable: false
   environment: test
   path: "C:\\Users\\admin\\Desktop\\shop-worker-data-export"
   tables:
