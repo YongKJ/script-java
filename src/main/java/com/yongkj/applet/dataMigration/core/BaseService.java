@@ -79,6 +79,8 @@ public abstract class BaseService {
     }
 
     protected boolean desDataUpdate(String updateSql) {
+        LogUtil.loggerLine(Log.of("BaseService", "desDataUpdate", "updateSql", updateSql));
+        System.out.println("------------------------------------------------------------------------------------------------------------");
         return JDBCUtil.getResult(desDatabase, updateSql);
     }
 

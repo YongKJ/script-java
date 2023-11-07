@@ -36,10 +36,10 @@ public class ShopCancelLogoutService extends BaseService {
         Map<String, Object> adminUser = desDataList(
                 Wrappers.lambdaQuery("admin_user")
                         .eq("mobile", mobile)).get(0);
-        Long utcDeleted = (Long) adminUser.get("utc_deleted");
+        Integer status = (Integer) adminUser.get("status");
         Long adminUserId = (Long) adminUser.get("id");
-        if (!Objects.equals(utcDeleted, 0L)) {
-            adminUser.put("utc_deleted", 0L);
+        if (!Objects.equals(status, 0L)) {
+            adminUser.put("status", 0L);
             desDataUpdate(SQL.getDataUpdateSql(
                     "admin_user", adminUser,
                     Wrappers.lambdaQuery()
@@ -50,7 +50,7 @@ public class ShopCancelLogoutService extends BaseService {
                 Wrappers.lambdaQuery("admin_role_users")
                         .eq("user_id", adminUserId));
         for (Map<String, Object> adminRole : adminRoles) {
-            utcDeleted = (Long) adminRole.get("utc_deleted");
+            Long utcDeleted = (Long) adminRole.get("utc_deleted");
             if (Objects.equals(utcDeleted, 0L)) continue;
             adminRole.put("utc_deleted", 0L);
             Long userId = (Long) adminRole.get("user_id");
@@ -68,7 +68,7 @@ public class ShopCancelLogoutService extends BaseService {
         Map<String, Object> organization = desDataList(
                 Wrappers.lambdaQuery("organization")
                         .eq("id", organizationId)).get(0);
-        utcDeleted = (Long) organization.get("utc_deleted");
+        Long utcDeleted = (Long) organization.get("utc_deleted");
         if (!Objects.equals(utcDeleted, 0L)) {
             organization.put("utc_deleted", 0L);
             desDataUpdate(SQL.getDataUpdateSql(
