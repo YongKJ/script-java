@@ -22,7 +22,8 @@ public class CsvDataTest {
     private void apply() {
 //        readTestTwo();
 //        readTestOne();
-        writeTestFive();
+        writeTestSix();
+//        writeTestFive();
 //        writeTestFour();
 //        writeTestThree();
 //        writeTestTwo();
@@ -46,6 +47,10 @@ public class CsvDataTest {
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstRecord", lstRecord));
         List<Map<String, String>> lstData = CsvUtil.toMap(csvReadPath);
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstData", lstData));
+    }
+
+    private void writeTestSix() {
+        CsvUtil.csvToExcel("/csv/适品囤类目分类.csv", 1);
     }
 
     private void writeTestFive() {
