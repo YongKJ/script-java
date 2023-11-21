@@ -6,6 +6,7 @@ import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -207,9 +208,10 @@ public class ExcelHeader {
         return cellStyle;
     }
 
-    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet, List<List<String>> lstHeader) {
+    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet) {
+        SXSSFRow row = sheet.getRow(0);
         Map<Integer, Integer> mapColWidth = new ConcurrentHashMap<>();
-        for (int col = 0; col < lstHeader.size(); col++) {
+        for (int col = 0; col < row.getLastCellNum(); col++) {
             mapColWidth.put(col, sheet.getColumnWidth(col));
         }
         return mapColWidth;

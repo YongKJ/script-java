@@ -12,6 +12,7 @@ import java.util.Map;
 public class PoiExcelUtil {
 
     private static final int[][] MOVE = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    private static Map<String, Map<Integer, Integer>> mapSheetColWidth;
     private static List<CellStyle> lstCellStyle;
     private static SXSSFDrawing drawing;
     private static int dataRow = 1;
@@ -143,8 +144,8 @@ public class PoiExcelUtil {
         ExcelWriter.writeCellData(cell, lstCellStyle, dataRow, cellData);
     }
 
-    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet, List<List<String>> lstHeader) {
-        return ExcelHeader.getInitColWidths(sheet, lstHeader);
+    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet) {
+        return ExcelHeader.getInitColWidths(sheet);
     }
 
     public static void updateColWidth(Map<Integer, Integer> mapColWidth, Integer col, Object value) {
@@ -157,6 +158,14 @@ public class PoiExcelUtil {
 
     public static void write(SXSSFWorkbook workbook, String fileName) {
         ExcelWriter.write(workbook, fileName);
+    }
+
+    public static Map<String, Map<Integer, Integer>> getMapSheetColWidth() {
+        return mapSheetColWidth;
+    }
+
+    public static void setMapSheetColWidth(Map<String, Map<Integer, Integer>> mapSheetColWidth) {
+        PoiExcelUtil.mapSheetColWidth = mapSheetColWidth;
     }
 
     public static List<CellStyle> getLstCellStyle() {

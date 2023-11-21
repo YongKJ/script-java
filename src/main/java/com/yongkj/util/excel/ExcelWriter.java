@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ExcelWriter {
 
@@ -181,6 +182,9 @@ public class ExcelWriter {
     }
 
     public static void writeCellData(SXSSFRow row, List<CellStyle> lstCellStyle, int dataRow, int colIndex, Object cellData) {
+        //记录列宽
+        changeSheetColWidth(row, colIndex, cellData);
+        //写入单元格数据
         SXSSFCell cell = setCellValue(row, colIndex, GenUtil.objToStr(cellData));
         //设置单元格样式
         setCellStyle(lstCellStyle, dataRow, cell);
@@ -212,6 +216,7 @@ public class ExcelWriter {
 
     public static void write(SXSSFWorkbook workbook, String fileName) {
         try {
+            saveSheetColWidth(workbook);
             workbook.write(
                     new FileOutputStream(
                             Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
@@ -219,6 +224,31 @@ public class ExcelWriter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void saveSheetColWidth(SXSSFWorkbook workbook) {
+        if (PoiExcelUtil.getMapSheetColWidth() == null || PoiExcelUtil.getMapSheetColWidth().isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            SXSSFSheet sheet = workbook.getSheetAt(i);
+            String sheetName = sheet.getSheetName();
+            if (!PoiExcelUtil.getMapSheetColWidth().containsKey(sheetName)) continue;
+            PoiExcelUtil.updateColWidths(sheet, PoiExcelUtil.getMapSheetColWidth().get(sheetName));
+        }
+        PoiExcelUtil.setMapSheetColWidth(new ConcurrentHashMap<>());
+    }
+
+    private static void changeSheetColWidth(SXSSFRow row, int colIndex, Object cellData) {
+        if (PoiExcelUtil.getMapSheetColWidth() == null) {
+            PoiExcelUtil.setMapSheetColWidth(new ConcurrentHashMap<>());
+        }
+        String sheetName = row.getSheet().getSheetName();
+        if (!PoiExcelUtil.getMapSheetColWidth().containsKey(sheetName)) {
+            PoiExcelUtil.getMapSheetColWidth().put(sheetName, PoiExcelUtil.getInitColWidths(row.getSheet()));
+        }
+        Map<Integer, Integer> mapColWidth = PoiExcelUtil.getMapSheetColWidth().get(sheetName);
+        PoiExcelUtil.updateColWidth(mapColWidth, colIndex, cellData);
     }
 
     public static SXSSFCell setCellValue(SXSSFSheet sheet, int rowIndex, int colIndex, String value) {
