@@ -60,7 +60,7 @@ public class ExcelExportTest {
         List<SXSSFSheet> sheets = getSheets(workbook);
         List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
         ThreadUtil.executeWithListDataByThreadPool(1, sheets, sheet -> {
-            PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+            PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1, 18);
             for (int i = 0; i < mapData.size(); ) {
                 int dataSize = i + ROW_ACCESS_WINDOW_SIZE;
                 dataSize = Math.min(dataSize, mapData.size());
