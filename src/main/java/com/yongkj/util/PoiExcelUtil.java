@@ -143,6 +143,18 @@ public class PoiExcelUtil {
         ExcelWriter.writeCellData(cell, lstCellStyle, dataRow, cellData);
     }
 
+    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet, List<List<String>> lstHeader) {
+        return ExcelHeader.getInitColWidths(sheet, lstHeader);
+    }
+
+    public static void updateColWidth(Map<Integer, Integer> mapColWidth, Integer col, Object value) {
+        ExcelHeader.updateColWidth(mapColWidth, col, value);
+    }
+
+    public static void updateColWidths(SXSSFSheet sheet, Map<Integer, Integer> mapColWidth) {
+        ExcelHeader.updateColWidths(sheet, mapColWidth);
+    }
+
     public static void write(SXSSFWorkbook workbook, String fileName) {
         ExcelWriter.write(workbook, fileName);
     }

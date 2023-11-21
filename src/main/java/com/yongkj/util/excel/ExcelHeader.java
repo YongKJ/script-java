@@ -1,6 +1,7 @@
 package com.yongkj.util.excel;
 
 import com.yongkj.pojo.dto.Coords;
+import com.yongkj.util.GenUtil;
 import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -12,10 +13,9 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ExcelHeader {
 
@@ -205,6 +205,28 @@ public class ExcelHeader {
         cellStyle.setLeftBorderColor(lstColor.get(2));
         cellStyle.setRightBorderColor(lstColor.get(2));
         return cellStyle;
+    }
+
+    public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet, List<List<String>> lstHeader) {
+        Map<Integer, Integer> mapColWidth = new ConcurrentHashMap<>();
+        for (int col = 0; col < lstHeader.size(); col++) {
+            mapColWidth.put(col, sheet.getColumnWidth(col));
+        }
+        return mapColWidth;
+    }
+
+    public static void updateColWidth(Map<Integer, Integer> mapColWidth, Integer col, Object value) {
+        int oldColWidth = Optional.ofNullable(mapColWidth.get(col)).orElse(0);
+        int newColWidth = getWidthCol(GenUtil.objToStr(value)) * 256;
+        if (newColWidth > oldColWidth) {
+            mapColWidth.put(col, newColWidth);
+        }
+    }
+
+    public static void updateColWidths(SXSSFSheet sheet, Map<Integer, Integer> mapColWidth) {
+        for (int col = 0; col < mapColWidth.size(); col++) {
+            sheet.setColumnWidth(col, mapColWidth.get(col));
+        }
     }
 
 }
