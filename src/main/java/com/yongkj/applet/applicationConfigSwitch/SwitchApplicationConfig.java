@@ -31,9 +31,11 @@ public class SwitchApplicationConfig {
     private final String projectPath;
     private final String filterBranch;
     private final String privateKeyPath;
+    private final String filterDevBranch;
     private final String filterPullBranch;
     private final List<String> pullBranchs;
     private final List<String> projectNames;
+    private final String filterDevPullBranch;
     private final List<String> filterProjectNames;
 
     private SwitchApplicationConfig() {
@@ -48,7 +50,9 @@ public class SwitchApplicationConfig {
 
         Map<String, Object> mapFilter = GenUtil.getMap("filter");
         filterProjectNames = (List<String>) mapFilter.get("project-name");
+        filterDevPullBranch = GenUtil.objToStr(mapFilter.get("dev-pull-branch"));
         filterPullBranch = GenUtil.objToStr(mapFilter.get("pull-branch"));
+        filterDevBranch = GenUtil.objToStr(mapFilter.get("dev-branch"));
         filterBranch = GenUtil.objToStr(mapFilter.get("branch"));
         isFilter = (Boolean) mapFilter.get("enable");
     }
@@ -116,6 +120,9 @@ public class SwitchApplicationConfig {
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
 
+            if (!isTest && isFilter && filterProjectNames.contains(projectName)) {
+                branchCheckOutAndPull(git);
+            }
 
             String url = git.getRepository().getConfig().getString("remote", "origin", "url");
 
@@ -133,6 +140,50 @@ public class SwitchApplicationConfig {
 
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "url", url));
             System.out.println("---------------------------------------------------------------------------------------------");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void branchCheckOutAndPull(Git git) {
+        try {
+            String refName = "";
+            String branch = filterDevBranch;
+            String branchName = git.getRepository().getBranch();
+            if (!Objects.equals(branchName, branch)) {
+                Ref ref = git.checkout().setName(branch).call();
+                refName = ref.getName();
+            }
+
+            PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
+
+            if (pullResult.isSuccessful()) {
+                PullResult pullRemoteResult = git.pull()
+                        .setRemoteBranchName(filterDevPullBranch)
+                        .setFastForward(MergeCommand.FastForwardMode.NO_FF)
+                        .setTransportConfigCallback(this::setSshSessionFactory).call();
+
+                if (pullRemoteResult.isSuccessful()) {
+                    Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                    for (PushResult pushResult : pushResults) {
+                        LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pushResult.getMessages()", pushResult.getMessages()));
+                        System.out.println("---------------------------------------------------------------------------------------------");
+                    }
+                }
+
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullRemoteResult.isSuccessful()", pullRemoteResult.isSuccessful()));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullResult.isSuccessful()", pullResult.isSuccessful()));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "branchName", branchName));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "refName", refName));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
