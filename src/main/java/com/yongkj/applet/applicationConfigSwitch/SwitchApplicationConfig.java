@@ -25,6 +25,7 @@ public class SwitchApplicationConfig {
 
     private final String branch;
     private final boolean isTest;
+    private final String bootName;
     private final boolean isFilter;
     private final String configName;
     private final String configPath;
@@ -46,6 +47,7 @@ public class SwitchApplicationConfig {
         projectNames = GenUtil.getList("project-name");
         projectPath = GenUtil.getValue("project-path");
         privateKeyPath = GenUtil.getValue("private-key-path");
+        bootName = "bootstrap-" + (isTest ? "test" : "dev") + ".yml";
         configName = "application-" + (isTest ? "test" : "dev") + ".yml";
 
         Map<String, Object> mapFilter = GenUtil.getMap("filter");
@@ -64,19 +66,31 @@ public class SwitchApplicationConfig {
         for (String projectName : projectNames) {
             branchCheckOutAndPull(projectName);
 
-            String srcPath = getApplicationSrcPath(projectName);
-            if (!FileUtil.exist(srcPath)) {
-                continue;
-            }
-            String desPath = getApplicationDesPath(projectName);
-            if (FileUtil.exist(desPath)) {
-                FileUtil.delete(desPath);
-            }
-            FileUtil.copy(srcPath, desPath);
+            String srcBootPath = getBootstrapSrcPath(projectName);
+            if (FileUtil.exist(srcBootPath)) {
+                String desBootPath = getBootstrapDesPath(projectName);
+                if (FileUtil.exist(desBootPath)) {
+                    FileUtil.delete(desBootPath);
+                }
+                FileUtil.copy(srcBootPath, desBootPath);
 
-            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "srcPath", srcPath));
-            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "desPath", desPath));
-            System.out.println("---------------------------------------------------------------------------------------------");
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "srcBootPath", srcBootPath));
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "desBootPath", desBootPath));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
+
+            String srcConfigPath = getApplicationSrcPath(projectName);
+            if (FileUtil.exist(srcConfigPath)) {
+                String desConfigPath = getApplicationDesPath(projectName);
+                if (FileUtil.exist(desConfigPath)) {
+                    FileUtil.delete(desConfigPath);
+                }
+                FileUtil.copy(srcConfigPath, desConfigPath);
+
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "srcConfigPath", srcConfigPath));
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "apply", "desConfigPath", desConfigPath));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
         }
     }
 
@@ -260,8 +274,16 @@ public class SwitchApplicationConfig {
         });
     }
 
+    private String getBootstrapDesPath(String projectName) {
+        return getListPath(getProjectResourcesPath(projectName), bootName);
+    }
+
     private String getApplicationDesPath(String projectName) {
         return getListPath(getProjectResourcesPath(projectName), "application.yml");
+    }
+
+    private String getBootstrapSrcPath(String projectName) {
+        return getListPath(configPath, projectName, bootName);
     }
 
     private String getApplicationSrcPath(String projectName) {
