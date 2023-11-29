@@ -23,6 +23,7 @@ public class SwitchApplicationConfig {
 
     private final String branch;
     private final boolean isTest;
+    private final boolean isDev;
     private final String bootName;
     private final boolean isFilter;
     private final String configName;
@@ -39,14 +40,16 @@ public class SwitchApplicationConfig {
 
     private SwitchApplicationConfig() {
         branch = GenUtil.getValue("branch");
+        isDev = branch.contains("dev");
         isTest = branch.contains("test");
+
         configPath = GenUtil.getValue("config-path");
         pullBranchs = GenUtil.getList("pull-branchs");
         projectNames = GenUtil.getList("project-name");
         projectPath = GenUtil.getValue("project-path");
         privateKeyPath = GenUtil.getValue("private-key-path");
-        bootName = "bootstrap-" + (isTest ? "test" : "dev") + ".yml";
-        configName = "application-" + (isTest ? "test" : "dev") + ".yml";
+        bootName = "bootstrap-" + (isTest ? "test" : (isDev ? "dev" : "pre")) + ".yml";
+        configName = "application-" + (isTest ? "test" : (isDev ? "dev" : "pre")) + ".yml";
 
         Map<String, Object> mapFilter = GenUtil.getMap("filter");
         filterProjectNames = (List<String>) mapFilter.get("project-name");
@@ -107,7 +110,7 @@ public class SwitchApplicationConfig {
 
             checkOutBootstrapModifiedFile(git);
 
-            String branch = this.branch;
+            String branch = getCheckBranch(git);
             String pullBranch = getPullBranch(git);
 //            String pullBranch = getPullBranch(git, projectName);
             if (isTest && isFilter && filterProjectNames.contains(projectName)) {
@@ -142,7 +145,7 @@ public class SwitchApplicationConfig {
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
 
-            if (!isTest && isFilter && filterProjectNames.contains(projectName)) {
+            if (isDev && isFilter && filterProjectNames.contains(projectName)) {
                 branchCheckOutAndPull(git);
             }
 
@@ -209,6 +212,28 @@ public class SwitchApplicationConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getCheckBranch(Git git) {
+        try {
+            List<Ref> lstBranch = git.branchList().setListMode(ListBranchCommand.ListMode.REMOTE).call();
+            List<String> branchNames = lstBranch.stream().map(Ref::getName).collect(Collectors.toList());
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "getPullBranch", "branchNames.size()", branchNames.size()));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "getPullBranch", "branchNames", branchNames));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            for (String branchName : branchNames) {
+                if (branchName.endsWith(this.branch)) {
+                    return this.branch;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pullBranchs.get(0);
     }
 
     private String getPullBranch(Git git) {
