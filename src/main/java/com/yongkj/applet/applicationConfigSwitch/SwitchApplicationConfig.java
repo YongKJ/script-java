@@ -7,15 +7,13 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.MergeCommand;
-import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.util.FS;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +62,14 @@ public class SwitchApplicationConfig {
         System.out.println("---------------------------------------------------------------------------------------------");
 
         for (String projectName : projectNames) {
+//            if (projectName.contains("user")) {
+//                branchCheckOutTest(projectName);
+//                continue;
+//            }
+//            if (!projectName.contains("user")) {
+//                continue;
+//            }
+
             branchCheckOutAndPull(projectName);
 
             String srcBootPath = getBootstrapSrcPath(projectName);
@@ -98,6 +104,8 @@ public class SwitchApplicationConfig {
         String gitPath = getProjectGitPath(projectName);
         try {
             Git git = Git.open(new File(gitPath));
+
+            checkOutBootstrapModifiedFile(git);
 
             String branch = this.branch;
             String pullBranch = getPullBranch(git);
@@ -228,6 +236,58 @@ public class SwitchApplicationConfig {
             e.printStackTrace();
         }
         return pullBranchs.get(0);
+    }
+
+    private void checkOutBootstrapModifiedFile(Git git) {
+        try {
+            Status status = git.status().call();
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOutTest", "status.getModified()", status.getModified()));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            List<String> paths = new ArrayList<>();
+            for (String path : status.getModified()) {
+                if (!path.equals("bootstrap-dev.yml") && !path.contains("bootstrap-test.yml")) {
+                    continue;
+                }
+                paths.add(path);
+            }
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOutTest", "paths", paths));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            if (!paths.isEmpty()) {
+                git.checkout().addPaths(paths).call();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void branchCheckOutTest(String projectName) {
+        String gitPath = getProjectGitPath(projectName);
+        try {
+            Git git = Git.open(new File(gitPath));
+
+            Status status = git.status().call();
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOutTest", "status.getModified()", status.getModified()));
+            System.out.println("---------------------------------------------------------------------------------------------");
+
+            for (String fileName : status.getModified()) {
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOutTest", "getListPath(projectName, fileName)", getListPath(projectName, fileName)));
+                System.out.println("---------------------------------------------------------------------------------------------");
+
+                Ref ref = git.checkout().addPath(fileName).call();
+
+                LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOutTest", "ref.getName()", ref.getName()));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
+
+            git.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String getPullBranch(Git git, String projectName) {
