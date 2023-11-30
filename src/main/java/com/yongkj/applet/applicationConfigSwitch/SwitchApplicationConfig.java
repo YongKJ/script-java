@@ -146,6 +146,7 @@ public class SwitchApplicationConfig {
             }
 
             if (isDev && isFilter && filterProjectNames.contains(projectName)) {
+                branchCheckOutAndPullByPre(git);
                 branchCheckOutAndPull(git);
             }
 
@@ -164,6 +165,33 @@ public class SwitchApplicationConfig {
             System.out.println("---------------------------------------------------------------------------------------------");
 
             LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "url", url));
+            System.out.println("---------------------------------------------------------------------------------------------");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void branchCheckOutAndPullByPre(Git git) {
+        try {
+            String pullBranch = pullBranchs.stream().filter(po -> po.contains("pre")).findFirst().orElse(null);
+            if (pullBranch == null) {
+                return;
+            }
+
+            PullResult pullRemoteResult = git.pull()
+                    .setRemoteBranchName(pullBranch)
+                    .setFastForward(MergeCommand.FastForwardMode.NO_FF)
+                    .setTransportConfigCallback(this::setSshSessionFactory).call();
+
+            if (pullRemoteResult.isSuccessful()) {
+                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                for (PushResult pushResult : pushResults) {
+                    LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pushResult.getMessages()", pushResult.getMessages()));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
+            }
+
+            LogUtil.loggerLine(Log.of("SwitchApplicationConfig", "branchCheckOut", "pullRemoteResult.isSuccessful()", pullRemoteResult.isSuccessful()));
             System.out.println("---------------------------------------------------------------------------------------------");
         } catch (Exception e) {
             e.printStackTrace();
