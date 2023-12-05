@@ -15,6 +15,7 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
+    private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
@@ -24,6 +25,9 @@ public class DataMigration {
     private DataMigration() {
         this.srcDatabase = Database.get("src");
         this.desDatabase = Database.get("des");
+        this.agreementsUpdateService = new AgreementsUpdateService(
+                this.srcDatabase, this.desDatabase
+        );
         this.shopCancelLogoutService = new ShopCancelLogoutService(
                 this.srcDatabase, this.desDatabase
         );
@@ -63,6 +67,7 @@ public class DataMigration {
             return;
         }
 
+        agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
         shopWorkerDataExportService.apply();
         adminMenuDataMigrationService.apply();

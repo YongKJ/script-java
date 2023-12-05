@@ -4,20 +4,44 @@ src:
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/dev_user?characterEncoding=utf-8"
     username: "dev"
-    password: "HHhda@%DSAs"
+    password: "HHhda@%DSAs996"
 
 des:
   database:
-    name: "test_user"
+    name: "prod_user"
     driver: "com.mysql.cj.jdbc.Driver"
-    url: "jdbc:mysql://127.0.0.1:23306/test_user?characterEncoding=utf-8"
-    username: "pre_chun"
-    password: "HHhda@%DSAs"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_user?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
+
+agreements-update:
+  enable: true
+  table-names:
+    - "agreements"
+    - "_article"
+  url-suffix: "?view=doc_embed&from=asite&outline=1&title=1"
+  agreement-infos:
+    - srcName: "保椿服务商家入驻协议"
+      desName: "保椿商家版用户服务协议"
+      srcUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xhac1z/ipw2ao5q54brzrmc"
+      desUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xhac1z/uuukiweych4q0qmp"
+    - srcName: "隐私政策"
+      desName: "隐私政策"
+      srcUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xhac1z/yls2tgufadghdia0"
+      desUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xhac1z/yls2tgufadghdia0"
+    - srcName: "保椿商品商家入驻协议"
+      desName: "保椿商家版用户服务协议"
+      srcUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xt3a10/fkl6nra2fde5x5c4"
+      desUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/an2tnc/dxa9megkt3k1a5gf"
+    - srcName: "隐私协议"
+      desName: "隐私政策"
+      srcUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/xt3a10/fflx2uph6wln453o"
+      desUrl: "https://baochun.yuque.com/org-wiki-baochun-tpnhs1/an2tnc/wnc9ydg5hesur90g"
 
 shop-cancel-logout:
-  enable: true
+  enable: false
   mobiles:
-    - 15655589781
+    - 11014225011
 
 shop-worker-data-export:
   enable: false
@@ -126,5 +150,7 @@ field-migration:
   table-delete: false
   field-delete: false
   table-names:
-    - "worker_certificate"
+    - "organization_category_ultra"
+    - "organization_certificate_ultra"
+    - "workflow_log"
 
