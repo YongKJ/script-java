@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 public class SwitchApplicationConfig {
 
-    private final String branch;
-    private final boolean isTest;
+    private String branch;
+    private boolean isTest;
     private final boolean isDev;
     private final String bootName;
     private final boolean isFilter;
@@ -42,14 +42,19 @@ public class SwitchApplicationConfig {
         branch = GenUtil.getValue("branch");
         isDev = branch.contains("dev");
         isTest = branch.contains("test");
+        boolean isProd = branch.contains("prod");
 
         configPath = GenUtil.getValue("config-path");
         pullBranchs = GenUtil.getList("pull-branchs");
         projectNames = GenUtil.getList("project-name");
         projectPath = GenUtil.getValue("project-path");
         privateKeyPath = GenUtil.getValue("private-key-path");
-        bootName = "bootstrap-" + (isTest ? "test" : (isDev ? "dev" : "pre")) + ".yml";
-        configName = "application-" + (isTest ? "test" : (isDev ? "dev" : "pre")) + ".yml";
+        bootName = "bootstrap-" + (isTest ? "test" : (isDev ? "dev" : (isProd ? "prod" : "pre"))) + ".yml";
+        configName = "application-" + (isTest ? "test" : (isDev ? "dev" : (isProd ? "prod" : "pre"))) + ".yml";
+        if (isProd) {
+            isTest = true;
+            branch = branch.replace("prod", "test");
+        }
 
         Map<String, Object> mapFilter = GenUtil.getMap("filter");
         filterProjectNames = (List<String>) mapFilter.get("project-name");
