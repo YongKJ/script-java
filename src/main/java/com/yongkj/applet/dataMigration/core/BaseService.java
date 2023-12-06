@@ -161,6 +161,13 @@ public abstract class BaseService {
         );
     }
 
+    protected String getUpdateSQl(Map<String, Object> mapData, String tableName, Wrappers query) {
+        return SQL.getDataUpdateSql(
+                tableName,
+                mapData,
+                query.getSqlSegment());
+    }
+
     protected Map<String, Map<String, Object>> getMapData(List<Map<String, Object>> lstData) {
         return getMapData(lstData, new ArrayList<>());
     }

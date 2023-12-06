@@ -18,6 +18,7 @@ public class DataMigration {
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
+    private final SmallAssignmentUpdateService smallAssignmentUpdateService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
@@ -32,6 +33,9 @@ public class DataMigration {
                 this.srcDatabase, this.desDatabase
         );
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(
+                this.srcDatabase, this.desDatabase
+        );
+        this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(
                 this.srcDatabase, this.desDatabase
         );
         this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(
@@ -70,6 +74,7 @@ public class DataMigration {
         agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
         shopWorkerDataExportService.apply();
+        smallAssignmentUpdateService.apply();
         adminMenuDataMigrationService.apply();
         dataIncrementMigrationService.apply();
         fieldIncrementMigrationService.apply();

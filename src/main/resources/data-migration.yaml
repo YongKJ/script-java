@@ -14,8 +14,11 @@ des:
     username: "prod"
     password: "vsHHhda@%DSAs996"
 
-agreements-update:
+small-assignment-update:
   enable: true
+
+agreements-update:
+  enable: false
   table-names:
     - "agreements"
     - "_article"
