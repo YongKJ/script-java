@@ -7,10 +7,13 @@ import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
+import com.yongkj.util.PoiExcelUtil;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class SmallAssignmentUpdateService extends BaseService {
 
@@ -24,7 +27,64 @@ public class SmallAssignmentUpdateService extends BaseService {
 
     public void apply() {
         if (!enable) return;
-        categoryModifierIdUpdate();
+//        categoryModifierIdUpdate();
+        relWorkerTypeLogExport();
+    }
+
+    private void relWorkerTypeLogExport() {
+        Table relWorkerTypeLogTable = desDatabase.getMapTable().get("rel_worker__worker_type_log");
+        Table workerTypeTable = desDatabase.getMapTable().get("worker_type");
+
+        List<Map<String, String>> lstData = new ArrayList<>();
+        List<Map<String, Object>> relWorkerTypeLogDataList = desDataList(relWorkerTypeLogTable);
+        Map<String, Map<String, Object>> mapWorkerType = getMapData(desDataList(workerTypeTable));
+        for (Map<String, Object> relWorkerTypeLogData : relWorkerTypeLogDataList) {
+            String relatedTypesStr = (String) relWorkerTypeLogData.get("related_types");
+            Map<String, Object> relatedTypes = (Map<String, Object>) GenUtil.fromJsonString(relatedTypesStr, Map.class);
+            List<Map<String, Object>> relWorkerTypes = (List<Map<String, Object>>) relatedTypes.get("relWorkerTypes");
+
+            Long utcCreated = (Long) relWorkerTypeLogData.get("utc_created");
+            LocalDateTime dateTime = GenUtil.toLocalDateTime(new Date(utcCreated * 1000));
+            String dateTimeStr = GenUtil.localDateTimeToStr(dateTime);
+
+            List<String> workerTypeNames = new ArrayList<>();
+            for (Map<String, Object> relWorkerType : relWorkerTypes) {
+                String typeId = relWorkerType.get("typeId") + "";
+                if (!mapWorkerType.containsKey(typeId)) {
+                    continue;
+                }
+                Map<String, Object> workerType = mapWorkerType.get(typeId);
+                String name = GenUtil.objToStr(workerType.get("name"));
+                workerTypeNames.add(name);
+            }
+
+            Map<String, String> mapData = new HashMap<>();
+            mapData.put("dateTimeStr", dateTimeStr);
+            mapData.put("workerTypeNameStr", String.join("、", workerTypeNames));
+            lstData.add(mapData);
+            System.out.println("-----------[SmallAssignmentUpdateService] relWorkerTypeLogExport -> relatedTypes: " + relatedTypes);
+        }
+
+        List<List<String>> lstHeader = new ArrayList<>();
+        lstHeader.add(Collections.singletonList("序号"));
+        lstHeader.add(Collections.singletonList("工种列表"));
+        lstHeader.add(Collections.singletonList("变更时间"));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet();
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+        int rowIndex = lstHeader.get(0).size();
+        for (Map<String, String> mapData : lstData) {
+            String dateTimeStr = mapData.get("dateTimeStr");
+            String workerTypeNameStr = mapData.get("workerTypeNameStr");
+
+            int colIndex = 0;
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, workerTypeNameStr);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, colIndex, dateTimeStr);
+        }
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\worker-types.xlsx");
     }
 
     private void categoryModifierIdUpdate() {

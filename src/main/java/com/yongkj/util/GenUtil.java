@@ -25,6 +25,10 @@ public class GenUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
+    public static LocalDateTime toLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    }
+
     public static <T> T fromJsonString(String strJson, Class<T> c) {
         T value = null;
         if (strJson != null) {
