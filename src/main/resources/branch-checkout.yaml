@@ -1,0 +1,25 @@
+project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
+config-path: "D:\\Document\\MyCodes\\Worker\\Config"
+private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
+
+branch: "feat/hello-world-dxj"
+pull-branchs:
+  - local
+  - develop
+  - release-1.0.0
+  - master
+
+branch-config-relation:
+  local: "dev"
+  develop: "test"
+  release: "pre"
+  master: "prod"
+
+project-name:
+  - api-gateway
+  - framework-core
+  - rocketmq-entity
+  - service-housekeeping
+  - service-im
+  - service-settlement
+  - service-user
