@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BranchCheckoutService {
+public class BranchCheckout {
 
     private final String configTag;
     private final String configPath;
@@ -29,7 +29,7 @@ public class BranchCheckoutService {
     private final Map<String, Object> mapTagBranch;
     private final List<Map<String, Object>> branchs;
 
-    private BranchCheckoutService() {
+    private BranchCheckout() {
         branchs = GenUtil.getListMap("branchs");
         configTag = GenUtil.getValue("config-tag");
         configPath = GenUtil.getValue("config-path");
@@ -161,7 +161,12 @@ public class BranchCheckoutService {
                 }
             }
 
-            List<String> branchNames = git.branchDelete().setBranchNames((String[]) lstBranchName.toArray()).call();
+            String[] delBranchNames = new String[lstBranchName.size()];
+            for (int i = 0; i < lstBranchName.size(); i++) {
+                delBranchNames[i] = lstBranchName.get(i);
+            }
+
+            List<String> branchNames = git.branchDelete().setBranchNames(delBranchNames).call();
 
             LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchClean", "branchNames", branchNames));
             System.out.println("---------------------------------------------------------------------------------------------");
@@ -206,7 +211,10 @@ public class BranchCheckoutService {
         try {
             branchCheckOutAndPullByTemp(git, tempBranch);
 
-            Ref ref = git.branchCreate().setName(branch).call();
+            Ref ref = git.checkout()
+                    .setName(branch)
+                    .setCreateBranch(true)
+                    .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
 
             boolean pullFlag = branchSyncPull(git, Collections.singletonList(tempBranch));
             if (pullFlag) {
@@ -382,7 +390,7 @@ public class BranchCheckoutService {
     }
 
     public static void run(String[] args) {
-        new BranchCheckoutService().apply();
+        new BranchCheckout().apply();
     }
 
 }
