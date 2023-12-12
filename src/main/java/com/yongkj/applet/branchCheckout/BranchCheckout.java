@@ -200,7 +200,7 @@ public class BranchCheckout {
                 delBranchNames[i] = lstBranchName.get(i);
             }
 
-            List<String> branchNames = git.branchDelete().setBranchNames(delBranchNames).call();
+            List<String> branchNames = git.branchDelete().setBranchNames(delBranchNames).setForce(true).call();
 
             LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchClean", "branchNames", branchNames));
             System.out.println("---------------------------------------------------------------------------------------------");
