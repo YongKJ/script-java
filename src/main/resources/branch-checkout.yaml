@@ -3,11 +3,15 @@ config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
 config-tag: dev
+
 branchs:
   - project-name: "service-user"
     branch: "feat/hello-world-dxj"
   - project-name: "service-housekeeping"
     branch: "feat/hello-world-dxj"
+
+branch-clean: false
+
 pull-branchs:
   - local
   - develop
