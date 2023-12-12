@@ -97,24 +97,30 @@ public class BranchCheckoutService {
             String branchName = git.getRepository().getBranch();
             if (!Objects.equals(branchName, branch) && !hasBranch(git, branch, false)) {
                 refName = branchCheckOutAndPull(git, branch);
+            } else {
+                if (!Objects.equals(branchName, branch)) {
+                    Ref ref = git.checkout().setName(branch).call();
+                    refName = ref.getName();
+                }
 
-                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "branchName", branchName));
+                PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
+                if (pullResult.isSuccessful() && !pullBranchs.contains(branch)) {
+                    boolean pullFlag = branchSyncPull(git);
+
+                    if (pullFlag) {
+                        Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                        for (PushResult pushResult : pushResults) {
+                            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pushResult.getMessages()", pushResult.getMessages()));
+                            System.out.println("---------------------------------------------------------------------------------------------");
+                        }
+                    }
+
+                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pullFlag", pullFlag));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
+
+                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pullResult.isSuccessful()", pullResult.isSuccessful()));
                 System.out.println("---------------------------------------------------------------------------------------------");
-
-                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "refName", refName));
-                System.out.println("---------------------------------------------------------------------------------------------");
-
-                return;
-            }
-
-            if (!Objects.equals(branchName, branch)) {
-                Ref ref = git.checkout().setName(branch).call();
-                refName = ref.getName();
-            }
-
-            PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
-            if (pullResult.isSuccessful() && !pullBranchs.contains(branch)) {
-                branchSyncPull(git);
             }
 
             if (branchClean) {
@@ -125,16 +131,13 @@ public class BranchCheckoutService {
 
             git.close();
 
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "pullResult.isSuccessful()", pullResult.isSuccessful()));
+            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "branchName", branchName));
             System.out.println("---------------------------------------------------------------------------------------------");
 
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "branchName", branchName));
+            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "refName", refName));
             System.out.println("---------------------------------------------------------------------------------------------");
 
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "refName", refName));
-            System.out.println("---------------------------------------------------------------------------------------------");
-
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOut", "url", url));
+            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "url", url));
             System.out.println("---------------------------------------------------------------------------------------------");
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,18 +173,28 @@ public class BranchCheckoutService {
     private String branchCheckOutAndPull(Git git, String branch) {
         try {
             if (!(branch.contains("feat") || branch.contains("fix"))) {
-                Ref ref = git.checkout()
-                        .setName(branch)
-                        .setCreateBranch(true)
-                        .setStartPoint(String.format("origin/%s", branch))
-                        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
-                return ref.getName();
+                if (hasBranch(git, branch, true)) {
+                    Ref ref = git.checkout()
+                            .setName(branch)
+                            .setCreateBranch(true)
+                            .setStartPoint(String.format("origin/%s", branch))
+                            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
+                    return ref.getName();
+                }
+                return "";
             }
             if (branch.contains("feat")) {
-                return branchCheckOutAndPullByFeat(git, branch);
+                String tempBranch = pullBranchs.stream()
+                        .filter(po -> po.contains("develop")).findFirst().orElse("develop");
+
+                return branchCheckOutAndPullByLocal(git, branch, tempBranch);
             }
             if (branch.contains("fix")) {
-                return branchCheckOutAndPullByFix(git, branch);
+                String tempBranch = pullBranchs.stream()
+                        .filter(po -> po.contains((String) mapTagBranch.get(configTag)))
+                        .findFirst().orElse((String) mapTagBranch.get(configTag));
+
+                return branchCheckOutAndPullByLocal(git, branch, tempBranch);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,37 +202,25 @@ public class BranchCheckoutService {
         return "";
     }
 
-    private String branchCheckOutAndPullByFeat(Git git, String branch) {
+    private String branchCheckOutAndPullByLocal(Git git, String branch, String tempBranch) {
         try {
-            String tempBranch = pullBranchs.stream()
-                    .filter(po -> po.contains("develop")).findFirst().orElse("develop");
             branchCheckOutAndPullByTemp(git, tempBranch);
 
             Ref ref = git.branchCreate().setName(branch).call();
 
-            branchSyncPull(git, Collections.singletonList(tempBranch));
+            boolean pullFlag = branchSyncPull(git, Collections.singletonList(tempBranch));
+            if (pullFlag) {
+                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                for (PushResult pushResult : pushResults) {
+                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "pushResult.getMessages()", pushResult.getMessages()));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
+            }
 
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByFeat", "refName", ref.getName()));
+            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "refName", ref.getName()));
             System.out.println("---------------------------------------------------------------------------------------------");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
-    private String branchCheckOutAndPullByFix(Git git, String branch) {
-        try {
-            String tempBranch = pullBranchs.stream()
-                    .filter(po -> po.contains((String) mapTagBranch.get(configTag)))
-                    .findFirst().orElse((String) mapTagBranch.get(configTag));
-            branchCheckOutAndPullByTemp(git, tempBranch);
-
-            Ref ref = git.branchCreate().setName(branch).call();
-
-            branchSyncPull(git, Collections.singletonList(tempBranch));
-
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByFix", "refName", ref.getName()));
-            System.out.println("---------------------------------------------------------------------------------------------");
+            return ref.getName();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -230,19 +231,20 @@ public class BranchCheckoutService {
         try {
             String branchName = git.getRepository().getBranch();
             if (!Objects.equals(branchName, branch) && !hasBranch(git, branch, false)) {
-                Ref ref = git.checkout()
-                        .setName(branch)
-                        .setCreateBranch(true)
-                        .setStartPoint(String.format("origin/%s", branch))
-                        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
-                String refName = ref.getName();
+                if (hasBranch(git, branch, true)) {
+                    Ref ref = git.checkout()
+                            .setName(branch)
+                            .setCreateBranch(true)
+                            .setStartPoint(String.format("origin/%s", branch))
+                            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
+                    String refName = ref.getName();
 
-                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByTemp", "branchName", branchName));
-                System.out.println("---------------------------------------------------------------------------------------------");
+                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByTemp", "branchName", branchName));
+                    System.out.println("---------------------------------------------------------------------------------------------");
 
-                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByTemp", "refName", refName));
-                System.out.println("---------------------------------------------------------------------------------------------");
-
+                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByTemp", "refName", refName));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
                 return;
             }
 
@@ -267,12 +269,13 @@ public class BranchCheckoutService {
         }
     }
 
-    private void branchSyncPull(Git git) {
-        branchSyncPull(git, new ArrayList<>());
+    private boolean branchSyncPull(Git git) {
+        return branchSyncPull(git, new ArrayList<>());
     }
 
-    private void branchSyncPull(Git git, List<String> branchFilters) {
+    private boolean branchSyncPull(Git git, List<String> branchFilters) {
         try {
+            boolean pullFlag = true;
             for (String pullBranch : pullBranchs) {
                 if (branchFilters != null && !branchFilters.isEmpty() && branchFilters.contains(pullBranch)) {
                     continue;
@@ -283,20 +286,17 @@ public class BranchCheckoutService {
                         .setFastForward(MergeCommand.FastForwardMode.NO_FF)
                         .setTransportConfigCallback(this::setSshSessionFactory).call();
 
-                if (pullRemoteResult.isSuccessful()) {
-                    Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
-                    for (PushResult pushResult : pushResults) {
-                        LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchSyncPull", "pushResult.getMessages()", pushResult.getMessages()));
-                        System.out.println("---------------------------------------------------------------------------------------------");
-                    }
-                }
+                pullFlag = pullFlag && pullRemoteResult.isSuccessful();
 
                 LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchSyncPull", "pullRemoteResult.isSuccessful()", pullRemoteResult.isSuccessful()));
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
+
+            return pullFlag;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private void setSshSessionFactory(Transport transport) {
