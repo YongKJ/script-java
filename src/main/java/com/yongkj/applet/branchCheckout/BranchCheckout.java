@@ -185,25 +185,29 @@ public class BranchCheckout {
 
         try {
             List<Ref> lstBranch = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
-            List<String> lstBranchName = new ArrayList<>();
             for (Ref branchRef : lstBranch) {
-                if (!branchRef.getName().endsWith(branch) &&
+                if (!(!branchRef.getName().endsWith(branch) &&
                         branchRef.getName().contains("dxj") &&
                         (branchRef.getName().contains("feat") ||
-                                branchRef.getName().contains("fix"))) {
-                    lstBranchName.add(branchRef.getName());
+                                branchRef.getName().contains("fix")))) {
+                    continue;
                 }
+                if (branchRef.getName().contains("remote")) {
+                    continue;
+                }
+
+                List<String> branchNames = git.branchDelete().setBranchNames(branchRef.getName()).setForce(true).call();
+
+                RefSpec refSpec = new RefSpec().setSource(null).setDestination(branchRef.getName());
+                Iterable<PushResult> pushResults = git.push().setRefSpecs(refSpec).setRemote("origin").call();
+                for (PushResult pushResult : pushResults) {
+                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchClean", "pushResult.getMessages()", pushResult.getMessages()));
+                    System.out.println("---------------------------------------------------------------------------------------------");
+                }
+
+                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchClean", "branchNames", branchNames));
+                System.out.println("---------------------------------------------------------------------------------------------");
             }
-
-            String[] delBranchNames = new String[lstBranchName.size()];
-            for (int i = 0; i < lstBranchName.size(); i++) {
-                delBranchNames[i] = lstBranchName.get(i);
-            }
-
-            List<String> branchNames = git.branchDelete().setBranchNames(delBranchNames).setForce(true).call();
-
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchClean", "branchNames", branchNames));
-            System.out.println("---------------------------------------------------------------------------------------------");
         } catch (Exception e) {
             e.printStackTrace();
         }
