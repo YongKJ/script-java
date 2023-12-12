@@ -327,6 +327,10 @@ public class BranchCheckout {
                     continue;
                 }
 
+                if (!hasBranch(git, pullBranch, true)) {
+                    continue;
+                }
+
                 PullResult pullRemoteResult = git.pull()
                         .setRemoteBranchName(pullBranch)
                         .setFastForward(MergeCommand.FastForwardMode.NO_FF)
