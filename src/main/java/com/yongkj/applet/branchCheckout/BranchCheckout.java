@@ -60,32 +60,36 @@ public class BranchCheckout {
 
     private void configCopy(String projectName) {
         String srcConfigPath = getConfigPath(projectName, true);
-        if (FileUtil.exist(srcConfigPath)) {
-            String desConfigPath = getConfigPath(projectName, false);
-            if (FileUtil.exist(desConfigPath)) {
-                FileUtil.delete(desConfigPath);
-            }
-            FileUtil.copy(srcConfigPath, desConfigPath);
-
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "srcConfigPath", srcConfigPath));
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "desConfigPath", desConfigPath));
-            System.out.println("---------------------------------------------------------------------------------------------");
+        if (!FileUtil.exist(srcConfigPath)) {
+            return;
         }
+
+        String desConfigPath = getConfigPath(projectName, false);
+        if (FileUtil.exist(desConfigPath)) {
+            FileUtil.delete(desConfigPath);
+        }
+        FileUtil.copy(srcConfigPath, desConfigPath);
+
+        LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "srcConfigPath", srcConfigPath));
+        LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "desConfigPath", desConfigPath));
+        System.out.println("---------------------------------------------------------------------------------------------");
     }
 
     private void bootCopy(String projectName) {
         String srcBootPath = getBootPath(projectName, true);
-        if (FileUtil.exist(srcBootPath)) {
-            String desBootPath = getBootPath(projectName, false);
-            if (FileUtil.exist(desBootPath)) {
-                FileUtil.delete(desBootPath);
-            }
-            FileUtil.copy(srcBootPath, desBootPath);
-
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "srcBootPath", srcBootPath));
-            LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "desBootPath", desBootPath));
-            System.out.println("---------------------------------------------------------------------------------------------");
+        if (!FileUtil.exist(srcBootPath)) {
+            return;
         }
+
+        String desBootPath = getBootPath(projectName, false);
+        if (FileUtil.exist(desBootPath)) {
+            FileUtil.delete(desBootPath);
+        }
+        FileUtil.copy(srcBootPath, desBootPath);
+
+        LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "srcBootPath", srcBootPath));
+        LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "desBootPath", desBootPath));
+        System.out.println("---------------------------------------------------------------------------------------------");
     }
 
     private void branchCheckOutAndPull(String projectName, String branch) {
@@ -94,6 +98,7 @@ public class BranchCheckout {
             Git git = Git.open(new File(gitPath));
 
             String refName = "";
+            branch = getReasonableCheckBranch(git, branch);
             String branchName = git.getRepository().getBranch();
             if (!Objects.equals(branchName, branch) && !hasBranch(git, branch, false)) {
                 refName = branchCheckOutAndPull(git, branch);
@@ -142,6 +147,35 @@ public class BranchCheckout {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getReasonableCheckBranch(Git git, String branch) {
+        if (branch.contains("feat") || branch.contains("fix")) {
+            return branch;
+        }
+        try {
+            List<Ref> lstBranch = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+            List<String> branchNames = lstBranch.stream().map(Ref::getName).collect(Collectors.toList());
+            String branchName = branchNames.stream().filter(po -> po.endsWith(branch)).findFirst().orElse(null);
+            if (StringUtils.hasText(branchName)) {
+                return branch;
+            }
+
+            for (Map.Entry<String, Object> map : mapTagBranch.entrySet()) {
+                branchName = branchNames.stream().filter(po -> po.endsWith(map.getKey())).findFirst().orElse(null);
+                if (StringUtils.hasText(branchName)) {
+                    return map.getKey();
+                }
+
+                branchName = branchNames.stream().filter(po -> po.endsWith((String) map.getValue())).findFirst().orElse(null);
+                if (StringUtils.hasText(branchName)) {
+                    return pullBranchs.stream().filter(po -> po.contains((String) map.getValue())).findFirst().orElse("master");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "master";
     }
 
     private void branchClean(Git git, String branch) {

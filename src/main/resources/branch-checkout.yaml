@@ -30,3 +30,6 @@ project-names:
   - service-im
   - service-settlement
   - service-user
+  - service-content
+  - service-life-care
+  - service-search
