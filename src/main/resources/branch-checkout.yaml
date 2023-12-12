@@ -2,13 +2,11 @@ project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
 config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
-config-tag: dev
+config-tag: test
 
 branchs:
   - project-name: "service-user"
-    branch: "feat/hello-world-dxj"
-  - project-name: "service-housekeeping"
-    branch: "feat/hello-world-dxj"
+    branch: "feat/dxj/hello-world"
 
 branch-clean: false
 
