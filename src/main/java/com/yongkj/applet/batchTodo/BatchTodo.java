@@ -25,16 +25,17 @@ public class BatchTodo {
             return;
         }
 
-//        List<String> entityFiles = new ArrayList<>();
-//        for (String folder : entityFolders) {
-//            entityFiles.addAll(getEntityFiles(folder));
-//        }
-//
-//        for (String entityFile : entityFiles) {
-//            batchTodo(entityFile);
-//        }
-//        LogUtil.loggerLine(Log.of("BatchTodo", "apply", "entityFiles", entityFiles));
-        replaceTest();
+        List<String> entityFiles = new ArrayList<>();
+        for (String folder : entityFolders) {
+            entityFiles.addAll(getEntityFiles(folder));
+        }
+
+        for (String entityFile : entityFiles) {
+            batchTodo(entityFile);
+        }
+        LogUtil.loggerLine(Log.of("BatchTodo", "apply", "entityFiles", entityFiles));
+
+//        replaceTest();
     }
 
     private void batchTodo(String codeFile) {
