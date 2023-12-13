@@ -1,0 +1,10 @@
+batch-todo-enable: true
+entity-folders:
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-user\\service-user-service\\src\\main\\java\\com\\bc\\user\\service\\entity\\dto"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-user\\service-user-service\\src\\main\\java\\com\\bc\\user\\service\\entity\\params"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-settlement\\service-settlement-service\\src\\main\\java\\com\\bc\\settlement\\service\\entity\\dto"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-settlement\\service-settlement-service\\src\\main\\java\\com\\bc\\settlement\\service\\entity\\params"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-im\\service-im-service\\src\\main\\java\\com\\bc\\im\\service\\entity\\dto"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-im\\service-im-service\\src\\main\\java\\com\\bc\\im\\service\\entity\\params"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-housekeeping\\service-order-service\\src\\main\\java\\com\\bc\\order\\service\\entity\\dto"
+  - "D:\\Document\\MyCodes\\Worker\\Codes\\service-housekeeping\\service-order-service\\src\\main\\java\\com\\bc\\order\\service\\entity\\params"
