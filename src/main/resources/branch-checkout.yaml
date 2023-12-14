@@ -6,9 +6,9 @@ config-tag: test
 
 branchs:
   - project-name: "service-user"
-    branch: "feat/dxj/hello-world"
+    branch: "feat/dxj/worker-created-date-update"
 
-branch-clean: false
+branch-clean: true
 
 pull-branchs:
   - local
