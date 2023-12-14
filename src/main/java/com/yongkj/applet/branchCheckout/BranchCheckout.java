@@ -14,7 +14,10 @@ import org.eclipse.jgit.util.FS;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BranchCheckout {
@@ -254,14 +257,14 @@ public class BranchCheckout {
                     .setCreateBranch(true)
                     .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
 
-            boolean pullFlag = branchSyncPull(git, Collections.singletonList(tempBranch));
-            if (pullFlag) {
-                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
-                for (PushResult pushResult : pushResults) {
-                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "pushResult.getMessages()", pushResult.getMessages()));
-                    System.out.println("---------------------------------------------------------------------------------------------");
-                }
-            }
+//            boolean pullFlag = branchSyncPull(git, Collections.singletonList(tempBranch));
+//            if (pullFlag) {
+//                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+//                for (PushResult pushResult : pushResults) {
+//                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "pushResult.getMessages()", pushResult.getMessages()));
+//                    System.out.println("---------------------------------------------------------------------------------------------");
+//                }
+//            }
 
             LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "refName", ref.getName()));
             System.out.println("---------------------------------------------------------------------------------------------");
