@@ -48,6 +48,12 @@ public class SQL {
         return String.format(DATA_SELECT_SQL, field, table, where);
     }
 
+    public static String getDataInsertSqlByObject(String table, List<String> fields, List<Object> lstData) {
+        String field = getFieldOrTableStr(fields);
+        String data = getLstDataStr(lstData);
+        return String.format(DATA_INSERT_SQL, table, field, data);
+    }
+
     public static String getDataInsertSql(String table, List<String> fields, List<String> lstData) {
         String field = getFieldOrTableStr(fields);
         String data = String.join(", ", lstData);
@@ -62,6 +68,14 @@ public class SQL {
 
     public static String getDataRemoveSql(String table, String where) {
         return String.format(DATA_REMOVE_SQL, table, where);
+    }
+
+    private static String getLstDataStr(List<Object> lstData) {
+        List<String> tempLstData = new ArrayList<>();
+        for (Object data : lstData) {
+            tempLstData.add(data instanceof String ? String.format("'%s'", data) : data + "");
+        }
+        return String.join(", ", tempLstData);
     }
 
     private static String getMapDataStr(Map<String, Object> mapData) {

@@ -14,6 +14,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SmallAssignmentUpdateService extends BaseService {
 
@@ -28,7 +29,36 @@ public class SmallAssignmentUpdateService extends BaseService {
     public void apply() {
         if (!enable) return;
 //        categoryModifierIdUpdate();
-        relWorkerTypeLogExport();
+//        relWorkerTypeLogExport();
+        msgTemplateImport();
+    }
+
+    private void msgTemplateImport() {
+        Table msgTemplateTable = desDatabase.getMapTable().get("_msg_template");
+        String excelPath = "C:\\Users\\Admin\\Downloads\\msg-template-1702631689927(1).xlsx";
+        List<Map<String, String>> lstData = PoiExcelUtil.toMap(excelPath);
+        lstData = lstData.stream().filter(po -> po.containsKey("id")).collect(Collectors.toList());
+        for (Map<String, String> mapData : lstData) {
+
+            Map<String, Object> tempMapData = new HashMap<>();
+            tempMapData.put("link_mark", "aftersale_detail");
+            Long id = GenUtil.objToLong(mapData.get("id"));
+            mapData.forEach(tempMapData::put);
+            tempMapData.put("is_audio", 0);
+            tempMapData.put("id", id);
+
+
+            String insertSql = getInsertSQl(tempMapData, msgTemplateTable.getName(),
+                    Wrappers.lambdaQuery()
+                            .eq("id", id));
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "categoryModifierIdUpdate", "insertSql", insertSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            desDataInsert(insertSql);
+        }
+
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "msgTemplateImport", "lstData", lstData));
     }
 
     private void relWorkerTypeLogExport() {
