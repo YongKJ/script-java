@@ -8,8 +8,10 @@ import com.yongkj.util.ThreadUtil;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExcelExportTest {
 
@@ -24,14 +26,90 @@ public class ExcelExportTest {
     }
 
     private void apply() {
+        readTestTwo();
 //        readTestOne();
-        writeTestSeven();
+//        writeTestSeven();
 //        writeTestSix();
 //        writeTestFive();
 //        writeTestFour();
 //        writeTestThree();
 //        writeTestTwo();
 //        writeTestOne();
+    }
+
+    private void readTestTwo() {
+        String excelPath = "C:\\Users\\Admin\\Desktop\\消息推送0919.xlsx";
+        List<Map<String, String>> lstData = PoiExcelUtil.toMap(excelPath);
+        lstData = lstData.stream()
+                .filter(po -> po.containsKey("后端开发人员") && po.get("后端开发人员").contains("宋明旭"))
+                .collect(Collectors.toList());
+
+        LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestTwo", "lstData.size()", lstData.size()));
+        LogUtil.loggerLine(Log.of("ExcelExportTest", "readTestTwo", "lstData", lstData));
+
+        int id = 20001;
+        List<Map<String, String>> tempLstData = new ArrayList<>();
+        for (Map<String, String> data : lstData) {
+            String smsTemplateId = "";
+            if (data.containsKey("推送方式") && data.get("推送方式").contains("短信")) {
+                smsTemplateId = "SMS_";
+            }
+            if (data.containsKey("新短信模板")) {
+                smsTemplateId = data.get("新短信模板");
+            }
+            String title = data.containsKey("推送标题") ? data.get("推送标题") : "";
+            if (!StringUtils.hasText(title) && StringUtils.hasText(smsTemplateId)) {
+                title = "短信通知";
+            }
+            String content = data.containsKey("推送内容") ? data.get("推送内容") : "";
+            String note = data.containsKey("消息类型") ? data.get("消息类型") : "";
+            if (note.contains("/")) {
+                note = note.split("/")[0];
+            }
+            if (note.contains("商家")) {
+                note = "商家端";
+            }
+            String whenRun = data.containsKey("触发条件") ? data.get("触发条件") : "";
+            String linkMark = "";
+            if (data.containsKey("打开页面") && data.get("打开页面").contains("跳转")) {
+                linkMark = "after_sales_details";
+            }
+
+            Map<String, String> tempData = new HashMap<>();
+            tempData.put("id", (id++) + "");
+            tempData.put("sms_template_id", smsTemplateId);
+            tempData.put("title", title);
+            tempData.put("content", content);
+            tempData.put("note", note);
+            tempData.put("when_run", whenRun);
+            tempData.put("link_mark", linkMark);
+            tempLstData.add(tempData);
+        }
+
+        List<List<String>> lstHeader = new ArrayList<>();
+        lstHeader.add(Collections.singletonList("id"));
+        lstHeader.add(Collections.singletonList("sms_template_id"));
+        lstHeader.add(Collections.singletonList("title"));
+        lstHeader.add(Collections.singletonList("content"));
+        lstHeader.add(Collections.singletonList("note"));
+        lstHeader.add(Collections.singletonList("when_run"));
+        lstHeader.add(Collections.singletonList("link_mark"));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet();
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = lstHeader.get(0).size();
+        for (Map<String, String> data : tempLstData) {
+            int colIndex = 0;
+            for (List<String> headers : lstHeader) {
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, data.get(headers.get(0)));
+            }
+            rowIndex++;
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\msg-template-" + System.currentTimeMillis() + ".xlsx");
     }
 
     private void readTestOne() {
