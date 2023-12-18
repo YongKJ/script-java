@@ -257,6 +257,12 @@ public class BranchCheckout {
                     .setCreateBranch(true)
                     .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK).call();
 
+            Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+            for (PushResult pushResult : pushResults) {
+                LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPullByLocal", "pushResult.getMessages()", pushResult.getMessages()));
+                System.out.println("---------------------------------------------------------------------------------------------");
+            }
+
 //            boolean pullFlag = branchSyncPull(git, Collections.singletonList(tempBranch));
 //            if (pullFlag) {
 //                Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
