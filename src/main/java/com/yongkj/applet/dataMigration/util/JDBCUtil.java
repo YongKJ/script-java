@@ -118,6 +118,7 @@ public class JDBCUtil {
                     break;
                 case "JSON":
                     data = getJsonData(resultSet.getString(fieldName));
+                    break;
                 default:
                     data = resultSet.getString(fieldName);
             }
@@ -128,7 +129,7 @@ public class JDBCUtil {
     }
 
     private static Object getJsonData(String jsonStr) {
-        if (jsonStr == null) {
+        if (jsonStr == null || jsonStr.length() == 0) {
             return new HashMap<>();
         }
         if (!(jsonStr.startsWith("[") && jsonStr.endsWith("]")) &&

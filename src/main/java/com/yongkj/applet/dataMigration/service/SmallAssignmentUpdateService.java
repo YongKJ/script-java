@@ -30,7 +30,25 @@ public class SmallAssignmentUpdateService extends BaseService {
         if (!enable) return;
 //        categoryModifierIdUpdate();
 //        relWorkerTypeLogExport();
-        msgTemplateImport();
+//        msgTemplateImport();
+        jsonFieldTest();
+    }
+
+    private void jsonFieldTest() {
+        Table workflowLog = srcDatabase.getMapTable().get("workflow_log");
+        Table organization = srcDatabase.getMapTable().get("organization");
+
+        Map<String, Map<String, Object>> workflowLogData = getMapData(srcDataList(workflowLog));
+        Map<String, Map<String, Object>> organizationData = getMapData(srcDataList(organization));
+
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "jsonFieldTest", "workflowLogData.size()", workflowLogData.size()));
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "jsonFieldTest", "workflowLogData", workflowLogData));
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "jsonFieldTest", "organizationData.size()", organizationData.size()));
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "jsonFieldTest", "organizationData", organizationData));
+        System.out.println("------------------------------------------------------------------------------------------------------------------");
     }
 
     private void msgTemplateImport() {
