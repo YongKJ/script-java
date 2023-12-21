@@ -74,6 +74,10 @@ public class DataMigration {
         fieldIncrementMigrationService.apply();
         JDBCUtil.closeAll(srcDatabase.getManager());
         JDBCUtil.closeAll(desDatabase.getManager());
+        JDBCUtil.closeAll(devDatabase.getManager());
+        JDBCUtil.closeAll(preDatabase.getManager());
+        JDBCUtil.closeAll(testDatabase.getManager());
+        JDBCUtil.closeAll(prodDatabase.getManager());
     }
 
     public Database getDevDatabase() {
