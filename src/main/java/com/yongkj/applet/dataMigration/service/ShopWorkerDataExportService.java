@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
-import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
@@ -26,8 +26,8 @@ public class ShopWorkerDataExportService extends BaseService {
     private final Map<String, List<String>> mapTables;
     private final Map<String, Map<String, Map<String, Object>>> mapTableData;
 
-    public ShopWorkerDataExportService(Database srcDatabase, Database desDatabase) {
-        super(srcDatabase, desDatabase);
+    public ShopWorkerDataExportService(DataMigration dataMigration) {
+        super(dataMigration);
         this.ROW_ACCESS_WINDOW_SIZE = 100;
         this.mapTableData = new HashMap<>();
         Map<String, Object> shopWorkerDataExport = GenUtil.getMap("shop-worker-data-export");

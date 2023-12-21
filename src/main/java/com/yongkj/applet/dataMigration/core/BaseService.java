@@ -1,5 +1,6 @@
 package com.yongkj.applet.dataMigration.core;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
@@ -9,21 +10,31 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class BaseService {
 
-    protected final Database srcDatabase;
-    protected final Database desDatabase;
+    protected Database srcDatabase;
+    protected Database desDatabase;
+    protected final Database devDatabase;
+    protected final Database preDatabase;
+    protected final Database testDatabase;
+    protected final Database prodDatabase;
+    protected final List<Database> databases;
 
-    protected BaseService(Database srcDatabase, Database desDatabase) {
-        this.srcDatabase = srcDatabase;
-        this.desDatabase = desDatabase;
+    protected BaseService(DataMigration dataMigration) {
+        this.srcDatabase = dataMigration.getSrcDatabase();
+        this.desDatabase = dataMigration.getDesDatabase();
+        this.devDatabase = dataMigration.getDevDatabase();
+        this.preDatabase = dataMigration.getPreDatabase();
+        this.testDatabase = dataMigration.getTestDatabase();
+        this.prodDatabase = dataMigration.getProdDatabase();
+        this.databases = Arrays.asList(
+                this.devDatabase, this.testDatabase,
+                this.preDatabase, this.prodDatabase
+        );
     }
 
     protected boolean srcTableCreate(String createSql) {

@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
-import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
@@ -25,8 +25,8 @@ public class AdminMenuDataMigrationService extends BaseService {
     private final List<String> tableNames;
     private final List<String> filterNames;
 
-    public AdminMenuDataMigrationService(Database srcDatabase, Database desDatabase) {
-        super(srcDatabase, desDatabase);
+    public AdminMenuDataMigrationService(DataMigration dataMigration) {
+        super(dataMigration);
         this.lstMenuId = new ArrayList<>();
         Map<String, Object> menuMigration = GenUtil.getMap("admin-menu-data-migration");
         this.filterNames = (List<String>) menuMigration.get("filter-names");

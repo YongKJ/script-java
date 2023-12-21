@@ -23,7 +23,8 @@ public class GenUtil {
     private GenUtil() {
     }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private static final ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());
 
     public static LocalDateTime toLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
@@ -33,7 +34,7 @@ public class GenUtil {
         T value = null;
         if (strJson != null) {
             try {
-                value = objectMapper.readValue(strJson, c);
+                value = jsonObjectMapper.readValue(strJson, c);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -44,7 +45,7 @@ public class GenUtil {
     public static String toJsonString(Object object) {
         String json;
         try {
-            json = objectMapper.writeValueAsString(object);
+            json = jsonObjectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("json generate error", e);
         }
@@ -210,7 +211,7 @@ public class GenUtil {
     public static Map getConfig(String config) {
         try {
             String path = getConfigPath(config);
-            return objectMapper.readValue(new File(path), Map.class);
+            return yamlObjectMapper.readValue(new File(path), Map.class);
         } catch (Exception e) {
             e.printStackTrace();
             return new HashMap<String, Object>();
@@ -220,7 +221,7 @@ public class GenUtil {
     public static void writeConfig(String config, Map<String, Object> mapData) {
         try {
             String path = getConfigPath(config);
-            String content = objectMapper.writeValueAsString(mapData);
+            String content = yamlObjectMapper.writeValueAsString(mapData);
             content = content.substring(4);
             FileUtil.write(path, content);
         } catch (Exception e) {

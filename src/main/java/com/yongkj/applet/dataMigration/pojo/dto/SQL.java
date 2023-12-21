@@ -1,5 +1,7 @@
 package com.yongkj.applet.dataMigration.pojo.dto;
 
+import com.yongkj.util.GenUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +75,7 @@ public class SQL {
     private static String getLstDataStr(List<Object> lstData) {
         List<String> tempLstData = new ArrayList<>();
         for (Object data : lstData) {
-            tempLstData.add(data instanceof String ? String.format("'%s'", data) : data + "");
+            tempLstData.add(getValueStr(data));
         }
         return String.join(", ", tempLstData);
     }
@@ -81,12 +83,26 @@ public class SQL {
     private static String getMapDataStr(Map<String, Object> mapData) {
         List<String> lstData = new ArrayList<>();
         for (Map.Entry<String, Object> map : mapData.entrySet()) {
-            String data = String.format("`%s` = %s", map.getKey(),
-                    map.getValue() instanceof String ?
-                            String.format("'%s'", map.getValue()) : map.getValue());
+            String data = String.format("`%s` = %s",
+                    map.getKey(), getValueStr(map.getValue()));
             lstData.add(data);
         }
         return String.join(", ", lstData);
+    }
+
+    private static String getValueStr(Object value) {
+        if (value == null) return "";
+        if (value instanceof String) {
+            return ((String) value).contains("`") ||
+                    ((String) value).contains(".") &&
+                            !((String) value).contains("/") &&
+                            !((String) value).contains("@") ?
+                    (String) value : String.format("'%s'", value);
+        } else if (value instanceof List || value instanceof Map) {
+            return String.format("'%s'", GenUtil.toJsonString(value));
+        } else {
+            return GenUtil.objToStr(value);
+        }
     }
 
     private static String getFieldOrTableStr(List<String> lstData) {

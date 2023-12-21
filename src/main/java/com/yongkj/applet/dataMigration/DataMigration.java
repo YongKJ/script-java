@@ -15,6 +15,10 @@ public class DataMigration {
 
     private final Database srcDatabase;
     private final Database desDatabase;
+    private final Database devDatabase;
+    private final Database preDatabase;
+    private final Database testDatabase;
+    private final Database prodDatabase;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
@@ -24,29 +28,19 @@ public class DataMigration {
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
-        this.srcDatabase = Database.get("src");
-        this.desDatabase = Database.get("des");
-        this.agreementsUpdateService = new AgreementsUpdateService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.shopCancelLogoutService = new ShopCancelLogoutService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.shopWorkerDataExportService = new ShopWorkerDataExportService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.dataIncrementMigrationService = new DataIncrementMigrationService(
-                this.srcDatabase, this.desDatabase
-        );
-        this.fieldIncrementMigrationService = new FieldIncrementMigrationService(
-                this.srcDatabase, this.desDatabase
-        );
+        this.devDatabase = Database.get("dev");
+        this.preDatabase = Database.get("pre");
+        this.testDatabase = Database.get("test");
+        this.prodDatabase = Database.get("prod");
+        this.srcDatabase = Database.get("src", this);
+        this.desDatabase = Database.get("des", this);
+        this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(this);
+        this.agreementsUpdateService = new AgreementsUpdateService(this);
+        this.shopCancelLogoutService = new ShopCancelLogoutService(this);
+        this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
+        this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
+        this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
+        this.fieldIncrementMigrationService = new FieldIncrementMigrationService(this);
     }
 
     private void apply() {
@@ -80,6 +74,30 @@ public class DataMigration {
         fieldIncrementMigrationService.apply();
         JDBCUtil.closeAll(srcDatabase.getManager());
         JDBCUtil.closeAll(desDatabase.getManager());
+    }
+
+    public Database getDevDatabase() {
+        return devDatabase;
+    }
+
+    public Database getPreDatabase() {
+        return preDatabase;
+    }
+
+    public Database getTestDatabase() {
+        return testDatabase;
+    }
+
+    public Database getProdDatabase() {
+        return prodDatabase;
+    }
+
+    public Database getSrcDatabase() {
+        return srcDatabase;
+    }
+
+    public Database getDesDatabase() {
+        return desDatabase;
     }
 
     public void test() {

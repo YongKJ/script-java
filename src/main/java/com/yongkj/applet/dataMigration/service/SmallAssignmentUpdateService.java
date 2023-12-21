@@ -1,5 +1,6 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
@@ -20,8 +21,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 
     private final boolean enable;
 
-    public SmallAssignmentUpdateService(Database srcDatabase, Database desDatabase) {
-        super(srcDatabase, desDatabase);
+    public SmallAssignmentUpdateService(DataMigration dataMigration) {
+        super(dataMigration);
         Map<String, Object> smallAssignmentUpdate = GenUtil.getMap("small-assignment-update");
         this.enable = GenUtil.objToBoolean(smallAssignmentUpdate.get("enable"));
     }
@@ -31,7 +32,67 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        categoryModifierIdUpdate();
 //        relWorkerTypeLogExport();
 //        msgTemplateImport();
-        jsonFieldTest();
+//        jsonFieldTest();
+        contactPersonUpdate();
+    }
+
+    private void contactPersonUpdate() {
+        for (Database database : databases) {
+            srcDatabase = database;
+            contactPersonUpdate(srcDatabase);
+        }
+    }
+
+    private void contactPersonUpdate(Database srcDatabase) {
+        Table organizationTable = srcDatabase.getMapTable().get("organization");
+        Table adminUserTable = srcDatabase.getMapTable().get("admin_user");
+        Table shopTable = srcDatabase.getMapTable().get("shop");
+
+
+        Map<String, Map<String, Object>> organizationData = getMapData(srcDataList(organizationTable));
+        Map<String, Map<String, Object>> adminUserData = getMapData(srcDataList(adminUserTable));
+        Map<String, Map<String, Object>> shopData = getMapData(srcDataList(shopTable));
+        List<Map<String, Object>> lstShopData = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : shopData.entrySet()) {
+            Long organizationId = (Long) map.getValue().get("organization_id");
+            if (!organizationData.containsKey(organizationId + "")) {
+                continue;
+            }
+            Map<String, Object> organization = organizationData.get(organizationId + "");
+            Long administratorId = (Long) organization.get("administrator_id");
+            if (!adminUserData.containsKey(administratorId + "")) {
+                continue;
+            }
+            Map<String, Object> adminUser = adminUserData.get(administratorId + "");
+
+            Long adminUserMobile = (Long) adminUser.get("mobile");
+            Long shopMobile = (Long) map.getValue().get("mobile");
+            Long shopContactPersonPhone = (Long) map.getValue().get("contact_person_phone");
+
+            if (Objects.equals(adminUserMobile, shopMobile) &&
+                    Objects.equals(adminUserMobile, shopContactPersonPhone) ||
+                    (adminUserMobile + "").length() != 11) {
+                continue;
+            }
+
+            map.getValue().put("contact_person_phone", adminUserMobile);
+            map.getValue().put("mobile", adminUserMobile);
+            lstShopData.add(map.getValue());
+        }
+
+        for (Map<String, Object> mapData : lstShopData) {
+            Long id = (Long) mapData.get("id");
+            String updateSql = getUpdateSQl(
+                    mapData, shopTable.getName(),
+                    Wrappers.lambdaQuery()
+                            .eq("id", id));
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "categoryModifierIdUpdate", "updateSql", updateSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            srcDataUpdate(updateSql);
+        }
+        System.out.println("\n");
     }
 
     private void jsonFieldTest() {

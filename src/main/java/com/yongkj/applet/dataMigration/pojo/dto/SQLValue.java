@@ -113,6 +113,8 @@ public class SQLValue {
         if (value instanceof String) {
             return ((String) value).contains("`") || ((String) value).contains(".") ?
                     (String) value : String.format("'%s'", value);
+        } else if (value instanceof List || value instanceof Map) {
+            return String.format("'%s'", GenUtil.toJsonString(value));
         } else {
             return GenUtil.objToStr(value);
         }

@@ -1,5 +1,6 @@
 package com.yongkj.applet.dataMigration.pojo.dto;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.util.GenUtil;
@@ -41,6 +42,23 @@ public class Database {
 
     public static Database of(String name, String driver, String url, String username, String password) {
         return new Database(name, driver, url, username, password);
+    }
+
+    public static Database get(String key, DataMigration dataMigration) {
+        Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
+        String value = (String) mapDatabaseConfig.get(key);
+        switch (value) {
+            case "dev":
+                return dataMigration.getDevDatabase();
+            case "test":
+                return dataMigration.getTestDatabase();
+            case "pre":
+                return dataMigration.getPreDatabase();
+            case "prod":
+                return dataMigration.getProdDatabase();
+            default:
+                return new Database();
+        }
     }
 
     public static Database get(String key) {

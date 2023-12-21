@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
-import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
@@ -18,8 +18,8 @@ public class ShopCancelLogoutService extends BaseService {
     private final boolean enable;
     private final List<Long> mobiles;
 
-    public ShopCancelLogoutService(Database srcDatabase, Database desDatabase) {
-        super(srcDatabase, desDatabase);
+    public ShopCancelLogoutService(DataMigration dataMigration) {
+        super(dataMigration);
         Map<String, Object> shopCancelLogout = GenUtil.getMap("shop-cancel-logout");
         this.mobiles = (List<Long>) shopCancelLogout.get("mobiles");
         this.enable = (Boolean) shopCancelLogout.get("enable");

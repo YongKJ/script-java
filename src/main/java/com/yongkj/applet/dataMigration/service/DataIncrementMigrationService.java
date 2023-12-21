@@ -1,7 +1,7 @@
 package com.yongkj.applet.dataMigration.service;
 
+import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
-import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
@@ -21,11 +21,11 @@ public class DataIncrementMigrationService extends BaseService {
     private final boolean enable;
     private final List<String> tableNames;
 
-    public DataIncrementMigrationService(Database srcDatabase, Database desDatabase) {
-        super(srcDatabase, desDatabase);
-        Map<String, Object> dataMigration = GenUtil.getMap("data-migration");
-        this.tableNames = (List<String>) dataMigration.get("table-names");
-        this.enable = GenUtil.objToBoolean(dataMigration.get("enable"));
+    public DataIncrementMigrationService(DataMigration dataMigration) {
+        super(dataMigration);
+        Map<String, Object> mapDataMigration = GenUtil.getMap("data-migration");
+        this.tableNames = (List<String>) mapDataMigration.get("table-names");
+        this.enable = GenUtil.objToBoolean(mapDataMigration.get("enable"));
     }
 
     public void apply() {

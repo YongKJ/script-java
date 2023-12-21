@@ -1,4 +1,4 @@
-src:
+dev:
   database:
     name: "dev_user"
     driver: "com.mysql.cj.jdbc.Driver"
@@ -6,13 +6,33 @@ src:
     username: "dev"
     password: "HHhda@%DSAs996"
 
-des:
+test:
+  database:
+    name: "test_user"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_user?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+
+pre:
+  database:
+    name: "pre_user"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_user?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+
+prod:
   database:
     name: "prod_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:33306/prod_user?characterEncoding=utf-8"
     username: "prod"
     password: "vsHHhda@%DSAs996"
+
+database-config:
+  src: "test"
+  des: "prod"
 
 small-assignment-update:
   enable: true
@@ -153,7 +173,6 @@ field-migration:
   table-delete: false
   field-delete: false
   table-names:
-    - "organization_category_ultra"
-    - "organization_certificate_ultra"
-    - "workflow_log"
+    - "shop"
+    - "shop_audit"
 
