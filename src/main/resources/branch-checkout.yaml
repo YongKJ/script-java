@@ -6,7 +6,9 @@ config-tag: test
 
 branchs:
   - project-name: "service-user"
-    branch: "feat/dxj/worker-created-date-update"
+    branch: "feature/find-organization"
+  - project-name: "service-housekeeping"
+    branch: "feature/find-organization"
 
 branch-clean: true
 

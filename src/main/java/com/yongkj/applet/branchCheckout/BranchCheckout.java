@@ -153,7 +153,7 @@ public class BranchCheckout {
     }
 
     private String getReasonableCheckBranch(Git git, String branch) {
-        if (branch.contains("feat") || branch.contains("fix")) {
+        if (branch.contains("feat/") || branch.contains("fix/")) {
             return branch;
         }
         try {
@@ -182,7 +182,7 @@ public class BranchCheckout {
     }
 
     private void branchClean(Git git, String branch) {
-        if (!(branch.contains("feat") || branch.contains("fix"))) {
+        if (!(branch.contains("feat/") || branch.contains("fix/"))) {
             return;
         }
 
@@ -191,8 +191,8 @@ public class BranchCheckout {
             for (Ref branchRef : lstBranch) {
                 if (!(!branchRef.getName().endsWith(branch) &&
                         branchRef.getName().contains("dxj") &&
-                        (branchRef.getName().contains("feat") ||
-                                branchRef.getName().contains("fix")))) {
+                        (branchRef.getName().contains("feat/") ||
+                                branchRef.getName().contains("fix/")))) {
                     continue;
                 }
                 if (branchRef.getName().contains("remote")) {
@@ -218,7 +218,7 @@ public class BranchCheckout {
 
     private String branchCheckOutAndPull(Git git, String branch) {
         try {
-            if (!(branch.contains("feat") || branch.contains("fix"))) {
+            if (!(branch.contains("feat/") || branch.contains("fix/"))) {
                 if (hasBranch(git, branch, true)) {
                     Ref ref = git.checkout()
                             .setName(branch)
@@ -229,13 +229,13 @@ public class BranchCheckout {
                 }
                 return "";
             }
-            if (branch.contains("feat")) {
+            if (branch.contains("feat/")) {
                 String tempBranch = pullBranchs.stream()
                         .filter(po -> po.contains("develop")).findFirst().orElse("develop");
 
                 return branchCheckOutAndPullByLocal(git, branch, tempBranch);
             }
-            if (branch.contains("fix")) {
+            if (branch.contains("fix/")) {
                 String tempBranch = pullBranchs.stream()
                         .filter(po -> po.contains((String) mapTagBranch.get(configTag)))
                         .findFirst().orElse((String) mapTagBranch.get(configTag));
