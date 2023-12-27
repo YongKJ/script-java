@@ -22,7 +22,8 @@ public class CsvDataTest {
     private void apply() {
 //        readTestTwo();
 //        readTestOne();
-        writeTestSix();
+        writeTestSeven();
+//        writeTestSix();
 //        writeTestFive();
 //        writeTestFour();
 //        writeTestThree();
@@ -47,6 +48,10 @@ public class CsvDataTest {
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstRecord", lstRecord));
         List<Map<String, String>> lstData = CsvUtil.toMap(csvReadPath);
         LogUtil.loggerLine(Log.of("CsvDataTest", "readTestOne", "lstData", lstData));
+    }
+
+    private void writeTestSeven() {
+        CsvUtil.csvToExcel("/csv/商家店铺入驻类型.csv", 1);
     }
 
     private void writeTestSix() {
