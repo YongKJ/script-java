@@ -33,7 +33,48 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        relWorkerTypeLogExport();
 //        msgTemplateImport();
 //        jsonFieldTest();
-        contactPersonUpdate();
+//        contactPersonUpdate();
+        syncShopApplyId();
+    }
+
+    private void syncShopApplyId() {
+        Table organizationTable = srcDatabase.getMapTable().get("organization");
+        Table shopTable = srcDatabase.getMapTable().get("shop");
+
+        Map<String, Map<String, Object>> organizationData = getMapData(srcDataList(organizationTable));
+        Map<String, Map<String, Object>> shopData = getMapData(srcDataList(shopTable));
+        List<Map<String, Object>> lstShopData = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : shopData.entrySet()) {
+            Long organizationId = (Long) map.getValue().get("organization_id");
+            if (!organizationData.containsKey(organizationId + "")) {
+                continue;
+            }
+            Map<String, Object> organization = organizationData.get(organizationId + "");
+            Integer applyId = (Integer) organization.get("apply_id");
+            if (applyId == 0) {
+                continue;
+            }
+            Integer shopApplyId = (Integer) map.getValue().get("apply_id");
+            if (Objects.equals(applyId, shopApplyId)) {
+                continue;
+            }
+            map.getValue().put("apply_id", applyId);
+            lstShopData.add(map.getValue());
+        }
+
+        for (Map<String, Object> mapData : lstShopData) {
+            Long id = (Long) mapData.get("id");
+            String updateSql = getUpdateSQl(
+                    mapData, shopTable.getName(),
+                    Wrappers.lambdaQuery()
+                            .eq("id", id));
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "categoryModifierIdUpdate", "updateSql", updateSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            srcDataUpdate(updateSql);
+        }
+        System.out.println("\n");
     }
 
     private void contactPersonUpdate() {

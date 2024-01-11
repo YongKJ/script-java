@@ -91,7 +91,7 @@ public class SQL {
     }
 
     private static String getValueStr(Object value) {
-        if (value == null) return "";
+        if (value == null) return null;
         if (value instanceof String) {
             return ((String) value).contains("`") ||
                     ((String) value).contains(".") &&
