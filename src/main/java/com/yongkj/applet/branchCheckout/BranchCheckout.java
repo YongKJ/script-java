@@ -113,18 +113,24 @@ public class BranchCheckout {
 
                 PullResult pullResult = git.pull().setTransportConfigCallback(this::setSshSessionFactory).call();
                 if (pullResult.isSuccessful() && !pullBranchs.contains(branch)) {
-                    boolean pullFlag = branchSyncPull(git);
+//                    boolean pullFlag = branchSyncPull(git);
 
-                    if (pullFlag) {
-                        Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
-                        for (PushResult pushResult : pushResults) {
-                            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pushResult.getMessages()", pushResult.getMessages()));
-                            System.out.println("---------------------------------------------------------------------------------------------");
-                        }
+//                    if (pullFlag) {
+//                        Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+//                        for (PushResult pushResult : pushResults) {
+//                            LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pushResult.getMessages()", pushResult.getMessages()));
+//                            System.out.println("---------------------------------------------------------------------------------------------");
+//                        }
+//                    }
+
+                    Iterable<PushResult> pushResults = git.push().setTransportConfigCallback(this::setSshSessionFactory).call();
+                    for (PushResult pushResult : pushResults) {
+                        LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pushResult.getMessages()", pushResult.getMessages()));
+                        System.out.println("---------------------------------------------------------------------------------------------");
                     }
 
-                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pullFlag", pullFlag));
-                    System.out.println("---------------------------------------------------------------------------------------------");
+//                    LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pullFlag", pullFlag));
+//                    System.out.println("---------------------------------------------------------------------------------------------");
                 }
 
                 LogUtil.loggerLine(Log.of("BranchCheckoutService", "branchCheckOutAndPull", "pullResult.isSuccessful()", pullResult.isSuccessful()));
