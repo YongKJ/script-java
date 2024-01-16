@@ -34,7 +34,48 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        msgTemplateImport();
 //        jsonFieldTest();
 //        contactPersonUpdate();
-        syncShopApplyId();
+//        syncShopApplyId();
+        syncShopOrganizationStatus();
+    }
+
+    private void syncShopOrganizationStatus() {
+        Table organizationTable = srcDatabase.getMapTable().get("organization");
+        Table shopTable = srcDatabase.getMapTable().get("shop");
+
+        Map<String, Map<String, Object>> organizationData = getMapData(srcDataList(organizationTable));
+        Map<String, Map<String, Object>> shopData = getMapData(srcDataList(shopTable));
+        List<Map<String, Object>> lstShopData = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : shopData.entrySet()) {
+            Long organizationId = (Long) map.getValue().get("organization_id");
+            if (!organizationData.containsKey(organizationId + "")) {
+                continue;
+            }
+            Map<String, Object> organization = organizationData.get(organizationId + "");
+            Integer organizationStatus = (Integer) organization.get("organization_status");
+            if (organizationStatus == 0) {
+                continue;
+            }
+            Integer shopOrganizationStatus = (Integer) map.getValue().get("organization_status");
+            if (Objects.equals(organizationStatus, shopOrganizationStatus)) {
+                continue;
+            }
+            map.getValue().put("organization_status", organizationStatus);
+            lstShopData.add(map.getValue());
+        }
+
+        for (Map<String, Object> mapData : lstShopData) {
+            Long id = (Long) mapData.get("id");
+            String updateSql = getUpdateSQl(
+                    mapData, shopTable.getName(),
+                    Wrappers.lambdaQuery()
+                            .eq("id", id));
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "syncShopOrganizationStatus", "updateSql", updateSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            srcDataUpdate(updateSql);
+        }
+        System.out.println("\n");
     }
 
     private void syncShopApplyId() {
