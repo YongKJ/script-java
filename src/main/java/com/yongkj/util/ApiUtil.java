@@ -16,6 +16,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,19 +39,38 @@ public class ApiUtil {
         return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), clazz);
     }
 
+    public static <T> T requestByGetWithHeaderToEntity(String api, Map<String, String> mapHeader, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        mapHeader.forEach(headers::set);
+        return requestByGetWithHeaderAndData(api, headers, null, clazz);
+    }
+
     public static String requestByPostWithParams(String api, Map<String, Object> params) {
         return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, String.class);
+    }
+
+    public static <T> T requestWithBodyDataByPostToEntity(String api, Map<String, Object> mapBody, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return requestByPostWithHeaderAndData(api, headers, GenUtil.toJsonString(mapBody), clazz);
+    }
+
+    public static <T> T requestWithBodyAndHeaderDataByPostToEntity(String api, Map<String, String> mapHeader, Object bodyData, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        mapHeader.forEach(headers::set);
+        return requestByPostWithHeaderAndData(api, headers, GenUtil.toJsonString(bodyData), clazz);
     }
 
     public static <T> T requestByPostWithParamsToEntity(String api, Map<String, Object> params, Class<T> clazz) {
         return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, clazz);
     }
 
-    private <T> T requestByGetWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
+    private static <T> T requestByGetWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
         return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.GET, new HttpEntity<>(data, headers), responseType).getBody();
     }
 
-    private <T> T requestByPostWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
+    private static <T> T requestByPostWithHeaderAndData(String url, HttpHeaders headers, Object data, Class<T> responseType) {
         return (proxyEnable ? SOCKS_RESTTEMPLATE : REST_TEMPLATE).exchange(url, HttpMethod.POST, new HttpEntity<>(data, headers), responseType).getBody();
     }
 

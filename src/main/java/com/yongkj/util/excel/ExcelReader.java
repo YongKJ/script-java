@@ -7,23 +7,28 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExcelReader {
 
     private ExcelReader() {
     }
 
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return toMap(getWorkbook(excelFile), sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
+    }
+
     public static <T> List<Map<String, String>> toMap(String excelName, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return toMap(getWorkbook(excelName), sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
         if (!(sheetName instanceof String) && !(sheetName instanceof Integer)) {
             return new ArrayList<>();
         }
-        Workbook workbook = getWorkbook(excelName);
         Sheet sheet;
         if (sheetName instanceof String) {
             sheet = workbook.getSheet((String) sheetName);
@@ -66,17 +71,31 @@ public class ExcelReader {
         return lstMap;
     }
 
-    private static Workbook getWorkbook(String excelFileName) {
+    public static Workbook getWorkbook(MultipartFile file) {
         Workbook workbook = null;
         try {
-            if (excelFileName.substring(0, 1).contains("/")) {
-                if (excelFileName.contains(".xlsx")) {
+            if (Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(file.getInputStream());
+            } else {
+                workbook = new HSSFWorkbook(file.getInputStream());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return workbook;
+    }
+
+    public static Workbook getWorkbook(String excelFileName) {
+        Workbook workbook = null;
+        try {
+            if (excelFileName.startsWith("/")) {
+                if (excelFileName.endsWith(".xlsx")) {
                     workbook = new XSSFWorkbook(new ClassPathResource(excelFileName).getInputStream());
                 } else {
                     workbook = new HSSFWorkbook(new ClassPathResource(excelFileName).getInputStream());
                 }
             } else {
-                if (excelFileName.contains(".xlsx")) {
+                if (excelFileName.endsWith(".xlsx")) {
                     workbook = new XSSFWorkbook(new FileInputStream(excelFileName));
                 } else {
                     workbook = new HSSFWorkbook(new FileInputStream(excelFileName));

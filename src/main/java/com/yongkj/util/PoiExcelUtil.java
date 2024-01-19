@@ -2,7 +2,9 @@ package com.yongkj.util;
 
 import com.yongkj.util.excel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -18,6 +20,70 @@ public class PoiExcelUtil {
     private static int dataRow = 1;
 
     private PoiExcelUtil() {
+    }
+
+    public static Workbook getWorkbook(MultipartFile file) {
+        return ExcelReader.getWorkbook(file);
+    }
+
+    public static Workbook getWorkbook(String excelFileName) {
+        return ExcelReader.getWorkbook(excelFileName);
+    }
+
+    public static List<Map<String, String>> toMap(Workbook workbook) {
+        return toMap(workbook, 0);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName) {
+        return toMap(workbook, sheetName, 0);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow) {
+        return toMap(workbook, sheetName, headerRow, headerRow + 1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow, int dataRow) {
+        return toMap(workbook, sheetName, headerRow, dataRow, -1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow, int dataRow, int dataLastRow) {
+        return toMap(workbook, sheetName, headerRow, dataRow, dataLastRow, new HashMap<>());
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return toMap(workbook, sheetName, headerRow, 0, -1, dataRow, dataLastRow, extraData);
+    }
+
+    public static <T> List<Map<String, String>> toMap(Workbook workbook, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return ExcelReader.toMap(workbook, sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
+    }
+
+    public static List<Map<String, String>> toMap(MultipartFile excelFile) {
+        return toMap(excelFile, 0);
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName) {
+        return toMap(excelFile, sheetName, 0);
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow) {
+        return toMap(excelFile, sheetName, headerRow, headerRow + 1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow, int dataRow) {
+        return toMap(excelFile, sheetName, headerRow, dataRow, -1);
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow, int dataRow, int dataLastRow) {
+        return toMap(excelFile, sheetName, headerRow, dataRow, dataLastRow, new HashMap<>());
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return toMap(excelFile, sheetName, headerRow, 0, -1, dataRow, dataLastRow, extraData);
+    }
+
+    public static <T> List<Map<String, String>> toMap(MultipartFile excelFile, T sheetName, int headerRow, int headerCol, int headerLastCol, int dataRow, int dataLastRow, Map<String, String> extraData) {
+        return ExcelReader.toMap(excelFile, sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
     }
 
     public static List<Map<String, String>> toMap(String excelName) {
