@@ -31,11 +31,14 @@ prod:
     password: "vsHHhda@%DSAs996"
 
 database-config:
-  src: "test"
-  des: "prod"
+  src: "prod"
+  des: "dev"
+
+token-management:
+  enable: true
 
 small-assignment-update:
-  enable: true
+  enable: false
 
 agreements-update:
   enable: false
@@ -173,6 +176,9 @@ field-migration:
   table-delete: false
   field-delete: false
   table-names:
-    - "shop"
-    - "shop_audit"
+    - "shop_business_card"
+    - "shop_facility"
+    - "contain_tag"
+    - "rel_facility__shop_business_card"
+    - "rel_contain_tag__shop_business_card"
 
