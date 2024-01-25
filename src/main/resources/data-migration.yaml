@@ -36,12 +36,13 @@ database-config:
 
 token-management:
   enable: true
-  platform-code: "platform"
-  service-code: "service.shop"
-  goods-code: "goods.shop"
-  agency-code: "agency.shop"
-  health-code: "health.shop"
   test-token: "User:Company:User.Login:992cc395cb2340f6a6199cc1b504f1df"
+  code:
+    platform-code: "platform"
+    service-code: "service.shop"
+    goods-code: "goods.shop"
+    agency-code: "agency.shop"
+    health-code: "health.shop"
   base-url:
     dev-user-base-url: "https://dev.baochuncare.com/api/user"
     dev-order-base-url: "https://dev.baochuncare.com/api/order"

@@ -38,15 +38,16 @@ public class TokenManagementService extends BaseService {
         super(dataMigration);
         this.tokenApiService = new TokenApiService();
         Map<String, Object> tokenManagement = GenUtil.getMap("token-management");
+        Map<String, Object> mapToken = (Map<String, Object>) tokenManagement.get("code");
         Map<String, Object> mapBaseUrl = (Map<String, Object>) tokenManagement.get("base-url");
 
         this.enable = GenUtil.objToBoolean(tokenManagement.get("enable"));
         this.TEST_TOKEN = GenUtil.objToStr(tokenManagement.get("test-token"));
-        this.PLATFORM_CODE = GenUtil.objToStr(tokenManagement.get("platform-code"));
-        this.SERVICE_CODE = GenUtil.objToStr(tokenManagement.get("service-code"));
-        this.GOODS_CODE = GenUtil.objToStr(tokenManagement.get("goods-code"));
-        this.AGENCY_CODE = GenUtil.objToStr(tokenManagement.get("agency-code"));
-        this.HEALTH_CODE = GenUtil.objToStr(tokenManagement.get("health-code"));
+        this.PLATFORM_CODE = GenUtil.objToStr(mapToken.get("platform-code"));
+        this.SERVICE_CODE = GenUtil.objToStr(mapToken.get("service-code"));
+        this.GOODS_CODE = GenUtil.objToStr(mapToken.get("goods-code"));
+        this.AGENCY_CODE = GenUtil.objToStr(mapToken.get("agency-code"));
+        this.HEALTH_CODE = GenUtil.objToStr(mapToken.get("health-code"));
 
         this.DEV_USER_BASE_URL = GenUtil.objToStr(mapBaseUrl.get("dev-user-base-url"));
         this.DEV_ORDER_BASE_URL = GenUtil.objToStr(mapBaseUrl.get("dev-order-base-url"));
@@ -67,7 +68,7 @@ public class TokenManagementService extends BaseService {
 
     private void testTokenToAdminToken() {
         Table organizationTable = desDatabase.getMapTable().get("organization");
-        Long organizationId = tokenApiService.getOrganizationIdByToken(ADMIN_USER_BASE_URL, TEST_TOKEN);
+        Long organizationId = tokenApiService.getOrganizationIdByToken(TEST_USER_BASE_URL, TEST_TOKEN);
         Map<String, Map<String, Object>> mapOrganizationData = getMapData(
                 desDataList(
                         Wrappers.lambdaQuery(organizationTable.getName())
