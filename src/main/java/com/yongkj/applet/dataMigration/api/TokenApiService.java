@@ -13,7 +13,7 @@ public class TokenApiService {
     private static final String ACCOUNT_LOGIN = "%s/v1/bc/company/admin/accountLogin";
     private static final String DETAIL_BY_USER = "%s/v1/bc/company/organization/detailByUser";
 
-    public String getShopIdByShopDetail(String baseUrl, String token) {
+    public Long getShopIdByShopDetail(String baseUrl, String token) {
         Map<String, String> mapHeader = new HashMap<>();
         mapHeader.put("token", token);
 
@@ -22,10 +22,10 @@ public class TokenApiService {
 
         Map<String, Object> mapData = (Map<String, Object>) GenUtil.fromJsonString(responseDataStr, Map.class).get("data");
 
-        return GenUtil.objToStr(mapData.get("id"));
+        return GenUtil.objToLong(mapData.get("id"));
     }
 
-    public String getShopIdByToken(String baseUrl, String token) {
+    public Long getShopIdByToken(String baseUrl, String token) {
         Map<String, String> mapHeader = new HashMap<>();
         mapHeader.put("token", token);
 
@@ -36,10 +36,10 @@ public class TokenApiService {
 
         Map<String, Object> shopInfo = (Map<String, Object>) mapData.get("shopInfo");
 
-        return GenUtil.objToStr(shopInfo.get("id"));
+        return GenUtil.objToLong(shopInfo.get("id"));
     }
 
-    public String getOrganizationIdByToken(String baseUrl, String token) {
+    public Long getOrganizationIdByToken(String baseUrl, String token) {
         Map<String, String> mapHeader = new HashMap<>();
         mapHeader.put("token", token);
 
@@ -50,7 +50,7 @@ public class TokenApiService {
 
         Map<String, Object> organizationInfo = (Map<String, Object>) mapData.get("organizationInfo");
 
-        return GenUtil.objToStr(organizationInfo.get("id"));
+        return GenUtil.objToLong(organizationInfo.get("id"));
     }
 
     public String getLoginToken(String baseUrl, String applyCode, Long mobile) {

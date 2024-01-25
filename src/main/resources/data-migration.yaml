@@ -31,11 +31,28 @@ prod:
     password: "vsHHhda@%DSAs996"
 
 database-config:
-  src: "prod"
-  des: "dev"
+  src: "dev"
+  des: "test"
 
 token-management:
   enable: true
+  platform-code: "platform"
+  service-code: "service.shop"
+  goods-code: "goods.shop"
+  agency-code: "agency.shop"
+  health-code: "health.shop"
+  test-token: "User:Company:User.Login:992cc395cb2340f6a6199cc1b504f1df"
+  base-url:
+    dev-user-base-url: "https://dev.baochuncare.com/api/user"
+    dev-order-base-url: "https://dev.baochuncare.com/api/order"
+    test-user-base-url: "https://test.baochuncare.com/api/user"
+    test-order-base-url: "https://test.baochuncare.com/api/order"
+    pre-user-base-url: "https://pre.baochuncare.com/api/user"
+    pre-order-base-url: "https://pre.baochuncare.com/api/order"
+    prod-user-base-url: "https://prod.baochuncare.com/api/user"
+    prod-order-base-url: "https://prod.baochuncare.com/api/order"
+    admin-user-base-url: "https://admin.yongkj.cn/api/user"
+    admin-order-base-url: "https://admin.yongkj.cn/api/order"
 
 small-assignment-update:
   enable: false
