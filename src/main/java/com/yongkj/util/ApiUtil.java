@@ -39,6 +39,12 @@ public class ApiUtil {
         return (PROXY_ENABLE ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).getForObject(getUrl(api, params), clazz);
     }
 
+    public static <T> T requestByGetWithHeaderAndParamsToEntity(String api, Map<String, String> mapHeader, Map<String, Object> mapParams, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        mapHeader.forEach(headers::set);
+        return requestByGetWithHeaderAndData(getUrl(api, mapParams), headers, null, clazz);
+    }
+
     public static <T> T requestByGetWithHeaderToEntity(String api, Map<String, String> mapHeader, Class<T> clazz) {
         HttpHeaders headers = new HttpHeaders();
         mapHeader.forEach(headers::set);
@@ -47,6 +53,13 @@ public class ApiUtil {
 
     public static String requestByPostWithParams(String api, Map<String, Object> params) {
         return (PROXY_ENABLE ? SOCKS_REST_TEMPLATE : REST_TEMPLATE).postForObject(getUrl(api, params), null, String.class);
+    }
+
+    public static <T> T requestWithHeaderAndBodyDataByPostToEntity(String api, Map<String, String> mapHeader, Map<String, Object> mapBody, Class<T> clazz) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        mapHeader.forEach(headers::set);
+        return requestByPostWithHeaderAndData(api, headers, GenUtil.toJsonString(mapBody), clazz);
     }
 
     public static <T> T requestWithBodyDataByPostToEntity(String api, Map<String, Object> mapBody, Class<T> clazz) {
