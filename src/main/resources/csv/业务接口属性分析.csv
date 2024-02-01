@@ -1,0 +1,2 @@
+user,description,prefix,api,requestMethod,params,dto,enum,po,table,modelMap,archetype,ui,flowChart,ERDiagram
+使用者（admin、worker、consumer）,接口描述,接口前缀,接口后缀,请求方式,请求参数,数据传输对象,枚举类,实体类,数据库表,模型图,原型图,UI图,流程图,ER图
