@@ -179,6 +179,13 @@ public abstract class BaseService {
                 query.getSqlSegment());
     }
 
+    protected String getInsertSQl(Map<String, Object> mapData, Table table) {
+        return SQL.getDataInsertSqlByObject(
+                table.getName(),
+                new ArrayList<>(mapData.keySet()),
+                new ArrayList<>(mapData.values()));
+    }
+
     protected String getInsertSQl(Map<String, Object> mapData, String tableName, Wrappers query) {
         return SQL.getDataInsertSqlByObject(
                 tableName,

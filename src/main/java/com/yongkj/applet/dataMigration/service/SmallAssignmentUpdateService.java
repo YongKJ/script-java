@@ -35,7 +35,30 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        jsonFieldTest();
 //        contactPersonUpdate();
 //        syncShopApplyId();
-        syncShopOrganizationStatus();
+//        syncShopOrganizationStatus();
+        syncRoleMenuData();
+    }
+
+    private void syncRoleMenuData() {
+//        syncRoleMenuData("admin_roles", "admin_roles_4");
+//        syncRoleMenuData("admin_menu", "admin_menu_4");
+//        syncRoleMenuData("admin_role_menu", "admin_role_menu_4");
+//        syncRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
+        syncRoleMenuData("admin_role_users", "admin_role_users_4");
+    }
+
+    private void syncRoleMenuData(String srcTableName, String desTableName) {
+        Table srcTable = srcDatabase.getMapTable().get(srcTableName);
+        Table desTable = desDatabase.getMapTable().get(desTableName);
+        List<Map<String, Object>> srcTableData = srcDataList(srcTable);
+        for (Map<String, Object> mapData : srcTableData) {
+            String insertSql = getInsertSQl(mapData, desTable);
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "syncRoleMenuData", "insertSql", insertSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            desDataInsert(insertSql);
+        }
     }
 
     private void syncShopOrganizationStatus() {
