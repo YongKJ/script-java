@@ -162,6 +162,20 @@ public class GenUtil {
         return value != null ? value.toString() : "";
     }
 
+    public static Integer objToInteger(Object value) {
+        Integer result = 0;
+        if (value != null) {
+            String str = value.toString();
+
+            try {
+                result = Integer.parseInt(str);
+            } catch (Exception var4) {
+            }
+        }
+
+        return result;
+    }
+
     public static boolean getBoolean(String key) {
         return Objects.equals(getValue(key), "true");
     }

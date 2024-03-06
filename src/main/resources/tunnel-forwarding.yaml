@@ -1,0 +1,10 @@
+server:
+  host: "47.106.225.57"
+  port: 22
+  username: "dev"
+  password: "HHhda163@%DSAs996"
+
+tunnels:
+  - target-host: "rm-wz9ymtq896s0egwf4.mysql.rds.aliyuncs.com"
+    target-port: 3306
+    forward-port: 53306
