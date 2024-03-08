@@ -6,11 +6,12 @@ config-tag: test
 
 branchs:
   - project-name: "service-user"
-    branch: "feature/find-organization"
+    branch: "feat/dxj/service-worker-list"
   - project-name: "service-housekeeping"
-    branch: "feature/find-organization"
+    #    branch: "feat/dxj/service-punch-card"
+    branch: "develop"
 
-branch-clean: true
+branch-clean: false
 
 pull-branchs:
   - local
@@ -35,3 +36,4 @@ project-names:
   - service-content
   - service-life-care
   - service-search
+  - service-smart-care
