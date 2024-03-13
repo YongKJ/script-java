@@ -36,15 +36,41 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        contactPersonUpdate();
 //        syncShopApplyId();
 //        syncShopOrganizationStatus();
-        syncRoleMenuData();
+//        syncRoleMenuData();
+        diffRoleMenuData();
+    }
+
+    private void diffRoleMenuData() {
+        diffRoleMenuData("admin_roles", "admin_roles_4");
+        diffRoleMenuData("admin_menu", "admin_menu_4");
+        diffRoleMenuData("admin_role_menu", "admin_role_menu_4");
+        diffRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
+    }
+
+    private void diffRoleMenuData(String srcTableName, String desTableName) {
+        Table srcTable = srcDatabase.getMapTable().get(srcTableName);
+        Table desTable = desDatabase.getMapTable().get(desTableName);
+        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcTable));
+        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desTable));
+        for (Map.Entry<String, Map<String, Object>> map : srcMapTableData.entrySet()) {
+            if (desMapTableData.containsKey(map.getKey())) {
+                continue;
+            }
+            String insertSql = getInsertSQl(map.getValue(), desTable);
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            desDataInsert(insertSql);
+        }
     }
 
     private void syncRoleMenuData() {
-//        syncRoleMenuData("admin_roles", "admin_roles_4");
-//        syncRoleMenuData("admin_menu", "admin_menu_4");
-//        syncRoleMenuData("admin_role_menu", "admin_role_menu_4");
-//        syncRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
-        syncRoleMenuData("admin_role_users", "admin_role_users_4");
+        syncRoleMenuData("admin_roles", "admin_roles_4");
+        syncRoleMenuData("admin_menu", "admin_menu_4");
+        syncRoleMenuData("admin_role_menu", "admin_role_menu_4");
+        syncRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
+//        syncRoleMenuData("admin_role_users", "admin_role_users_4");
     }
 
     private void syncRoleMenuData(String srcTableName, String desTableName) {

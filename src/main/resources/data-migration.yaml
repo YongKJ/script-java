@@ -32,10 +32,10 @@ prod:
 
 database-config:
   src: "dev"
-  des: "test"
+  des: "dev"
 
 token-management:
-  enable: true
+  enable: false
   test-token: "User:Company:User.Login:992cc395cb2340f6a6199cc1b504f1df"
   code:
     platform-code: "platform"
@@ -56,7 +56,7 @@ token-management:
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
 
 small-assignment-update:
-  enable: false
+  enable: true
 
 agreements-update:
   enable: false
@@ -85,7 +85,7 @@ agreements-update:
 shop-cancel-logout:
   enable: false
   mobiles:
-    - 11014225011
+    - 18956554525
 
 shop-worker-data-export:
   enable: false
