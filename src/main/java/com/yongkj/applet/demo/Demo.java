@@ -317,8 +317,64 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test17", "lstScript.size()", lstScript.size()));
     }
 
+    private void test18() {
+        String content = "Hello world!";
+        String key = AesUtil.generateKey();
+        LogUtil.loggerLine(Log.of("Demo", "test18", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "key", key));
+        String encryptStr = AesUtil.aesEncrypt(key, content);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStr", encryptStr));
+        String decryptStr = AesUtil.aesDecrypt(key, encryptStr);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "decryptStr", decryptStr));
+    }
+
+    private void test19() {
+        String content = "Hello world!";
+        Map<String, String> keyMap = RsaUtil.generateKey();
+        String publicKey = keyMap.get(RsaUtil.KEY_TYPE_PUBLIC_KEY);
+        String privateKey = keyMap.get(RsaUtil.KEY_TYPE_PRIVATE_KEY);
+        LogUtil.loggerLine(Log.of("Demo", "test19", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test19", "publicKey", publicKey));
+        LogUtil.loggerLine(Log.of("Demo", "test19", "privateKey", privateKey));
+        System.out.println("----------------------------------------------------------------------------------");
+
+        String privateKeyEncryptStr = RsaUtil.rsaEncrypt(privateKey, content, RsaUtil.KEY_TYPE_PRIVATE_KEY);
+        String publicKeyDecryptStr = RsaUtil.rsaDecrypt(publicKey, privateKeyEncryptStr, RsaUtil.KEY_TYPE_PUBLIC_KEY);
+        LogUtil.loggerLine(Log.of("Demo", "test19", "privateKeyEncryptStr", privateKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test19", "publicKeyDecryptStr", publicKeyDecryptStr));
+        System.out.println("----------------------------------------------------------------------------------");
+
+        String publicKeyEncryptStr = RsaUtil.rsaEncrypt(publicKey, content, RsaUtil.KEY_TYPE_PUBLIC_KEY);
+        String privateKeyDecryptStr = RsaUtil.rsaDecrypt(privateKey, publicKeyEncryptStr, RsaUtil.KEY_TYPE_PRIVATE_KEY);
+        LogUtil.loggerLine(Log.of("Demo", "test19", "publicKeyEncryptStr", publicKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test19", "privateKeyDecryptStr", privateKeyDecryptStr));
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
+    private void test20() {
+        String content = "Hello world!";
+        Map<String, String> keyMap = SignatureUtil.generateKey();
+        String publicKey = keyMap.get(SignatureUtil.KEY_TYPE_PUBLIC_KEY);
+        String privateKey = keyMap.get(SignatureUtil.KEY_TYPE_PRIVATE_KEY);
+        LogUtil.loggerLine(Log.of("Demo", "test20", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test20", "publicKey", publicKey));
+        LogUtil.loggerLine(Log.of("Demo", "test20", "privateKey", privateKey));
+        System.out.println("----------------------------------------------------------------------------------");
+
+        String privateKeyEncryptStr = SignatureUtil.generateSignature(privateKey, content);
+        boolean publicKeyDecryptResult = SignatureUtil.verifySignature(publicKey, content, privateKeyEncryptStr);
+        boolean publicKeyDecryptResultTest = SignatureUtil.verifySignature(publicKey, content + " ", privateKeyEncryptStr);
+        LogUtil.loggerLine(Log.of("Demo", "test20", "privateKeyEncryptStr", privateKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test20", "publicKeyDecryptResult", publicKeyDecryptResult));
+        LogUtil.loggerLine(Log.of("Demo", "test20", "publicKeyDecryptResultTest", publicKeyDecryptResultTest));
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+        demo.test20();
+//        demo.test19();
+//        demo.test18();
 //        demo.test17();
 //        demo.test16();
 //        demo.test15();
@@ -336,7 +392,7 @@ public class Demo {
 //        demo.test3();
 //        demo.test2();
 //        demo.test1();
-        demo.test();
+//        demo.test();
     }
 
 }
