@@ -370,9 +370,22 @@ public class Demo {
         System.out.println("----------------------------------------------------------------------------------");
     }
 
+    private void test21() {
+        String privateKeyEncryptStr = "JksyEIFGoemYCkdQhlJXkTchMeGLoKgkl+agMrTOOaE1uVfngBKIYH91t7OMwN42lXy6SzmySP4eYQSc7DdGHgLhP7HT6qt8YFRZNZzL0PdB5unnCpnFo14x7KojitFs8OiCGMLjRY1R9GVgXydud5pmTEy3MeyB2TLSbz/DKpxT0AkQLZhT/biJbQAwUKxbYKim+oMaWY8jgG8ChsPydNsV1gz8Y/SuUbsxy08utFN9wkZD80xn5VEr19646ovLHPY+lem306YXJnwCZVpVqgn+W5oXfY1WY8k2VxUzIXavnJvYtjcMRz8PtvTJRxXjtpVw3Hzl1dXI1yxMk0KQuA==";
+        String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArCS+Mc95KdU5XvsL5Z5sYo78CmRgZ2D65dMHaZw8KjaJtM2SXiswz3f6ykR+dgSRONQifQjfdLdiaAiczJqchRLb2y5FrlQJ/Rxe+Z3Jn74vuUiKn5XeMy4nqsdNaaLQavakfQBMYmAPcxZfnjNIyyfyMGIFmW+MMgs/bGXLO6UrwJvaaXC59x5+2I/5KL0TrL9kNWBh0Xfv61U64fg0cAqHZF2HzckmxSF8H3AEAheqbvzuqzkBW26dP+2x5MOKQmfbkf8VlX+lcqPdvIFZOYQQ+olHsGIUzduuk8Xt6UqfMwDo4PTnv9SVQQdFlZ/hLOtncTMLoeqPM8H2rJ3ihwIDAQAB";
+        String publicKeyDecryptStr = RsaUtil.rsaDecrypt(publicKey, privateKeyEncryptStr, RsaUtil.KEY_TYPE_PUBLIC_KEY);
+
+        LogUtil.loggerLine(Log.of("Demo", "test19", "publicKey", publicKey));
+        System.out.println("----------------------------------------------------------------------------------");
+        LogUtil.loggerLine(Log.of("Demo", "test21", "privateKeyEncryptStr", privateKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test19", "publicKeyDecryptStr", publicKeyDecryptStr));
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test20();
+        demo.test21();
+//        demo.test20();
 //        demo.test19();
 //        demo.test18();
 //        demo.test17();
