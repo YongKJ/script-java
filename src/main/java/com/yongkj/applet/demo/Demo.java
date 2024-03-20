@@ -319,10 +319,12 @@ public class Demo {
 
     private void test18() {
         String content = "Hello world!";
-        String key = AesUtil.generateKey();
+//        String key = AesUtil.generateKey();
+        String key = "GuWpAYNaAn7aDOutTGyQrlU7N3zCWiSDDnoWCuldtZs=";
         LogUtil.loggerLine(Log.of("Demo", "test18", "content", content));
         LogUtil.loggerLine(Log.of("Demo", "test18", "key", key));
-        String encryptStr = AesUtil.aesEncrypt(key, content);
+//        String encryptStr = AesUtil.aesEncrypt(key, content);
+        String encryptStr = "lXO5FgiOAP4QgoWPENbhzQ==";
         LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStr", encryptStr));
         String decryptStr = AesUtil.aesDecrypt(key, encryptStr);
         LogUtil.loggerLine(Log.of("Demo", "test18", "decryptStr", decryptStr));
@@ -382,9 +384,85 @@ public class Demo {
         System.out.println("----------------------------------------------------------------------------------");
     }
 
+    private void test22() {
+        String ivStr = AesUtil.generateIV();
+        LogUtil.loggerLine(Log.of("Demo", "test22", "ivStr", ivStr));
+    }
+
+    private void test23() {
+        String content = "Hello world!";
+        String ivStr = "iVf3rzor4buyLwG4";
+        String key = "GuWpAYNaAn7aDOutTGyQrlU7N3zCWiSDDnoWCuldtZs=";
+
+        LogUtil.loggerLine(Log.of("Demo", "test18", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "ivStr", ivStr));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "key", key));
+//        String encryptStr = AesUtil.aesEncrypt(key, ivStr, content);
+        String encryptStr = "GigvhLC75KwiDhi3Lg91yg==";
+        LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStr", encryptStr));
+        String decryptStr = AesUtil.aesDecrypt(key, ivStr, encryptStr);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "decryptStr", decryptStr));
+    }
+
+    private void test24() {
+        String content = "Hello world!";
+        String iv = AesUtil.generateIV();
+        String key = AesUtil.generateKey();
+
+        LogUtil.loggerLine(Log.of("Demo", "test18", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "iv", iv));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "key", key));
+        System.out.println("-----------------------------------------------------------------------------");
+
+        String encryptStr = AesUtil.aesEncrypt(key, iv, content);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStr", encryptStr));
+        String decryptStr = AesUtil.aesDecrypt(key, iv, encryptStr);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "decryptStr", decryptStr));
+    }
+
+    private void test25() {
+        String content = "Hello world!";
+        String iv = "wmgcCFxfuL2MaegK";
+        String key = "ODJrHhcGN1DGglwIZ4f7YE5I7sg5JxUspHFRFi3S+lk=";
+
+        LogUtil.loggerLine(Log.of("Demo", "test18", "content", content));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "iv", iv));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "key", key));
+        System.out.println("-----------------------------------------------------------------------------");
+
+        String encryptStr = "izMCHqcvIxEHIMoaFp4qiw==";
+        String encryptStrLatest = AesUtil.aesEncrypt(key, iv, content);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStrLatest", encryptStrLatest));
+        LogUtil.loggerLine(Log.of("Demo", "test18", "encryptStr", encryptStr));
+        String decryptStr = AesUtil.aesDecrypt(key, iv, encryptStrLatest);
+        LogUtil.loggerLine(Log.of("Demo", "test18", "decryptStr", decryptStr));
+    }
+
+    private void test26() {
+        String base64Iv = "V1lhZjI2b3c3WTlmWjFpeg==";
+        String base64Key = "Ep0U1U2zm7vfA1UZ03m2+E1pU/ugLEZ33tO1ui7rT2s=";
+        String base64Content = "FbcG8w9oKVTfvxdt6j74vA==";
+        String decryptStr = AesUtil.aesDecrypt(base64Key, base64Iv, base64Content);
+        LogUtil.loggerLine(Log.of("Demo", "test26", "decryptStr", decryptStr));
+    }
+
+    private void test27() {
+        String content = "Hello world!";
+        String base64Iv = "V1lhZjI2b3c3WTlmWjFpeg==";
+        String base64Key = "Ep0U1U2zm7vfA1UZ03m2+E1pU/ugLEZ33tO1ui7rT2s=";
+        String encryptStr = AesUtil.aesEncrypt(base64Key, base64Iv, content);
+        LogUtil.loggerLine(Log.of("Demo", "test26", "encryptStr", encryptStr));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test21();
+        demo.test27();
+//        demo.test26();
+//        demo.test25();
+//        demo.test24();
+//        demo.test23();
+//        demo.test22();
+//        demo.test21();
 //        demo.test20();
 //        demo.test19();
 //        demo.test18();
