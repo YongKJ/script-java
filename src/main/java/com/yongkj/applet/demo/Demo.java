@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import reactor.core.publisher.Flux;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -454,15 +455,23 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test26", "encryptStr", encryptStr));
     }
 
+    private void test28() {
+        Flux.just(1, 2, 3, 4, 5)
+                .log()
+                .map(i -> i * 2)
+                .subscribe(System.out::println);
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+        demo.test28();
 //        demo.test27();
 //        demo.test26();
 //        demo.test25();
 //        demo.test24();
 //        demo.test23();
 //        demo.test22();
-        demo.test21();
+//        demo.test21();
 //        demo.test20();
 //        demo.test19();
 //        demo.test18();
