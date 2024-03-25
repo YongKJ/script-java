@@ -41,10 +41,15 @@ public class SmallAssignmentUpdateService extends BaseService {
     }
 
     private void diffRoleMenuData() {
-        diffRoleMenuData("admin_roles", "admin_roles_4");
-        diffRoleMenuData("admin_menu", "admin_menu_4");
-        diffRoleMenuData("admin_role_menu", "admin_role_menu_4");
-        diffRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
+//        diffRoleMenuData("admin_roles", "admin_roles_4");
+//        diffRoleMenuData("admin_menu", "admin_menu_4");
+//        diffRoleMenuData("admin_role_menu", "admin_role_menu_4");
+//        diffRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
+
+//        diffRoleMenuData("admin_roles", "admin_roles");
+        diffRoleMenuData("admin_menu", "admin_menu");
+//        diffRoleMenuData("admin_role_menu", "admin_role_menu");
+        diffRoleMenuData("admin_apply_menu", "admin_apply_menu");
     }
 
     private void diffRoleMenuData(String srcTableName, String desTableName) {
