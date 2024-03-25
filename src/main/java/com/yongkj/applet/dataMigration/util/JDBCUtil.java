@@ -47,6 +47,10 @@ public class JDBCUtil {
         return result;
     }
 
+    public static List<Map<String, Object>> getResultSet(Database database, String sql) {
+        return getResultSet(database, sql, new ArrayList<>());
+    }
+
     public static List<Map<String, Object>> getResultSet(Database database, String sql, List<String> filterFields) {
         Statement statement = null;
         ResultSet resultSet = null;
@@ -71,34 +75,6 @@ public class JDBCUtil {
         List<Field> lstField = Field.getFields(resultSet);
         for (Field field : lstField) {
             if (field == null || filterFields.size() > 0 && !filterFields.contains(field.getName())) continue;
-            mapData.put(field.getName(), getValue(field.getType(), field.getName(), resultSet));
-        }
-        return mapData;
-    }
-
-    public static List<Map<String, Object>> getResultSet(Database database, String sql) {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        List<Map<String, Object>> lstData = new ArrayList<>();
-        try {
-            statement = database.getManager().getConnection().createStatement();
-            resultSet = statement.executeQuery(sql);
-
-            while (resultSet.next()) {
-                lstData.add(getRowData(resultSet));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            close(resultSet, statement);
-        }
-        return lstData;
-    }
-
-    private static Map<String, Object> getRowData(ResultSet resultSet) {
-        Map<String, Object> mapData = new LinkedHashMap<>();
-        List<Field> lstField = Field.getFields(resultSet);
-        for (Field field : lstField) {
             mapData.put(field.getName(), getValue(field.getType(), field.getName(), resultSet));
         }
         return mapData;
