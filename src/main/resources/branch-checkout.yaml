@@ -2,14 +2,13 @@ project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
 config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
-config-tag: test
+config-tag: dev
 
 branchs:
   - project-name: "service-user"
-    branch: "feat/dxj/service-worker-list"
+    branch: "local"
   - project-name: "service-housekeeping"
-    #    branch: "feat/dxj/service-punch-card"
-    branch: "develop"
+    branch: "local"
 
 branch-clean: false
 
@@ -27,6 +26,7 @@ branch-config-relation:
 
 project-names:
   - api-gateway
+  - iot-gateway
   - framework-core
   - rocketmq-entity
   - service-housekeeping
