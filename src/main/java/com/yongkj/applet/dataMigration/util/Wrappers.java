@@ -2,6 +2,7 @@ package com.yongkj.applet.dataMigration.util;
 
 import com.yongkj.applet.dataMigration.pojo.dict.SQLOperate;
 import com.yongkj.applet.dataMigration.pojo.dto.SQLValue;
+import com.yongkj.applet.dataMigration.pojo.po.Table;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -36,6 +37,10 @@ public class Wrappers {
 
     public static Wrappers lambdaQuery() {
         return new Wrappers();
+    }
+
+    public static Wrappers lambdaQuery(Table table) {
+        return new Wrappers(table.getName());
     }
 
     public static Wrappers lambdaQuery(String tableName) {

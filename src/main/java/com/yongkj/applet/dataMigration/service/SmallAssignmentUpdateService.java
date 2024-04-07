@@ -37,7 +37,76 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        syncShopApplyId();
 //        syncShopOrganizationStatus();
 //        syncRoleMenuData();
-        diffRoleMenuData();
+//        diffRoleMenuData();
+        organizationInfoUpdate();
+    }
+
+    private void organizationInfoUpdate() {
+        Table idCardTable = srcDatabase.getMapTable().get("id_card");
+        Table organizationTable = srcDatabase.getMapTable().get("organization");
+        List<Map<String, Object>> lstOrganizationData = srcDataList(
+                Wrappers.lambdaQuery(organizationTable)
+                        .eq("apply_id", 2));
+        List<Long> idCardIds = lstOrganizationData.stream().map(po -> (Long) po.get("legal_person_id_card_id")).collect(Collectors.toList());
+
+        Map<String, Map<String, Object>> mapOrganizationData = getMapData(lstOrganizationData);
+        Map<String, Map<String, Object>> mapIdCardData = getMapData(srcDataList(
+                Wrappers.lambdaQuery(idCardTable)
+                        .in("id", idCardIds)));
+
+        Long organizationId = 1730477844633948162L;
+        Map<String, Object> organizationDemo = mapOrganizationData.get(organizationId + "");
+        if (organizationDemo == null) {
+            return;
+        }
+
+        Long legalPersonIdCardId = (Long) organizationDemo.get("legal_person_id_card_id");
+        Map<String, Object> idCardDemo = mapIdCardData.get(legalPersonIdCardId + "");
+        if (idCardDemo == null) {
+            return;
+        }
+
+        for (Map.Entry<String, Map<String, Object>> map : mapOrganizationData.entrySet()) {
+            if (Objects.equals(map.getKey(), organizationId + "")) {
+                continue;
+            }
+
+            Map<String, Object> organization = map.getValue();
+            organization.put("code", organizationDemo.get("code"));
+            organization.put("business_license", organizationDemo.get("business_license"));
+            organization.put("period_of_validity_start", organizationDemo.get("period_of_validity_start"));
+            organization.put("period_of_validity_end", organizationDemo.get("period_of_validity_end"));
+            organization.put("period_type", organizationDemo.get("period_type"));
+
+            Long id = (Long) organization.get("id");
+            String updateSql = getUpdateSQl(organization,
+                    Wrappers.lambdaQuery(organizationTable)
+                            .eq("id", id));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "organizationInfoUpdate", "updateSql", updateSql));
+            srcDataUpdate(updateSql);
+
+            legalPersonIdCardId = (Long) organization.get("legal_person_id_card_id");
+            Map<String, Object> idCard = mapIdCardData.get(legalPersonIdCardId + "");
+            if (idCard == null) {
+                continue;
+            }
+
+            idCard.put("positive_img", idCardDemo.get("positive_img"));
+            idCard.put("negative_img", idCardDemo.get("negative_img"));
+            idCard.put("name", idCardDemo.get("name"));
+            idCard.put("number", idCardDemo.get("number"));
+            idCard.put("start_time", idCardDemo.get("start_time"));
+            idCard.put("end_time", idCardDemo.get("end_time"));
+            idCard.put("validity", idCardDemo.get("validity"));
+
+            id = (Long) idCard.get("id");
+            String idCardUpdateSql = getUpdateSQl(idCard,
+                    Wrappers.lambdaQuery(idCardTable)
+                            .eq("id", id));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "organizationInfoUpdate", "idCardUpdateSql", idCardUpdateSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+            srcDataUpdate(idCardUpdateSql);
+        }
     }
 
     private void diffRoleMenuData() {
