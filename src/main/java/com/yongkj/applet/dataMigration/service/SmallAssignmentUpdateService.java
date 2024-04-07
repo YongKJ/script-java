@@ -42,30 +42,30 @@ public class SmallAssignmentUpdateService extends BaseService {
     }
 
     private void organizationInfoUpdate() {
-        Table idCardTable = srcDatabase.getMapTable().get("id_card");
-        Table organizationTable = srcDatabase.getMapTable().get("organization");
-        List<Map<String, Object>> lstOrganizationData = srcDataList(
-                Wrappers.lambdaQuery(organizationTable)
-                        .eq("apply_id", 2));
-        List<Long> idCardIds = lstOrganizationData.stream().map(po -> (Long) po.get("legal_person_id_card_id")).collect(Collectors.toList());
-
-        Map<String, Map<String, Object>> mapOrganizationData = getMapData(lstOrganizationData);
-        Map<String, Map<String, Object>> mapIdCardData = getMapData(srcDataList(
-                Wrappers.lambdaQuery(idCardTable)
-                        .in("id", idCardIds)));
-
         Long organizationId = 1730477844633948162L;
-        Map<String, Object> organizationDemo = mapOrganizationData.get(organizationId + "");
+        Map<String, Object> organizationDemo = getOrganizationDemo(organizationId);
         if (organizationDemo == null) {
             return;
         }
-
-        Long legalPersonIdCardId = (Long) organizationDemo.get("legal_person_id_card_id");
-        Map<String, Object> idCardDemo = mapIdCardData.get(legalPersonIdCardId + "");
+        Map<String, Object> idCardDemo = getIdCardDemo(organizationDemo);
         if (idCardDemo == null) {
             return;
         }
 
+        Table idCardTable = desDatabase.getMapTable().get("id_card");
+        Table organizationTable = desDatabase.getMapTable().get("organization");
+
+        List<Map<String, Object>> lstOrganizationData = desDataList(
+                Wrappers.lambdaQuery(organizationTable)
+                        .eq("apply_id", 2));
+
+        List<Long> idCardIds = lstOrganizationData.stream()
+                .map(po -> (Long) po.get("legal_person_id_card_id")).collect(Collectors.toList());
+        Map<String, Map<String, Object>> mapIdCardData = getMapData(desDataList(
+                Wrappers.lambdaQuery(idCardTable)
+                        .in("id", idCardIds)));
+
+        Map<String, Map<String, Object>> mapOrganizationData = getMapData(lstOrganizationData);
         for (Map.Entry<String, Map<String, Object>> map : mapOrganizationData.entrySet()) {
             if (Objects.equals(map.getKey(), organizationId + "")) {
                 continue;
@@ -83,9 +83,9 @@ public class SmallAssignmentUpdateService extends BaseService {
                     Wrappers.lambdaQuery(organizationTable)
                             .eq("id", id));
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "organizationInfoUpdate", "updateSql", updateSql));
-            srcDataUpdate(updateSql);
+            desDataUpdate(updateSql);
 
-            legalPersonIdCardId = (Long) organization.get("legal_person_id_card_id");
+            Long legalPersonIdCardId = (Long) organization.get("legal_person_id_card_id");
             Map<String, Object> idCard = mapIdCardData.get(legalPersonIdCardId + "");
             if (idCard == null) {
                 continue;
@@ -105,8 +105,26 @@ public class SmallAssignmentUpdateService extends BaseService {
                             .eq("id", id));
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "organizationInfoUpdate", "idCardUpdateSql", idCardUpdateSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
-            srcDataUpdate(idCardUpdateSql);
+            desDataUpdate(idCardUpdateSql);
         }
+    }
+
+    private Map<String, Object> getIdCardDemo(Map<String, Object> organization) {
+        Table idCardTable = srcDatabase.getMapTable().get("id_card");
+        Long legalPersonIdCardId = (Long) organization.get("legal_person_id_card_id");
+        List<Map<String, Object>> lstIdCardData = srcDataList(
+                Wrappers.lambdaQuery(idCardTable)
+                        .eq("id", legalPersonIdCardId));
+        return lstIdCardData.isEmpty() ? null : lstIdCardData.get(0);
+    }
+
+    private Map<String, Object> getOrganizationDemo(Long organizationId) {
+        Table organizationTable = srcDatabase.getMapTable().get("organization");
+        List<Map<String, Object>> lstOrganizationData = srcDataList(
+                Wrappers.lambdaQuery(organizationTable)
+                        .eq("apply_id", 2)
+                        .eq("id", organizationId));
+        return lstOrganizationData.isEmpty() ? null : lstOrganizationData.get(0);
     }
 
     private void diffRoleMenuData() {
