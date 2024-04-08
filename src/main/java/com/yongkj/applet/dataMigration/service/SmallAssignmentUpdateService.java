@@ -57,6 +57,7 @@ public class SmallAssignmentUpdateService extends BaseService {
 
         List<Map<String, Object>> lstOrganizationData = desDataList(
                 Wrappers.lambdaQuery(organizationTable)
+                        .eq("utc_deleted", 0)
                         .eq("apply_id", 2));
 
         List<Long> idCardIds = lstOrganizationData.stream()
@@ -67,7 +68,7 @@ public class SmallAssignmentUpdateService extends BaseService {
 
         Map<String, Map<String, Object>> mapOrganizationData = getMapData(lstOrganizationData);
         for (Map.Entry<String, Map<String, Object>> map : mapOrganizationData.entrySet()) {
-            if (Objects.equals(map.getKey(), organizationId + "")) {
+            if (!Objects.equals(map.getKey(), "1777159838766972929")) {
                 continue;
             }
 
