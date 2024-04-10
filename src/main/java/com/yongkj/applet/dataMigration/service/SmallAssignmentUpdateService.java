@@ -68,12 +68,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 
         Map<String, Map<String, Object>> mapOrganizationData = getMapData(lstOrganizationData);
         for (Map.Entry<String, Map<String, Object>> map : mapOrganizationData.entrySet()) {
-            if (!Objects.equals(map.getKey(), "1777159838766972929")) {
-                continue;
-            }
-
             Map<String, Object> organization = map.getValue();
             organization.put("code", organizationDemo.get("code"));
+            organization.put("name", organizationDemo.get("name"));
+            organization.put("address", organizationDemo.get("address"));
             organization.put("business_license", organizationDemo.get("business_license"));
             organization.put("period_of_validity_start", organizationDemo.get("period_of_validity_start"));
             organization.put("period_of_validity_end", organizationDemo.get("period_of_validity_end"));
