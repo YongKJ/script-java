@@ -37,8 +37,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        syncShopApplyId();
 //        syncShopOrganizationStatus();
 //        syncRoleMenuData();
-//        diffRoleMenuData();
-        organizationInfoUpdate();
+        diffRoleMenuData();
+//        organizationInfoUpdate();
     }
 
     private void organizationInfoUpdate() {
@@ -133,6 +133,7 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        diffRoleMenuData("admin_apply_menu", "admin_apply_menu_4");
 
 //        diffRoleMenuData("admin_roles", "admin_roles");
+//        diffRoleMenuData("admin_apply", "admin_apply");
         diffRoleMenuData("admin_menu", "admin_menu");
 //        diffRoleMenuData("admin_role_menu", "admin_role_menu");
         diffRoleMenuData("admin_apply_menu", "admin_apply_menu");
@@ -152,7 +153,18 @@ public class SmallAssignmentUpdateService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataInsert(insertSql);
+            boolean flag = desDataInsert(insertSql);
+            if (!flag && map.getValue().containsKey("apply_id") && map.getValue().containsKey("menu_id")) {
+                String updateSql = getUpdateSQl(map.getValue(),
+                        Wrappers.lambdaQuery(desTable)
+                                .eq("apply_id", map.getValue().get("apply_id"))
+                                .eq("menu_id", map.getValue().get("menu_id")));
+
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+                desDataUpdate(updateSql);
+            }
         }
     }
 
