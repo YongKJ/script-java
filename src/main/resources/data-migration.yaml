@@ -1,38 +1,76 @@
 dev:
-  database:
-    name: "dev_user"
+  - name: "dev_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/dev_user?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "dev_order"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_order?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "dev_content"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_content?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 test:
-  database:
-    name: "test_user"
+  - name: "test_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/test_user?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "test_order"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_order?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "test_content"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_content?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 pre:
-  database:
-    name: "pre_user"
+  - name: "pre_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/pre_user?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "pre_order"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_order?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "pre_content"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_content?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 prod:
-  database:
-    name: "prod_user"
+  - name: "prod_user"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:33306/prod_user?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
+  - name: "prod_order"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_order?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
+  - name: "prod_content"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_content?characterEncoding=utf-8"
     username: "prod"
     password: "vsHHhda@%DSAs996"
 
 database-config:
   src: "dev"
-  des: "dev"
+  des: "test"
+  databases:
+    - "user"
 
 token-management:
   enable: false
@@ -56,7 +94,7 @@ token-management:
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
 
 small-assignment-update:
-  enable: true
+  enable: false
 
 agreements-update:
   enable: false
@@ -85,7 +123,7 @@ agreements-update:
 shop-cancel-logout:
   enable: false
   mobiles:
-    - 18956554525
+    - 13479732716
 
 shop-worker-data-export:
   enable: false

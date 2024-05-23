@@ -23,8 +23,10 @@ public abstract class BaseService {
     protected final Database testDatabase;
     protected final Database prodDatabase;
     protected final List<Database> databases;
+    protected Map<String, Database> mapDatabase;
 
     protected BaseService(DataMigration dataMigration) {
+        this.mapDatabase = dataMigration.getMapDatabase();
         this.srcDatabase = dataMigration.getSrcDatabase();
         this.desDatabase = dataMigration.getDesDatabase();
         this.devDatabase = dataMigration.getDevDatabase();

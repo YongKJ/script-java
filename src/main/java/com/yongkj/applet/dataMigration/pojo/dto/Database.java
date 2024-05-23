@@ -8,10 +8,7 @@ import com.yongkj.util.GenUtil;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Database {
 
@@ -61,25 +58,53 @@ public class Database {
         }
     }
 
-    public static Database get(String key) {
+    public static Map<String, Database> initDMapDatabase() {
+        Map<String, Database> mapDatabase = new HashMap<>();
+        List<String> keys = Arrays.asList("dev", "test", "pre", "prod");
+        Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
+        List<String> databases = (List<String>) mapDatabaseConfig.get("databases");
+        if (databases.size() == 1) {
+            return mapDatabase;
+        }
+
+        for (int i = 1; i < databases.size(); i++) {
+            String database = databases.get(i);
+            for (String key : keys) {
+                String databaseName = key + "_" + database;
+                mapDatabase.put(databaseName, get(key, databaseName, mapDatabase));
+            }
+        }
+        return mapDatabase;
+    }
+
+    public static Database get(String key, Map<String, Database> mapDatabases) {
+        Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
+        String databaseName = key + "_" + ((List<String>) mapDatabaseConfig.get("databases")).get(0);
+        return get(key, databaseName, mapDatabases);
+    }
+
+    private static Database get(String key, String databaseName, Map<String, Database> mapDatabases) {
+
         Object value = GenUtil.getObject(key);
-        if (!(value instanceof Map)) {
+        if (!(value instanceof List)) {
             return new Database();
         }
-        Object mapDatabase = ((Map<String, Object>) value).get("database");
-        if (!(mapDatabase instanceof Map)) {
+        Map<String, Object> mapDatabase = ((List<Map<String, Object>>) value).stream()
+                .filter(po -> Objects.equals(po.get("name"), databaseName)).findFirst().orElse(new HashMap<>());
+        if (mapDatabase.isEmpty()) {
             return new Database();
         }
-        String name = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("name"));
-        String driver = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("driver"));
-        String url = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("url"));
-        String username = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("username"));
-        String password = GenUtil.objToStr(((Map<String, Object>) mapDatabase).get("password"));
+        String name = GenUtil.objToStr(mapDatabase.get("name"));
+        String driver = GenUtil.objToStr(mapDatabase.get("driver"));
+        String url = GenUtil.objToStr(mapDatabase.get("url"));
+        String username = GenUtil.objToStr(mapDatabase.get("username"));
+        String password = GenUtil.objToStr(mapDatabase.get("password"));
         Database database = new Database(name, driver, url, username, password);
         database.setManager(JDBCUtil.getConnection(database));
         database.setMapTable(Table.getTables(database.getManager()));
         database.setDatabaseNames(getDatabasesBySql(database.getManager()));
         database.setTableNames(Table.getTableNamesBySql(database.getManager()));
+        mapDatabases.put(databaseName, database);
         return database;
     }
 

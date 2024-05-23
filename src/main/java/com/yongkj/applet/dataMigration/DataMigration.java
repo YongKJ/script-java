@@ -19,6 +19,7 @@ public class DataMigration {
     private final Database preDatabase;
     private final Database testDatabase;
     private final Database prodDatabase;
+    private final Map<String, Database> mapDatabase;
     private final TokenManagementService tokenManagementService;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
@@ -29,10 +30,11 @@ public class DataMigration {
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
-        this.devDatabase = Database.get("dev");
-        this.preDatabase = Database.get("pre");
-        this.testDatabase = Database.get("test");
-        this.prodDatabase = Database.get("prod");
+        this.mapDatabase = Database.initDMapDatabase();
+        this.devDatabase = Database.get("dev", mapDatabase);
+        this.preDatabase = Database.get("pre", mapDatabase);
+        this.testDatabase = Database.get("test", mapDatabase);
+        this.prodDatabase = Database.get("prod", mapDatabase);
         this.srcDatabase = Database.get("src", this);
         this.desDatabase = Database.get("des", this);
         this.tokenManagementService = new TokenManagementService(this);
@@ -81,6 +83,10 @@ public class DataMigration {
         JDBCUtil.closeAll(preDatabase.getManager());
         JDBCUtil.closeAll(testDatabase.getManager());
         JDBCUtil.closeAll(prodDatabase.getManager());
+    }
+
+    public Map<String, Database> getMapDatabase() {
+        return mapDatabase;
     }
 
     public Database getDevDatabase() {
