@@ -83,6 +83,10 @@ public abstract class BaseService {
         return JDBCUtil.getResult(srcDatabase, insertSql);
     }
 
+    protected boolean desDataInsert(Database database, String insertSql) {
+        return JDBCUtil.getResult(database, insertSql);
+    }
+
     protected boolean desDataInsert(String insertSql) {
         return JDBCUtil.getResult(desDatabase, insertSql);
     }
@@ -91,9 +95,11 @@ public abstract class BaseService {
         return JDBCUtil.getResult(srcDatabase, updateSql);
     }
 
+    protected boolean desDataUpdate(Database database, String updateSql) {
+        return JDBCUtil.getResult(database, updateSql);
+    }
+
     protected boolean desDataUpdate(String updateSql) {
-        LogUtil.loggerLine(Log.of("BaseService", "desDataUpdate", "updateSql", updateSql));
-        System.out.println("------------------------------------------------------------------------------------------------------------");
         return JDBCUtil.getResult(desDatabase, updateSql);
     }
 
@@ -121,8 +127,16 @@ public abstract class BaseService {
         return list(desDatabase, query);
     }
 
+    protected List<Map<String, Object>> srcDataList(Database database, Table table) {
+        return list(database, table.getSelectDataSql(), new ArrayList<>());
+    }
+
     protected List<Map<String, Object>> srcDataList(Table table) {
         return list(srcDatabase, table.getSelectDataSql(), new ArrayList<>());
+    }
+
+    protected List<Map<String, Object>> desDataList(Database database, Table table) {
+        return list(database, table.getSelectDataSql(), new ArrayList<>());
     }
 
     protected List<Map<String, Object>> desDataList(Table table) {

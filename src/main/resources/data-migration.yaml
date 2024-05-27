@@ -70,7 +70,7 @@ database-config:
   src: "dev"
   des: "test"
   databases:
-    - "user"
+    - "order"
 
 token-management:
   enable: false
@@ -92,6 +92,9 @@ token-management:
     prod-order-base-url: "https://prod.baochuncare.com/api/order"
     admin-user-base-url: "https://admin.yongkj.cn/api/user"
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
+
+category-data-sync:
+  enable: true
 
 small-assignment-update:
   enable: false

@@ -21,6 +21,7 @@ public class DataMigration {
     private final Database prodDatabase;
     private final Map<String, Database> mapDatabase;
     private final TokenManagementService tokenManagementService;
+    private final CategoryDataSyncService categoryDataSyncService;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
@@ -38,6 +39,7 @@ public class DataMigration {
         this.srcDatabase = Database.get("src", this);
         this.desDatabase = Database.get("des", this);
         this.tokenManagementService = new TokenManagementService(this);
+        this.categoryDataSyncService = new CategoryDataSyncService(this);
         this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(this);
         this.agreementsUpdateService = new AgreementsUpdateService(this);
         this.shopCancelLogoutService = new ShopCancelLogoutService(this);
@@ -70,6 +72,7 @@ public class DataMigration {
         }
 
         tokenManagementService.apply();
+        categoryDataSyncService.apply();
         agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
         shopWorkerDataExportService.apply();
