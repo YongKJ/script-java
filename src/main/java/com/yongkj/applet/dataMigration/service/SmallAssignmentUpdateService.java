@@ -153,18 +153,19 @@ public class SmallAssignmentUpdateService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            boolean flag = desDataInsert(insertSql);
-            if (!flag && map.getValue().containsKey("apply_id") && map.getValue().containsKey("menu_id")) {
-                String updateSql = getUpdateSQl(map.getValue(),
-                        Wrappers.lambdaQuery(desTable)
-                                .eq("apply_id", map.getValue().get("apply_id"))
-                                .eq("menu_id", map.getValue().get("menu_id")));
-
-                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
-                System.out.println("------------------------------------------------------------------------------------------------------------------");
-
-                desDataUpdate(updateSql);
-            }
+            desDataInsert(insertSql);
+//            boolean flag = desDataInsert(insertSql);
+//            if (!flag && map.getValue().containsKey("apply_id") && map.getValue().containsKey("menu_id")) {
+//                String updateSql = getUpdateSQl(map.getValue(),
+//                        Wrappers.lambdaQuery(desTable)
+//                                .eq("apply_id", map.getValue().get("apply_id"))
+//                                .eq("menu_id", map.getValue().get("menu_id")));
+//
+//                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
+//                System.out.println("------------------------------------------------------------------------------------------------------------------");
+//
+//                desDataUpdate(updateSql);
+//            }
         }
     }
 
