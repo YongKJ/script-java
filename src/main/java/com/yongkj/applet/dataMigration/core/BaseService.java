@@ -103,6 +103,10 @@ public abstract class BaseService {
         return JDBCUtil.getResult(desDatabase, updateSql);
     }
 
+    protected boolean srcDataRemove(Database database, String removeSql) {
+        return JDBCUtil.getResult(database, removeSql);
+    }
+
     protected boolean srcDataRemove(String removeSql) {
         return JDBCUtil.getResult(srcDatabase, removeSql);
     }
@@ -186,6 +190,12 @@ public abstract class BaseService {
                 Collections.singletonList(query.getTableName()),
                 query.getSqlSegment()
         );
+    }
+
+    protected String getRemoveSQl(Wrappers query) {
+        return SQL.getDataRemoveSql(
+                query.getTableName(),
+                query.getSqlSegment());
     }
 
     protected String getUpdateSQl(Map<String, Object> mapData, Wrappers query) {

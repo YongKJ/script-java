@@ -9,10 +9,7 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CategoryDataSyncService extends BaseService {
 
@@ -29,23 +26,65 @@ public class CategoryDataSyncService extends BaseService {
 
         Database devOrder = mapDatabase.get("dev_order");
         Database testOrder = mapDatabase.get("test_order");
+        Database preOrder = mapDatabase.get("pre_order");
         Database devContent = mapDatabase.get("dev_content");
         Database testContent = mapDatabase.get("test_content");
+        Database preContent = mapDatabase.get("pre_content");
 
-//        syncCategoryData(testOrder, devOrder, "category");
-        syncCategoryData(testOrder, devOrder, "category_show");
-//        syncCategoryData(testContent, devContent, "article_category_show");
-//        syncCategoryData(testContent, devContent, "article_category_show");
+//        syncCategoryData(testOrder, preOrder, "category");
+//        syncCategoryData(testOrder, preOrder, "category_show", "pid", "name", "utc_deleted");
+//        syncCategoryData(testContent, preContent, "article_category");
+//        syncCategoryData(testContent, preContent, "article_category_show", "pid", "name", "utc_deleted");
+
+        fixCategoryData(preOrder, "category_show");
     }
 
-    private void syncCategoryData(Database srcDatabase, Database desDatabase, String tableName) {
+    private void fixCategoryData(Database database, String tableName) {
+        Table table = database.getMapTable().get(tableName);
+        Map<String, Map<String, Object>> mapData = new HashMap<>();
+        List<Map<String, Object>> lstTableData = srcDataList(database, table);
+
+        List<Map<String, Object>> deleteTableData = new ArrayList<>();
+        for (Map<String, Object> tableData : lstTableData) {
+            String key = getMd5Key(tableData, Arrays.asList("pid", "name", "utc_deleted"));
+            if (!mapData.containsKey(key)) {
+                mapData.put(key, tableData);
+                continue;
+            }
+            Map<String, Object> mapTableData = mapData.get(key);
+
+            String icon = (String) tableData.get("icon");
+            String mapIcon = (String) mapTableData.get("icon");
+            if (icon.contains("env_test")) {
+                deleteTableData.add(tableData);
+            }
+            if (mapIcon.contains("env_test")) {
+                deleteTableData.add(mapTableData);
+            }
+        }
+
+        for (Map<String, Object> data : deleteTableData) {
+
+            Long id = (Long) data.get("id");
+            String deleteSql = getRemoveSQl(
+                    Wrappers.lambdaQuery(table.getName())
+                            .eq("id", id));
+
+            System.out.println("---------[CategoryDataSyncService] fixCategoryData -> tableData: " + data);
+            System.out.println("---------[CategoryDataSyncService] fixCategoryData -> deleteSql: " + deleteSql);
+
+//            srcDataRemove(database, deleteSql);
+        }
+    }
+
+    private void syncCategoryData(Database srcDatabase, Database desDatabase, String tableName, String... lstField) {
         LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncOrderCategoryData", "tableName", tableName));
         System.out.println("==================================================================================================================");
 
         Table srcTable = srcDatabase.getMapTable().get(tableName);
         Table desTable = desDatabase.getMapTable().get(tableName);
-        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcDatabase, srcTable));
-        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desDatabase, desTable));
+        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcDatabase, srcTable), Arrays.asList(lstField));
+        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desDatabase, desTable), Arrays.asList(lstField));
 
         List<String> lstInsertSql = new ArrayList<>();
         List<String> lstUpdateSql = new ArrayList<>();
@@ -93,14 +132,14 @@ public class CategoryDataSyncService extends BaseService {
             LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncOrderCategoryData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-//            desDataInsert(desDatabase, insertSql);
+            desDataInsert(desDatabase, insertSql);
         }
 
         for (String updateSql : lstUpdateSql) {
             LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncOrderCategoryData", "updateSql", updateSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-//            desDataUpdate(desDatabase, updateSql);
+            desDataUpdate(desDatabase, updateSql);
         }
 
         System.out.println("==================================================================================================================\n\n");
