@@ -1,7 +1,10 @@
 package com.yongkj.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
@@ -24,7 +27,29 @@ public class GenUtil {
     }
 
     private static final ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private static final ObjectMapper xmlObjectMapper = new ObjectMapper(new XmlFactory());
     private static final ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());
+
+    public static String jsonToXml(String jsonStr) {
+        try {
+            JsonNode jsonNode = jsonObjectMapper.readTree(jsonStr);
+            XmlMapper xmlMapper = new XmlMapper();
+            return xmlMapper.writeValueAsString(jsonNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String xmlToJson(String xmlStr) {
+        try {
+            JsonNode jsonNode = xmlObjectMapper.readTree(xmlStr);
+            return jsonObjectMapper.writeValueAsString(jsonNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
     public static LocalDateTime toLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());

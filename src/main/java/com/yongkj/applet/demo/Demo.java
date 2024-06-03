@@ -462,9 +462,20 @@ public class Demo {
                 .subscribe(System.out::println);
     }
 
+    private void test29() {
+        String jsonStr = "{\"msg\": \"Hello world!\"}";
+        String xmlStr = GenUtil.jsonToXml(jsonStr);
+        String tempJsonStr = GenUtil.xmlToJson(xmlStr);
+
+        LogUtil.loggerLine(Log.of("Demo", "test29", "jsonStr", jsonStr));
+        LogUtil.loggerLine(Log.of("Demo", "test29", "xmlStr", xmlStr));
+        LogUtil.loggerLine(Log.of("Demo", "test29", "tempJsonStr", tempJsonStr));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test28();
+        demo.test29();
+//        demo.test28();
 //        demo.test27();
 //        demo.test26();
 //        demo.test25();
