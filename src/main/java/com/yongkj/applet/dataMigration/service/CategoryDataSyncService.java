@@ -6,6 +6,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
@@ -27,16 +28,21 @@ public class CategoryDataSyncService extends BaseService {
         Database devOrder = mapDatabase.get("dev_order");
         Database testOrder = mapDatabase.get("test_order");
         Database preOrder = mapDatabase.get("pre_order");
+        Database prodOrder = mapDatabase.get("prod_order");
         Database devContent = mapDatabase.get("dev_content");
         Database testContent = mapDatabase.get("test_content");
         Database preContent = mapDatabase.get("pre_content");
+        Database prodContent = mapDatabase.get("prod_content");
 
 //        syncCategoryData(testOrder, preOrder, "category");
 //        syncCategoryData(testOrder, preOrder, "category_show", "pid", "name", "utc_deleted");
 //        syncCategoryData(testContent, preContent, "article_category");
 //        syncCategoryData(testContent, preContent, "article_category_show", "pid", "name", "utc_deleted");
 
-        fixCategoryData(preOrder, "category_show");
+//        fixCategoryData(preOrder, "category_show");
+
+        syncCategoryDataByField(preOrder, prodOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
+//        syncCategoryDataByField(preContent, prodContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
     }
 
     private void fixCategoryData(Database database, String tableName) {
@@ -75,6 +81,74 @@ public class CategoryDataSyncService extends BaseService {
 
 //            srcDataRemove(database, deleteSql);
         }
+    }
+
+    private void syncCategoryDataByField(Database srcDatabase, Database desDatabase, String tableName, String... lstField) {
+        LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncCategoryDataByField", "tableName", tableName));
+        System.out.println("==================================================================================================================");
+
+        Table srcTable = srcDatabase.getMapTable().get(tableName);
+        Table desTable = desDatabase.getMapTable().get(tableName);
+        List<Map<String, Object>> srcTableData = srcDataList(srcDatabase, srcTable);
+        Map<String, Map<String, Object>> desMapTableDataByKey = getMapData(desDataList(desDatabase, desTable));
+        Map<String, Map<String, Object>> desMapTableDataByField = getMapData(desDataList(desDatabase, desTable), Arrays.asList(lstField));
+
+        List<String> lstInsertSql = new ArrayList<>();
+        List<String> lstUpdateSql = new ArrayList<>();
+        for (Map<String, Object> tableData : srcTableData) {
+
+            Integer status = (Integer) tableData.get("status");
+            Long utcDeleted = (Long) tableData.get("utc_deleted");
+            if (utcDeleted != 0 || !tableName.contains("show") && status != 2) {
+                continue;
+            }
+
+            String key = getMd5Key(tableData, Arrays.asList(lstField));
+            if (desMapTableDataByField.containsKey(key)) {
+                continue;
+            }
+
+            Long id = (Long) tableData.get("id");
+            if (!desMapTableDataByKey.containsKey(id + "")) {
+                String insertSql = getInsertSQl(tableData, desTable);
+                lstInsertSql.add(insertSql);
+                continue;
+            }
+
+            if (!tableName.contains("show") && id > 1000000) {
+                continue;
+            }
+            String updateSql = getUpdateSQl(tableData,
+                    Wrappers.lambdaQuery(desTable)
+                            .eq("id", id));
+
+            lstUpdateSql.add(updateSql);
+
+        }
+
+        List<String> lstSql = new ArrayList<>();
+        for (String insertSql : lstInsertSql) {
+            LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncCategoryDataByField", "insertSql", insertSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            lstSql.add(insertSql);
+            desDataInsert(desDatabase, insertSql);
+        }
+
+        for (String updateSql : lstUpdateSql) {
+            LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncCategoryDataByField", "updateSql", updateSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            lstSql.add(updateSql);
+            desDataUpdate(desDatabase, updateSql);
+        }
+
+        System.out.println("==================================================================================================================\n\n");
+
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\category-sql.sql",
+                String.join("\n", lstSql)
+        );
     }
 
     private void syncCategoryData(Database srcDatabase, Database desDatabase, String tableName, String... lstField) {
@@ -132,14 +206,14 @@ public class CategoryDataSyncService extends BaseService {
             LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncOrderCategoryData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataInsert(desDatabase, insertSql);
+//            desDataInsert(desDatabase, insertSql);
         }
 
         for (String updateSql : lstUpdateSql) {
             LogUtil.loggerLine(Log.of("CategoryDataSyncService", "syncOrderCategoryData", "updateSql", updateSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataUpdate(desDatabase, updateSql);
+//            desDataUpdate(desDatabase, updateSql);
         }
 
         System.out.println("==================================================================================================================\n\n");
