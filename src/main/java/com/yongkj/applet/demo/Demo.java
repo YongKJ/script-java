@@ -464,7 +464,7 @@ public class Demo {
 
     private void test29() {
         String jsonStr = "{\"msg\": \"Hello world!\"}";
-        String xmlStr = GenUtil.jsonToXml(jsonStr);
+        String xmlStr = GenUtil.jsonToXml(jsonStr, Map.class);
         String tempJsonStr = GenUtil.xmlToJson(xmlStr);
 
         LogUtil.loggerLine(Log.of("Demo", "test29", "jsonStr", jsonStr));
