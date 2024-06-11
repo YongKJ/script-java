@@ -134,16 +134,16 @@ public class SmallAssignmentUpdateService extends BaseService {
 
 //        diffRoleMenuData("admin_roles", "admin_roles");
 //        diffRoleMenuData("admin_apply", "admin_apply");
-        diffRoleMenuData("admin_menu", "admin_menu");
+        diffRoleMenuData("admin_menu", "admin_menu", "id");
 //        diffRoleMenuData("admin_role_menu", "admin_role_menu");
-        diffRoleMenuData("admin_apply_menu", "admin_apply_menu");
+        diffRoleMenuData("admin_apply_menu", "admin_apply_menu", "apply_id", "menu_id");
     }
 
-    private void diffRoleMenuData(String srcTableName, String desTableName) {
+    private void diffRoleMenuData(String srcTableName, String desTableName, String... fields) {
         Table srcTable = srcDatabase.getMapTable().get(srcTableName);
         Table desTable = desDatabase.getMapTable().get(desTableName);
-        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcTable));
-        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desTable));
+        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcTable), Arrays.asList(fields));
+        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desTable), Arrays.asList(fields));
         for (Map.Entry<String, Map<String, Object>> map : srcMapTableData.entrySet()) {
             if (desMapTableData.containsKey(map.getKey())) {
                 continue;
