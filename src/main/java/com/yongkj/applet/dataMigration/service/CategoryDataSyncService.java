@@ -6,7 +6,6 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
@@ -41,8 +40,10 @@ public class CategoryDataSyncService extends BaseService {
 
 //        fixCategoryData(preOrder, "category_show");
 
-        syncCategoryDataByField(preOrder, prodOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
-//        syncCategoryDataByField(preContent, prodContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
+//        syncCategoryDataByField(testOrder, preOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
+//        syncCategoryDataByField(testOrder, preOrder, "category_show", "pid", "name", "first_id", "app_type", "utc_deleted");
+//        syncCategoryDataByField(testContent, preContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
+        syncCategoryDataByField(testContent, preContent, "article_category_show", "pid", "name", "category_type", "utc_deleted");
     }
 
     private void fixCategoryData(Database database, String tableName) {
@@ -132,7 +133,7 @@ public class CategoryDataSyncService extends BaseService {
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
             lstSql.add(insertSql);
-            desDataInsert(desDatabase, insertSql);
+//            desDataInsert(desDatabase, insertSql);
         }
 
         for (String updateSql : lstUpdateSql) {
@@ -140,15 +141,15 @@ public class CategoryDataSyncService extends BaseService {
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
             lstSql.add(updateSql);
-            desDataUpdate(desDatabase, updateSql);
+//            desDataUpdate(desDatabase, updateSql);
         }
 
         System.out.println("==================================================================================================================\n\n");
 
-        FileUtil.write(
-                "C:\\Users\\Admin\\Desktop\\category-sql.sql",
-                String.join("\n", lstSql)
-        );
+//        FileUtil.write(
+//                "C:\\Users\\Admin\\Desktop\\category-sql.sql",
+//                String.join("\n", lstSql)
+//        );
     }
 
     private void syncCategoryData(Database srcDatabase, Database desDatabase, String tableName, String... lstField) {
