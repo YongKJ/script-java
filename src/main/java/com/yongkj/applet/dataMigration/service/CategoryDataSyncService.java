@@ -40,10 +40,29 @@ public class CategoryDataSyncService extends BaseService {
 
 //        fixCategoryData(preOrder, "category_show");
 
+//        syncCategoryDataByField(devOrder, testOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
+//        System.out.println("===========================================================================================");
+//        syncCategoryDataByField(devOrder, testOrder, "category_show", "pid", "name", "first_id", "app_type", "utc_deleted");
+//        System.out.println("===========================================================================================");
+//        syncCategoryDataByField(devContent, testContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
+//        System.out.println("===========================================================================================");
+//        syncCategoryDataByField(devContent, testContent, "article_category_show", "pid", "name", "category_type", "utc_deleted");
+
 //        syncCategoryDataByField(testOrder, preOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
+//        System.out.println("===========================================================================================");
 //        syncCategoryDataByField(testOrder, preOrder, "category_show", "pid", "name", "first_id", "app_type", "utc_deleted");
+//        System.out.println("===========================================================================================");
 //        syncCategoryDataByField(testContent, preContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
-        syncCategoryDataByField(testContent, preContent, "article_category_show", "pid", "name", "category_type", "utc_deleted");
+//        System.out.println("===========================================================================================");
+//        syncCategoryDataByField(testContent, preContent, "article_category_show", "pid", "name", "category_type", "utc_deleted");
+
+        syncCategoryDataByField(preOrder, prodOrder, "category", "pid", "name", "apply_id", "status", "utc_deleted");
+        System.out.println("===========================================================================================");
+        syncCategoryDataByField(preOrder, prodOrder, "category_show", "pid", "name", "first_id", "app_type", "utc_deleted");
+        System.out.println("===========================================================================================");
+        syncCategoryDataByField(preContent, prodContent, "article_category", "pid", "category_name", "category_type", "status", "utc_deleted");
+        System.out.println("===========================================================================================");
+        syncCategoryDataByField(preContent, prodContent, "article_category_show", "pid", "name", "category_type", "utc_deleted");
     }
 
     private void fixCategoryData(Database database, String tableName) {
