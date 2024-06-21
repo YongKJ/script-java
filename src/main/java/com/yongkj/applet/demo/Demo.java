@@ -472,9 +472,55 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test29", "tempJsonStr", tempJsonStr));
     }
 
+    private void test30() {
+        String key = AesUtil.generateKey();
+        LogUtil.loggerLine(Log.of("Demo", "test30", "key", key));
+    }
+
+    private void test31() {
+        String privateKeyEncryptStr = "ZjY7RAZgznIKnCKHJTel+E6y41dzMwIKSm/kEm32XKWPk4qyP/FHq2kU2seP1h1MRXLtZ3ZKJ40N3D6K+vXCfTyGDLfahpnXOAyO9yT35VPw3Zx/aRf+SjCc+79gnHEqfy5vhyAE14vs+uCipX2j4ArD0rYFiKtQg2/9dJxohxqYAw4au0KV9dmuiBf5EFhHUs1o8XGYFJWwFF8HVQgqXdNP2/cSxE5Maltski4jXKMizPegl/ivC8scjDj/36UxC080FKsD+w3lH+MfB7yxfYBGLsZ5PPBAWSFqMHkUS6M9WcR0A19qcYgQ2UOqc10mQWbVGJCddHm0Rhq7Hlat1g==";
+        String publicKey = "MIIBITANBgkqhkiG9w0BAQEFAAOCAQ4AMIIBCQKCAQB+gX4DgWY1ZMzuhgVc39pV3zmI0LpsxK6pZDxGvTIU/ML/9W/XvN5cQ0dDiIgc4QvsmYLdaWDOQPE3IO1g9Xt3jXhAUk2/7lz5+lfr/8Oad9hqAj2LXHlYKsueGL6B834CBj2Co+oQcwYM+Tb6MY3ahKaak8pJoULf9S4Yhn3xwh1Rbs0BUQhKo+MvoaPUy1+mtoyhDnXsUaG3e1nNGtwx9a3Ecg90lTC9WVqu5F7ed2mRs6UEijtd/MAgHqBypBWuhTtQU1K57mqCV4t5aUTG/g4xCaWbFtSeobNNChIi5VD0Wd5qSiUWDKN33uETqA4CHEDA58EYG7CKVBzj3x+BAgMBAAE=";
+        String publicKeyDecryptStr = RsaUtil.rsaDecrypt(publicKey, privateKeyEncryptStr, RsaUtil.KEY_TYPE_PUBLIC_KEY);
+
+        LogUtil.loggerLine(Log.of("Demo", "test31", "publicKey", publicKey));
+        System.out.println("----------------------------------------------------------------------------------");
+        LogUtil.loggerLine(Log.of("Demo", "test31", "privateKeyEncryptStr", privateKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test31", "publicKeyDecryptStr", publicKeyDecryptStr));
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
+    private void test32() {
+        String content = "Hello world";
+        String privateKey = "MIIEoQIBAAKCAQB+gX4DgWY1ZMzuhgVc39pV3zmI0LpsxK6pZDxGvTIU/ML/9W/XvN5cQ0dDiIgc4QvsmYLdaWDOQPE3IO1g9Xt3jXhAUk2/7lz5+lfr/8Oad9hqAj2LXHlYKsueGL6B834CBj2Co+oQcwYM+Tb6MY3ahKaak8pJoULf9S4Yhn3xwh1Rbs0BUQhKo+MvoaPUy1+mtoyhDnXsUaG3e1nNGtwx9a3Ecg90lTC9WVqu5F7ed2mRs6UEijtd/MAgHqBypBWuhTtQU1K57mqCV4t5aUTG/g4xCaWbFtSeobNNChIi5VD0Wd5qSiUWDKN33uETqA4CHEDA58EYG7CKVBzj3x+BAgMBAAECggEAGqpE24xM9Pg4Uhahzr/Ij80rnXERupeCkWX1Zpu+kLnuiHE9j+XZoOz1eoCu4Bd3ofmBohXyN8dskMg6APP9gGerbzNp/AjMREzGd5JDsq2MSlwKiPOHCFSM8tgYX9/pMZgLIxxV2/3Cyr1FH1uOoP7Q90grnXWGWRqfCsBej7SjG/sbZ5i/zNTHlgxCm2TQSmaqSKFiJrDRTpS7hGXOT2kSrHPOxnAdpeWZCJqpal9cdiXm1+cS22Fp98Wob3AsPfvRxVDzw1YTK9EbdbBrl5w8vKlwAZxwHwC6IyBkCkHF21N0XLEJPBOJQ93W//I03axcSUvKV4e+2WD9ci4uIQKBgQDhRbyMnrspSW2GqX0mU53ImL2yND56wlC4yy1Ru6xZt+FS+VreyiZ4b136WKGB+WSRYmQLu+SDDL0HB344bxOT359lwH4wePQfxgaCZkotHqbsGivfB6nbpuC3ecQC8LEI9QQ43wQzz0W3MAvhbdiRKer/VI9x8AMVCKUA9kgs5QKBgQCPwu+agub6XZoOMVfiu32BbIEWVVHzFTFaM4pxmuCBRK6TZgutdIZwcAVBT47q4sLh3hjpRWygqYetEManAI0Q6KfxMMAZPfEEPf9vK7vsQVfUuGyk+gKasA6ACOUwnZ5klx+v/ksh/qxvPPso51qlumhLzrYDaSQ9DAvdV7XabQKBgFI4kckBZm57Tm6IDhWfD0fX9+TDDMrhgXTxM2lRhmZ4ptUSDgii38e1XiexkcFOtVYbA0kFGzJ5w8R9B6SxZgPi6trIl0Y532B5dobBrvEo7uPd6YVN1sFE92AAIXqxPux2AUSAoZgHXvqtnqh430KcehkXVAPSBk33CcKAIXfBAoGAGpNLncGDF1dESkle2MAWFF3NgyZkjs4lIGqUtimORPdAWmkr0XXQAGsE3azqW4ttwTlAW6cEzLJqLVkDkA2vBigsG48Kg+AKdOFNHez0wVjW9rDdDKZW4ueW1p5OV+1bQXcaWXtlwjQFBk88krQp8qcB7rmYtgqys0JN0y4KpQUCgYAJ4hZRbgHYSKcTfvsprU6iTd5XQOHAY9vCsWzNEFzyIkI2sO2K4anokFsrytorx3BCYFZrKzodeKxmC/jnO6Mnx/Rz6PDUSI9c/WDZJQz2WIhflo6t2Qee7buuNMhvlvps6XXaNEFCA01/ruT6N1jW1NYf/nANLRzyqEwKhkHgEg==";
+        String privateKeyEncryptStr = RsaUtil.rsaEncrypt(privateKey, content, RsaUtil.KEY_TYPE_PRIVATE_KEY);
+
+        LogUtil.loggerLine(Log.of("Demo", "test31", "privateKeyEncryptStr", privateKeyEncryptStr));
+    }
+
+    private void test33() {
+//        Map<String, String> keyPair = RsaUtil.generateKey();
+//        LogUtil.loggerLine(Log.of("Demo", "test33", "privateKey", keyPair.get(RsaUtil.KEY_TYPE_PRIVATE_KEY)));
+//        LogUtil.loggerLine(Log.of("Demo", "test33", "publicKey", keyPair.get(RsaUtil.KEY_TYPE_PUBLIC_KEY)));
+
+        Map<String, String> keyPair = new HashMap<>();
+        keyPair.put(RsaUtil.KEY_TYPE_PRIVATE_KEY, "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCLVVzGq2MEmlyOe9x3k80bZEWMuZVU9VWJGO39p4sEKp1D56ThNBr/tFX6ruOBoymE3VVuGV7fDU+WMK7F4+/hIiAnBwral1UQm/T1vlHyQP+vEFbxvkjoPDNUv6pxEXO9G8JF53n+6HeF7E/A/kDwlCP678krVMidz/jrotar0vHp1LSevpl7J6aFHaMb6ttXlo/y9kC5+oEp1TrivnBdfgjxfUME/ZViATsm51HD+EWi3KCMJRICyInfCPrp7wPoaZeaFHmPic1sEXZFvPGp+rTygvWbJmFC6NoPWbT8RMcG4Dwx8y2xzoMNOrINgrxy6aRVPq4nCsSjC6EZjAiNAgMBAAECggEAFgGqgJprLjvvKHX5sU0/1Pa2YW6iXmPNWbT9SdXfiA3u/t2kVglzxjVGayyaNEx/70NCDfyl1lb03gTcZdcFeSp5p5BeL349aj0nqHSh3sBTYeQTx2TFgSCY/uay1d7qx9CNk5rm0tMGpblYM2Q0/4p2UFj1Dgn7EanaZ+U1QLf3Qhhm35SbS9b27gghANgoPG0lRKkXYqTems5WDOoVz9t4G+gfYVp9Vvk1FlhNgV54s7KgUDDc31acIX4no9P9+5g5tOWA0tSXJyrdautoAMAFAc3tcW9SgRJAcgXFr1sixIqqoWa9tzf1iJdesC+qa2kdNqH7FyiBFuOnOCbVhQKBgQD91zcRX2olhhmv9DJCmIJ3M99O59CM1LXWeNerraenX0gg/G1ZeqY40RwwTkFw2lsx34PZybPXifmxF1oV6ZU4OAMtFw3K7N8Ag3Zl6oOO+WqWjowTp+Gh0U98E9BtHYdJ8seI79pJgU8ghkfYTI95GbF3yD1lLNiCxcNd4oSNhwKBgQCMhMljoykmgrZkpd2stoZQlj1oUpbASvWkZIusKYktTptoG9YIUeGrhgYbgH5o/uIzfWvrK2Acw4+FgVBXVmCgWCBxKWR49XvvEcJZMnhngjCo2BUS/BQzWjvEz6G5HURS6yeI/VuqJQewRUmta53MoipVXV3WtmQ1qW0C8QleSwKBgQD8jwMVX+/GwfQQ41CWfhNg8tV+NpuDY6hAah97it5CY0TqvP03iBaWdUgsr8/grwEJUDBpoowzKe6rSmaxYqS7OM/ALy3j92WxpxtIL9sRiAuLHO02KVUPoagJ9dTsm/Kdmtb44lw3wlauL6yQAyzE+tFeMncTkVkiVA4b/WKRRQKBgCZGSQCtwZiuw/WYRFA2C1HKCoHu9Qb9o/kaNf039xhzL9tksaDkhL6Oq/0zu7rnqj9yK0IMN4q+LcqklXikm38xYezQ5IAaBZ7xzGk1WRyAlrZ23Q6lwO7X5i3OjHN6qFCZotQqhpxKp9R4mv/0ry+9ACDuZJAGcDc5perGMtIPAoGAf4Z0XFvNwexPj8DIRdcu+CeeQZRIW5eBt7x8uFw89XSQpoFahj4hjrcxHuBIQwdG78pWDI97s0HSORltB0ivr5OQUhm3c8pEChFdDJNOMa7aCfdqkt4Vp5sb4tHH8QsxVUuTqVonQujIb86iKA1qlzvz862WfB3i6vgRp+h1OfE=");
+        keyPair.put(RsaUtil.KEY_TYPE_PUBLIC_KEY, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi1VcxqtjBJpcjnvcd5PNG2RFjLmVVPVViRjt/aeLBCqdQ+ek4TQa/7RV+q7jgaMphN1Vbhle3w1PljCuxePv4SIgJwcK2pdVEJv09b5R8kD/rxBW8b5I6DwzVL+qcRFzvRvCRed5/uh3hexPwP5A8JQj+u/JK1TInc/466LWq9Lx6dS0nr6ZeyemhR2jG+rbV5aP8vZAufqBKdU64r5wXX4I8X1DBP2VYgE7JudRw/hFotygjCUSAsiJ3wj66e8D6GmXmhR5j4nNbBF2Rbzxqfq08oL1myZhQujaD1m0/ETHBuA8MfMtsc6DDTqyDYK8cumkVT6uJwrEowuhGYwIjQIDAQAB");
+
+        String str = "Hello world";
+        String privateKeyEncryptStr = RsaUtil.rsaEncrypt(keyPair.get(RsaUtil.KEY_TYPE_PRIVATE_KEY), str, RsaUtil.KEY_TYPE_PRIVATE_KEY);
+        String publicKeyDecryptStr = RsaUtil.rsaDecrypt(keyPair.get(RsaUtil.KEY_TYPE_PUBLIC_KEY), privateKeyEncryptStr, RsaUtil.KEY_TYPE_PUBLIC_KEY);
+
+        LogUtil.loggerLine(Log.of("Demo", "test33", "privateKeyEncryptStr", privateKeyEncryptStr));
+        LogUtil.loggerLine(Log.of("Demo", "test33", "publicKeyDecryptStr", publicKeyDecryptStr));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test29();
+        demo.test33();
+//        demo.test32();
+//        demo.test31();
+//        demo.test30();
+//        demo.test29();
 //        demo.test28();
 //        demo.test27();
 //        demo.test26();
