@@ -157,7 +157,7 @@ public class SmallAssignmentUpdateService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "distinctRoleMenuData", "deleteSql", deleteSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-//            desDataRemove(deleteSql);
+            desDataRemove(deleteSql);
         }
     }
 
