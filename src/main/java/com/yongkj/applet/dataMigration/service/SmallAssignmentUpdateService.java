@@ -134,9 +134,31 @@ public class SmallAssignmentUpdateService extends BaseService {
 
 //        diffRoleMenuData("admin_roles", "admin_roles");
 //        diffRoleMenuData("admin_apply", "admin_apply");
-        diffRoleMenuData("admin_menu", "admin_menu", "id");
 //        diffRoleMenuData("admin_role_menu", "admin_role_menu");
+
+        distinctRoleMenuData("admin_apply_menu", "apply_id", "menu_id");
+
+        diffRoleMenuData("admin_menu", "admin_menu", "id");
         diffRoleMenuData("admin_apply_menu", "admin_apply_menu", "apply_id", "menu_id");
+    }
+
+    private void distinctRoleMenuData(String desTableName, String... fields) {
+        Table desTable = desDatabase.getMapTable().get(desTableName);
+        List<Map<String, Object>> lstData = desDataList(desTable);
+        Map<String, Map<String, Object>> mapData = new HashMap<>();
+        for (Map<String, Object> data : lstData) {
+            String key = getMd5Key(data, Arrays.asList(fields));
+            if (!mapData.containsKey(key)) {
+                mapData.put(key, data);
+                continue;
+            }
+
+            String deleteSql = getRemoveSQl(data, desTableName);
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "distinctRoleMenuData", "deleteSql", deleteSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+//            desDataRemove(deleteSql);
+        }
     }
 
     private void diffRoleMenuData(String srcTableName, String desTableName, String... fields) {

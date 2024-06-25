@@ -24,7 +24,7 @@ public class SQL {
     }
 
     public static String getFieldCreateSql(String table, String field, String type, String notNull, String defaultValue, String comment, String position, String positionField) {
-        comment = comment.length() == 0 ? comment : String.format("COMMENT '%s'", comment);
+        comment = comment.isEmpty() ? comment : String.format("COMMENT '%s'", comment);
         defaultValue = defaultValue == null ? "" : Objects.equals(defaultValue, "NULL") ?
                 String.format("DEFAULT %s", defaultValue) : String.format("DEFAULT '%s'", defaultValue);
         position = Objects.equals(position, "BEFORE") ? "FIRST" : String.format("%s `%s`", position, positionField);
@@ -32,7 +32,7 @@ public class SQL {
     }
 
     public static String getFieldModifySql(String table, String field, String type, String notNull, String defaultValue, String comment, String position, String positionField) {
-        comment = comment.length() == 0 ? comment : String.format("COMMENT '%s'", comment);
+        comment = comment.isEmpty() ? comment : String.format("COMMENT '%s'", comment);
         defaultValue = defaultValue == null ? "" : Objects.equals(defaultValue, "NULL") ?
                 String.format("DEFAULT %s", defaultValue) : String.format("DEFAULT '%s'", defaultValue);
         position = Objects.equals(position, "BEFORE") ? "FIRST" : String.format("%s `%s`", position, positionField);
@@ -46,7 +46,7 @@ public class SQL {
     public static String getDataSelectSql(List<String> fields, List<String> tables, String where) {
         String field = getFieldOrTableStr(fields);
         String table = getFieldOrTableStr(tables);
-        where = where.length() == 0 ? where : String.format("WHERE %s", where);
+        where = where.isEmpty() ? where : String.format("WHERE %s", where);
         return String.format(DATA_SELECT_SQL, field, table, where);
     }
 
@@ -64,8 +64,13 @@ public class SQL {
 
     public static String getDataUpdateSql(String table, Map<String, Object> mapData, String where) {
         String data = getMapDataStr(mapData);
-        where = where.length() == 0 ? where : String.format("WHERE %s", where);
+        where = where.isEmpty() ? where : String.format("WHERE %s", where);
         return String.format(DATA_UPDATE_SQL, table, data, where);
+    }
+
+    public static String getDataRemoveSqlByObject(String table, Map<String, Object> mapData) {
+        String where = getMapDataStr(mapData, " AND ");
+        return String.format(DATA_REMOVE_SQL, table, where);
     }
 
     public static String getDataRemoveSql(String table, String where) {
@@ -81,13 +86,17 @@ public class SQL {
     }
 
     private static String getMapDataStr(Map<String, Object> mapData) {
+        return getMapDataStr(mapData, ", ");
+    }
+
+    private static String getMapDataStr(Map<String, Object> mapData, String separator) {
         List<String> lstData = new ArrayList<>();
         for (Map.Entry<String, Object> map : mapData.entrySet()) {
             String data = String.format("`%s` = %s",
                     map.getKey(), getValueStr(map.getValue()));
             lstData.add(data);
         }
-        return String.join(", ", lstData);
+        return String.join(separator, lstData);
     }
 
     private static String getValueStr(Object value) {

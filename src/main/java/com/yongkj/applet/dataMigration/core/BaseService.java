@@ -192,6 +192,12 @@ public abstract class BaseService {
         );
     }
 
+    protected String getRemoveSQl(Map<String, Object> mapData, String tableName) {
+        return SQL.getDataRemoveSqlByObject(
+                tableName,
+                mapData);
+    }
+
     protected String getRemoveSQl(Wrappers query) {
         return SQL.getDataRemoveSql(
                 query.getTableName(),
