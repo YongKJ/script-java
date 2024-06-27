@@ -111,6 +111,10 @@ public abstract class BaseService {
         return JDBCUtil.getResult(srcDatabase, removeSql);
     }
 
+    protected boolean desDataRemove(Database database, String removeSql) {
+        return JDBCUtil.getResult(database, removeSql);
+    }
+
     protected boolean desDataRemove(String removeSql) {
         return JDBCUtil.getResult(desDatabase, removeSql);
     }
