@@ -14,11 +14,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import reactor.core.publisher.Flux;
+import rufus.lzstring4java.LZString;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -514,9 +516,31 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test33", "publicKeyDecryptStr", publicKeyDecryptStr));
     }
 
+    private void test34() {
+        String content = "Hello world";
+
+        String contentBase64 = Base64.getEncoder().encodeToString(content.getBytes());
+        LogUtil.loggerLine(Log.of("Demo", "test34", "contentBase64", contentBase64));
+        contentBase64 = Base64.getEncoder().encodeToString(contentBase64.getBytes());
+        LogUtil.loggerLine(Log.of("Demo", "test34", "contentBase64", contentBase64));
+
+        String compressedStr = LZString.compressToEncodedURIComponent(contentBase64);
+        LogUtil.loggerLine(Log.of("Demo", "test34", "compressedStr", compressedStr));
+
+        String decompressedStr = LZString.decompressFromEncodedURIComponent(compressedStr);
+        LogUtil.loggerLine(Log.of("Demo", "test34", "decompressedStr", decompressedStr));
+
+        String message = new String(Base64.getDecoder().decode(decompressedStr));
+        LogUtil.loggerLine(Log.of("Demo", "test34", "message", message));
+
+        message = new String(Base64.getDecoder().decode(message));
+        LogUtil.loggerLine(Log.of("Demo", "test34", "message", message));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test33();
+        demo.test34();
+//        demo.test33();
 //        demo.test32();
 //        demo.test31();
 //        demo.test30();
