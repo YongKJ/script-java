@@ -537,9 +537,16 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test34", "message", message));
     }
 
+    private void test35() {
+        String filePath = "D:\\Document\\MyCodes\\BC-Space\\Worker\\Codes\\service-search\\src\\main\\resources\\bootstrap.yml";
+        String regStr = "\\s+active:\\s(\\w+)";
+        FileUtil.modContent(filePath, regStr, "test");
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test34();
+        demo.test35();
+//        demo.test34();
 //        demo.test33();
 //        demo.test32();
 //        demo.test31();
