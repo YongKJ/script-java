@@ -58,6 +58,10 @@ public class BranchCheckout {
             branchCheckOutAndPull(projectName, branch);
             configCopy(projectName);
             bootCopy(projectName);
+
+            if (projectName.endsWith("search")) {
+                bootUpdate(projectName);
+            }
         }
     }
 
@@ -76,6 +80,20 @@ public class BranchCheckout {
         LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "srcConfigPath", srcConfigPath));
         LogUtil.loggerLine(Log.of("BranchCheckoutService", "configCopy", "desConfigPath", desConfigPath));
         System.out.println("---------------------------------------------------------------------------------------------");
+
+//        if (!projectName.endsWith("search")) {
+//            return;
+//        }
+//        if (Objects.equals(configTag, "dev")) {
+//            return;
+//        }
+//
+//        String tempDesConfigPath = getConfigPath(projectName, configTag);
+//        if (Objects.equals(configTag, "pi")) {
+//            tempDesConfigPath = getConfigPath(projectName, "test");
+//        }
+//        FileUtil.copy(desConfigPath, tempDesConfigPath);
+//        FileUtil.delete(desConfigPath);
     }
 
     private void bootCopy(String projectName) {
@@ -93,6 +111,26 @@ public class BranchCheckout {
         LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "srcBootPath", srcBootPath));
         LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "desBootPath", desBootPath));
         System.out.println("---------------------------------------------------------------------------------------------");
+
+        if (!projectName.endsWith("search")) {
+            return;
+        }
+        if (Objects.equals(configTag, "dev")) {
+            return;
+        }
+
+        String tempDesBootPath = getBootPath(projectName, configTag);
+        if (Objects.equals(configTag, "pi")) {
+            tempDesBootPath = getBootPath(projectName, "test");
+        }
+        FileUtil.copy(desBootPath, tempDesBootPath);
+        FileUtil.delete(desBootPath);
+    }
+
+    private void bootUpdate(String projectName) {
+        String bootPath = getBootPath(projectName);
+        FileUtil.modContent(bootPath, "\\s+active:\\s(\\w+)",
+                Objects.equals(configTag, "pi") ? "test" : configTag);
     }
 
     private void branchCheckOutAndPull(String projectName, String branch) {
@@ -408,14 +446,26 @@ public class BranchCheckout {
         return pullBranchs.stream().filter(po -> po.contains(branch)).findFirst().orElse("local");
     }
 
+    private String getBootPath(String projectName) {
+        return getListPath(getProjectResourcesPath(projectName), "bootstrap.yml");
+    }
+
     private String getBootPath(String projectName, boolean isSrcPath) {
         return isSrcPath ? getListPath(configPath, projectName, String.format("bootstrap-%s.yml", configTag)) :
                 getListPath(getProjectResourcesPath(projectName), "bootstrap-dev.yml");
     }
 
+    private String getBootPath(String projectName, String configTag) {
+        return getListPath(getProjectResourcesPath(projectName), String.format("bootstrap-%s.yml", configTag));
+    }
+
     private String getConfigPath(String projectName, boolean isSrcPath) {
         return isSrcPath ? getListPath(configPath, projectName, String.format("application-%s.yml", configTag)) :
                 getListPath(getProjectResourcesPath(projectName), "application.yml");
+    }
+
+    private String getConfigPath(String projectName, String configTag) {
+        return getListPath(getProjectResourcesPath(projectName), String.format("application-%s.yml", configTag));
     }
 
     private String getProjectGitPath(String projectName) {

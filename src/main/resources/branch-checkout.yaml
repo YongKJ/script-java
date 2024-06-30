@@ -2,13 +2,13 @@ project-path: "D:\\Document\\MyCodes\\Worker\\Codes"
 config-path: "D:\\Document\\MyCodes\\Worker\\Config"
 private-key-path: "C:\\Users\\Admin\\.ssh\\id_rsa"
 
-config-tag: dev
+config-tag: pi
 
 branchs:
   - project-name: "service-user"
-    branch: "local"
+    branch: "develop"
   - project-name: "service-housekeeping"
-    branch: "local"
+    branch: "develop"
 
 branch-clean: false
 
@@ -20,6 +20,7 @@ pull-branchs:
 
 branch-config-relation:
   dev: "local"
+  pi: "develop"
   test: "develop"
   pre: "release"
   prod: "master"
