@@ -59,9 +59,9 @@ public class BranchCheckout {
             configCopy(projectName);
             bootCopy(projectName);
 
-            if (projectName.endsWith("search")) {
-                bootUpdate(projectName);
-            }
+//            if (projectName.endsWith("search")) {
+//                bootUpdate(projectName);
+//            }
         }
     }
 
@@ -112,19 +112,19 @@ public class BranchCheckout {
         LogUtil.loggerLine(Log.of("BranchCheckoutService", "bootCopy", "desBootPath", desBootPath));
         System.out.println("---------------------------------------------------------------------------------------------");
 
-        if (!projectName.endsWith("search")) {
-            return;
-        }
-        if (Objects.equals(configTag, "dev")) {
-            return;
-        }
-
-        String tempDesBootPath = getBootPath(projectName, configTag);
-        if (Objects.equals(configTag, "pi")) {
-            tempDesBootPath = getBootPath(projectName, "test");
-        }
-        FileUtil.copy(desBootPath, tempDesBootPath);
-        FileUtil.delete(desBootPath);
+//        if (!projectName.endsWith("search")) {
+//            return;
+//        }
+//        if (Objects.equals(configTag, "dev")) {
+//            return;
+//        }
+//
+//        String tempDesBootPath = getBootPath(projectName, configTag);
+//        if (Objects.equals(configTag, "pi")) {
+//            tempDesBootPath = getBootPath(projectName, "test");
+//        }
+//        FileUtil.copy(desBootPath, tempDesBootPath);
+//        FileUtil.delete(desBootPath);
     }
 
     private void bootUpdate(String projectName) {
