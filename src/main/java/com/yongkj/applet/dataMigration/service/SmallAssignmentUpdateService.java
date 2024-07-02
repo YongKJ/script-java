@@ -142,17 +142,17 @@ public class SmallAssignmentUpdateService extends BaseService {
         Database prodUser = mapDatabase.get("prod_user");
 
         distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
-        diffRoleMenuData(devUser, testUser, "admin_menu", "admin_menu", "id");
+        diffRoleMenuData(devUser, testUser, "admin_menu", "id");
         diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
 
         distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
-        diffRoleMenuData(testUser, preUser, "admin_menu", "admin_menu", "id");
+        diffRoleMenuData(testUser, preUser, "admin_menu", "id");
         diffRoleMenuData(testUser, preUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
 
         distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
-        diffRoleMenuData(preUser, prodUser, "admin_menu", "admin_menu", "id");
+        diffRoleMenuData(preUser, prodUser, "admin_menu", "id");
         diffRoleMenuData(preUser, prodUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
     }
@@ -179,30 +179,78 @@ public class SmallAssignmentUpdateService extends BaseService {
     private void diffRoleMenuData(Database srcDatabase, Database desDatabase, String tableName, String... fields) {
         Table srcTable = srcDatabase.getMapTable().get(tableName);
         Table desTable = desDatabase.getMapTable().get(tableName);
-        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcDataList(srcDatabase, srcTable), Arrays.asList(fields));
-        Map<String, Map<String, Object>> desMapTableData = getMapData(desDataList(desDatabase, desTable), Arrays.asList(fields));
-        for (Map.Entry<String, Map<String, Object>> map : srcMapTableData.entrySet()) {
-            if (desMapTableData.containsKey(map.getKey())) {
+        List<Map<String, Object>> srcTableData = srcDataList(srcDatabase, srcTable);
+        List<Map<String, Object>> desTableData = srcDataList(desDatabase, srcTable);
+
+        List<String> lstKey = new ArrayList<>();
+        for (Map.Entry<String, Object> map : srcTableData.get(0).entrySet()) {
+            if (map.getKey().contains("_kind") ||
+                    map.getKey().contains("_modified")) {
                 continue;
             }
-            String insertSql = getInsertSQl(map.getValue(), desTable);
+            lstKey.add(map.getKey());
+        }
+
+        Map<String, Map<String, Object>> srcMapTableData = getMapData(srcTableData, Arrays.asList(fields));
+        Map<String, Map<String, Object>> desMapTableData = getMapData(desTableData, Arrays.asList(fields));
+        for (Map.Entry<String, Map<String, Object>> map : srcMapTableData.entrySet()) {
+            if (desMapTableData.containsKey(map.getKey())) {
+                if (Objects.equals(tableName, "admin_apply_menu")) {
+
+                    String removeSql = getRemoveSQl(
+                            Wrappers.lambdaQuery(desTable)
+                                    .eq("menu_id", map.getValue().get("menu_id"))
+                                    .eq("apply_id", map.getValue().get("apply_id")));
+
+                    LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "removeSql", removeSql));
+                    System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+//                    srcDataRemove(desDatabase, removeSql);
+
+                    continue;
+                }
+
+                String srcMd5Key = getMd5Key(map.getValue(), lstKey);
+                String desMd5Key = getMd5Key(desMapTableData.get(map.getKey()), lstKey);
+                if (Objects.equals(srcMd5Key, desMd5Key)) {
+                    continue;
+                }
+
+                Map<String, Object> tempMapData = new HashMap<>();
+                for (Map.Entry<String, Object> tempMap : map.getValue().entrySet()) {
+                    if (tempMap.getKey().contains("_kind") ||
+                            tempMap.getKey().contains("_modified")) {
+                        continue;
+                    }
+                    tempMapData.put(tempMap.getKey(), tempMap.getValue());
+                }
+
+                String updateSql = getUpdateSQl(tempMapData,
+                        Wrappers.lambdaQuery(desTable)
+                                .eq("id", map.getValue().get("id")));
+
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+//                desDataUpdate(desDatabase, updateSql);
+
+                continue;
+            }
+
+            Map<String, Object> tempMapData = new HashMap<>();
+            for (Map.Entry<String, Object> tempMap : map.getValue().entrySet()) {
+                if (tempMap.getKey().contains("_kind") ||
+                        tempMap.getKey().contains("_modified")) {
+                    continue;
+                }
+                tempMapData.put(tempMap.getKey(), tempMap.getValue());
+            }
+            String insertSql = getInsertSQl(tempMapData, desTable);
 
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataInsert(desDatabase, insertSql);
-//            boolean flag = desDataInsert(insertSql);
-//            if (!flag && map.getValue().containsKey("apply_id") && map.getValue().containsKey("menu_id")) {
-//                String updateSql = getUpdateSQl(map.getValue(),
-//                        Wrappers.lambdaQuery(desTable)
-//                                .eq("apply_id", map.getValue().get("apply_id"))
-//                                .eq("menu_id", map.getValue().get("menu_id")));
-//
-//                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
-//                System.out.println("------------------------------------------------------------------------------------------------------------------");
-//
-//                desDataUpdate(updateSql);
-//            }
+//            desDataInsert(desDatabase, insertSql);
         }
     }
 
