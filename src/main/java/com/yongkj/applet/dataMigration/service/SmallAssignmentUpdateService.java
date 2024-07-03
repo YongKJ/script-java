@@ -141,17 +141,32 @@ public class SmallAssignmentUpdateService extends BaseService {
         Database preUser = mapDatabase.get("pre_user");
         Database prodUser = mapDatabase.get("prod_user");
 
+        distinctRoleMenuData(devUser, "admin_apply_menu", "apply_id", "menu_id");
+        System.out.println("==================================================================================================================\n");
         distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
+        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
+        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
+        System.out.println("==================================================================================================================\n");
+
+        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(prodUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+        System.out.println("==================================================================================================================\n");
+
         diffRoleMenuData(devUser, testUser, "admin_menu", "id");
         diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
 
-        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
         diffRoleMenuData(testUser, preUser, "admin_menu", "id");
         diffRoleMenuData(testUser, preUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
 
-        distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
         diffRoleMenuData(preUser, prodUser, "admin_menu", "id");
         diffRoleMenuData(preUser, prodUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
@@ -184,23 +199,23 @@ public class SmallAssignmentUpdateService extends BaseService {
         Map<String, Map<String, Object>> srcMapTableData = getMapData(srcTableData, Arrays.asList(fields));
         Map<String, Map<String, Object>> desMapTableData = getMapData(desTableData, Arrays.asList(fields));
 
-        if (Objects.equals(tableName, "admin_apply_menu")) {
-            for (Map.Entry<String, Map<String, Object>> map : desMapTableData.entrySet()) {
-                if (srcMapTableData.containsKey(map.getKey())) {
-                    continue;
-                }
-
-                String removeSql = getRemoveSQl(
-                        Wrappers.lambdaQuery(desTable)
-                                .eq("menu_id", map.getValue().get("menu_id"))
-                                .eq("apply_id", map.getValue().get("apply_id")));
-
-                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "removeSql", removeSql));
-                System.out.println("------------------------------------------------------------------------------------------------------------------");
-
+//        if (Objects.equals(tableName, "admin_apply_menu")) {
+//            for (Map.Entry<String, Map<String, Object>> map : desMapTableData.entrySet()) {
+//                if (srcMapTableData.containsKey(map.getKey())) {
+//                    continue;
+//                }
+//
+//                String removeSql = getRemoveSQl(
+//                        Wrappers.lambdaQuery(desTable)
+//                                .eq("menu_id", map.getValue().get("menu_id"))
+//                                .eq("apply_id", map.getValue().get("apply_id")));
+//
+//                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "removeSql", removeSql));
+//                System.out.println("------------------------------------------------------------------------------------------------------------------");
+//
 //                    desDataRemove(desDatabase, removeSql);
-            }
-        }
+//            }
+//        }
 
         List<String> lstKey = new ArrayList<>();
         for (Map.Entry<String, Object> map : srcTableData.get(0).entrySet()) {
