@@ -15,6 +15,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SmallAssignmentUpdateService extends BaseService {
@@ -39,6 +40,36 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        syncRoleMenuData();
         diffRoleMenuData();
 //        organizationInfoUpdate();
+//        devApplyMenuDataFix();
+    }
+
+    private void devApplyMenuDataFix() {
+        Database devUser = mapDatabase.get("dev_user");
+        Table applyMenuTable = devUser.getMapTable().get("admin_apply_menu");
+        List<Map<String, Object>> lstApplyMenuTableData = desDataList(devUser, applyMenuTable);
+        Map<String, Map<String, Object>> applyMenuTableData = lstApplyMenuTableData.stream()
+                .filter(po -> Objects.equals(po.get("apply_id"), 1L)).collect(Collectors.toMap(po -> po.get("menu_id") + "", Function.identity()));
+
+        Table menuTable = devUser.getMapTable().get("admin_menu");
+        Map<String, Map<String, Object>> menuTableData = getMapData(desDataList(devUser, menuTable));
+        for (Map.Entry<String, Map<String, Object>> map : menuTableData.entrySet()) {
+            if (applyMenuTableData.containsKey(map.getKey())) {
+                continue;
+            }
+
+            Long menuId = (Long) map.getValue().get("id");
+            Map<String, Object> tempMapData = new HashMap<>();
+            tempMapData.put("utc_created", System.currentTimeMillis());
+            tempMapData.put("menu_id", menuId);
+            tempMapData.put("apply_id", 1);
+
+            String insertSql = getInsertSQl(tempMapData, applyMenuTable);
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "devApplyMenuDataFix", "insertSql", insertSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+
+            desDataInsert(devUser, insertSql);
+        }
     }
 
     private void organizationInfoUpdate() {
