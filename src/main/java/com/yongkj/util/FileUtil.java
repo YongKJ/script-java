@@ -284,8 +284,7 @@ public class FileUtil {
             Matcher matcher = pattern.matcher(line);
             if (!matcher.find()) continue;
             String value = valueFunc.apply(matcher.group(1));
-            String newLine = line.replace(matcher.group(1), value);
-            contentArray[i] = newLine;
+            contentArray[i] = line.replace(matcher.group(1), value);
             if (!isAll) break;
         }
         write(path, String.join(contentBreak, contentArray));
