@@ -63,7 +63,7 @@ public class FileUtil {
         }
     }
 
-    public static String getAbsPath(boolean isProd, String ...names) {
+    public static String getAbsPath(boolean isProd, String... names) {
         StringBuilder path = new StringBuilder(FileUtil.appDir(isProd));
         String separator = path.toString().contains("/") ? "/" : "\\";
         for (String name : names) {
@@ -276,18 +276,19 @@ public class FileUtil {
 
     public static void modify(String path, String regStr, Function<String, String> valueFunc, boolean isAll) {
         String content = read(path);
-        String[] contentArray = content.contains("\r\n") ?
-                content.split("\r\n") : content.split("\n");
+        String contentBreak = content.contains("\r\n") ? "\r\n" : "\n";
+        String[] contentArray = content.split(contentBreak);
         Pattern pattern = Pattern.compile(regStr);
-        for (String line : contentArray) {
+        for (int i = 0; i < contentArray.length; i++) {
+            String line = contentArray[i];
             Matcher matcher = pattern.matcher(line);
             if (!matcher.find()) continue;
             String value = valueFunc.apply(matcher.group(1));
             String newLine = line.replace(matcher.group(1), value);
-            content = content.replace(line, newLine);
+            contentArray[i] = newLine;
             if (!isAll) break;
         }
-        write(path, content);
+        write(path, String.join(contentBreak, contentArray));
     }
 
 }
