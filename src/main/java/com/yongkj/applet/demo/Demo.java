@@ -543,9 +543,16 @@ public class Demo {
         FileUtil.modContent(filePath, regStr, "test");
     }
 
+    private void test36() {
+        String csvPath = "/csv/apply-kind-mapping.csv";
+        List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
+        LogUtil.loggerLine(Log.of("Demo", "test36", "lstData.size()", lstData.size()));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test35();
+        demo.test36();
+//        demo.test35();
 //        demo.test34();
 //        demo.test33();
 //        demo.test32();
