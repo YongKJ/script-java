@@ -41,7 +41,36 @@ public class SmallAssignmentUpdateService extends BaseService {
         diffRoleMenuData();
 //        organizationInfoUpdate();
 //        devApplyMenuDataFix();
+//        apiExport();
     }
+
+//    private void apiExport() {
+//        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\白名单接口.txt");
+//        String lineBreak = content.contains("\r\n") ? "\r\n" : "\n";
+//        List<String> lstLine = Arrays.asList(content.split(lineBreak));
+//        List<List<String>> lstHeader = Arrays.asList(
+//                Collections.singletonList("序号"),
+//                Collections.singletonList("白名单接口"),
+//                Collections.singletonList("备注"),
+//                Collections.singletonList("状态")
+//        );
+//        SXSSFWorkbook workbook = new SXSSFWorkbook();
+//        SXSSFSheet sheet = workbook.createSheet();
+//        PoiExcelUtil.writeHeader(sheet, lstHeader, 1);
+//
+//        Integer rowIndex = lstHeader.get(0).size();
+//        for (int i = 0; i < lstLine.size(); i++) {
+//            String line = lstLine.get(i);
+//            List<String> lstLineData = Collections.singletonList(line);
+//            if (line.contains("#")) {
+//                lstLineData = Arrays.asList(line.split("#"));
+//            }
+//
+//            int num = i + 1;
+//            String api = lstLineData.get(0);
+//            String mark
+//        }
+//    }
 
     private void devApplyMenuDataFix() {
         Database devUser = mapDatabase.get("dev_user");
