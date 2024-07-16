@@ -24,6 +24,7 @@ public class DataMigration {
     private final CategoryDataSyncService categoryDataSyncService;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
+    private final SyncMenuPermissionsService syncMenuPermissionsService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
     private final SmallAssignmentUpdateService smallAssignmentUpdateService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
@@ -39,10 +40,11 @@ public class DataMigration {
         this.srcDatabase = Database.get("src", this);
         this.desDatabase = Database.get("des", this);
         this.tokenManagementService = new TokenManagementService(this);
-        this.categoryDataSyncService = new CategoryDataSyncService(this);
         this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(this);
+        this.categoryDataSyncService = new CategoryDataSyncService(this);
         this.agreementsUpdateService = new AgreementsUpdateService(this);
         this.shopCancelLogoutService = new ShopCancelLogoutService(this);
+        this.syncMenuPermissionsService = new SyncMenuPermissionsService(this);
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
         this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
         this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
@@ -75,17 +77,15 @@ public class DataMigration {
         categoryDataSyncService.apply();
         agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
+        syncMenuPermissionsService.apply();
         shopWorkerDataExportService.apply();
         smallAssignmentUpdateService.apply();
         adminMenuDataMigrationService.apply();
         dataIncrementMigrationService.apply();
         fieldIncrementMigrationService.apply();
-        JDBCUtil.closeAll(srcDatabase.getManager());
-        JDBCUtil.closeAll(desDatabase.getManager());
-        JDBCUtil.closeAll(devDatabase.getManager());
-        JDBCUtil.closeAll(preDatabase.getManager());
-        JDBCUtil.closeAll(testDatabase.getManager());
-        JDBCUtil.closeAll(prodDatabase.getManager());
+        for (Map.Entry<String, Database> map : mapDatabase.entrySet()) {
+            JDBCUtil.closeAll(map.getValue().getManager());
+        }
     }
 
     public Map<String, Database> getMapDatabase() {

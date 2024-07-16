@@ -127,6 +127,10 @@ public abstract class BaseService {
         return listSet(desDatabase, query);
     }
 
+    protected List<Map<String, Object>> srcDataList(Database database, Wrappers query) {
+        return list(database, query);
+    }
+
     protected List<Map<String, Object>> srcDataList(Wrappers query) {
         return list(srcDatabase, query);
     }

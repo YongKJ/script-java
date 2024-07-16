@@ -38,10 +38,12 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        syncShopApplyId();
 //        syncShopOrganizationStatus();
 //        syncRoleMenuData();
-        diffRoleMenuData();
+//        diffRoleMenuData();
 //        organizationInfoUpdate();
 //        devApplyMenuDataFix();
 //        apiExport();
+//        updatePlatformKind();
+        updateProdMenuPermissions();
     }
 
 //    private void apiExport() {
@@ -201,35 +203,35 @@ public class SmallAssignmentUpdateService extends BaseService {
         Database preUser = mapDatabase.get("pre_user");
         Database prodUser = mapDatabase.get("prod_user");
 
-        distinctRoleMenuData(devUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(devUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
 
-        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(prodUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(prodUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
 
         diffRoleMenuData(devUser, testUser, "admin_menu", "id");
         diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
         System.out.println("==================================================================================================================\n");
 
-        diffRoleMenuData(testUser, preUser, "admin_menu", "id");
-        diffRoleMenuData(testUser, preUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-
-        diffRoleMenuData(preUser, prodUser, "admin_menu", "id");
-        diffRoleMenuData(preUser, prodUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
+//        diffRoleMenuData(testUser, preUser, "admin_menu", "id");
+//        diffRoleMenuData(testUser, preUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//
+//        diffRoleMenuData(preUser, prodUser, "admin_menu", "id");
+//        diffRoleMenuData(preUser, prodUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
     }
 
     private void distinctRoleMenuData(Database database, String desTableName, String... fields) {
@@ -279,10 +281,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 
         List<String> lstKey = new ArrayList<>();
         for (Map.Entry<String, Object> map : srcTableData.get(0).entrySet()) {
-            if (map.getKey().contains("_kind") ||
-                    map.getKey().contains("_modified")) {
-                continue;
-            }
+//            if (map.getKey().contains("_kind") ||
+//                    map.getKey().contains("_modified")) {
+//                continue;
+//            }
             lstKey.add(map.getKey());
         }
 
@@ -297,10 +299,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 
                     Map<String, Object> tempMapData = new HashMap<>();
                     for (Map.Entry<String, Object> tempMap : map.getValue().entrySet()) {
-                        if (tempMap.getKey().contains("_kind") ||
-                                tempMap.getKey().contains("_modified")) {
-                            continue;
-                        }
+//                        if (tempMap.getKey().contains("_kind") ||
+//                                tempMap.getKey().contains("_modified")) {
+//                            continue;
+//                        }
                         tempMapData.put(tempMap.getKey(), tempMap.getValue());
                     }
 
@@ -311,17 +313,17 @@ public class SmallAssignmentUpdateService extends BaseService {
                     LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
                     System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-//                desDataUpdate(desDatabase, updateSql);
+                    desDataUpdate(desDatabase, updateSql);
                 }
                 continue;
             }
 
             Map<String, Object> tempMapData = new HashMap<>();
             for (Map.Entry<String, Object> tempMap : map.getValue().entrySet()) {
-                if (tempMap.getKey().contains("_kind") ||
-                        tempMap.getKey().contains("_modified")) {
-                    continue;
-                }
+//                if (tempMap.getKey().contains("_kind") ||
+//                        tempMap.getKey().contains("_modified")) {
+//                    continue;
+//                }
                 tempMapData.put(tempMap.getKey(), tempMap.getValue());
             }
             String insertSql = getInsertSQl(tempMapData, desTable);
@@ -329,7 +331,134 @@ public class SmallAssignmentUpdateService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-//            desDataInsert(desDatabase, insertSql);
+            desDataInsert(desDatabase, insertSql);
+        }
+    }
+
+    private void updatePlatformKind() {
+        List<Map<String, String>> lstData = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\店铺手机号.xlsx");
+        List<Long> lstMobile = lstData.stream().map(po -> GenUtil.objToLong(po.get("mobile"))).collect(Collectors.toList());
+
+        Database testUser = mapDatabase.get("test_user");
+        Table shopTable = testUser.getMapTable().get("shop");
+        Table adminUserTable = testUser.getMapTable().get("admin_user");
+        Table organizationTable = testUser.getMapTable().get("organization");
+        Table shopBusinessCardTable = testUser.getMapTable().get("shop_business_card");
+        Map<String, Map<String, Object>> mapShop = getMapData(srcDataList(testUser, shopTable));
+        Map<String, Map<String, Object>> mapAdminUser = getMapData(srcDataList(testUser, adminUserTable));
+        Map<String, Map<String, Object>> mapOrganization = getMapData(srcDataList(testUser, organizationTable));
+        Map<String, Map<String, Object>> mapShopBusinessCard = getMapData(srcDataList(testUser, shopBusinessCardTable));
+
+        List<Long> lstAdminUserId = mapAdminUser.values().stream()
+                .filter(po -> lstMobile.contains((Long) po.get("mobile")))
+                .map(po -> (Long) po.get("id")).collect(Collectors.toList());
+
+        for (Long adminUserId : lstAdminUserId) {
+            Map<String, Object> adminUser = mapAdminUser.get(adminUserId.toString());
+            if (adminUser == null) {
+                continue;
+            }
+
+            adminUser.put("platform_kind", 2);
+            Long organizationId = (Long) adminUser.get("organization_id");
+            String adminUserSql = getUpdateSQl(adminUser,
+                    Wrappers.lambdaQuery(adminUserTable)
+                            .eq("id", adminUser.get("id")));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "adminUserSql", adminUserSql));
+            desDataUpdate(testUser, adminUserSql);
+
+            Map<String, Object> organization = mapOrganization.get(organizationId.toString());
+            if (organization == null) {
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+                continue;
+            }
+
+            organization.put("platform_kind", 2);
+            String organizationSql = getUpdateSQl(organization,
+                    Wrappers.lambdaQuery(organizationTable)
+                            .eq("id", organization.get("id")));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "organizationSql", organizationSql));
+            desDataUpdate(testUser, organizationSql);
+
+            Map<String, Object> shop = mapShop.values().stream().filter(po -> Objects.equals(po.get("organization_id"), organizationId)).findFirst().orElse(null);
+            if (shop == null) {
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+                continue;
+            }
+
+            shop.put("platform_kind", 2);
+            Long shopId = (Long) shop.get("id");
+            String shopSql = getUpdateSQl(shop,
+                    Wrappers.lambdaQuery(shopTable)
+                            .eq("id", shop.get("id")));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "shopSql", shopSql));
+            desDataUpdate(testUser, shopSql);
+
+            Map<String, Object> shopBusinessCard = mapShopBusinessCard.values().stream().filter(po -> Objects.equals(po.get("shop_id"), shopId)).findFirst().orElse(null);
+            if (shopBusinessCard == null) {
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+                continue;
+            }
+
+            shopBusinessCard.put("platform_kind", 2);
+            String shopBusinessCardSql = getUpdateSQl(shopBusinessCard,
+                    Wrappers.lambdaQuery(shopBusinessCardTable)
+                            .eq("id", shopBusinessCard.get("id")));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "shopBusinessCardSql", shopBusinessCardSql));
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
+            desDataUpdate(testUser, shopBusinessCardSql);
+
+        }
+    }
+
+    private void updateProdMenuPermissions() {
+        Long menuPid = 1687300237020479490L;
+
+        Database prodUser = mapDatabase.get("prod_user");
+        Table adminUserTable = prodUser.getMapTable().get("admin_user");
+        Table adminMenuTable = prodUser.getMapTable().get("admin_menu");
+        Table adminRoleMenuTable = prodUser.getMapTable().get("admin_role_menu");
+        Table adminRoleUsersTable = prodUser.getMapTable().get("admin_role_users");
+
+        List<Long> adminUserIds = srcDataList(
+                prodUser,
+                Wrappers.lambdaQuery(adminUserTable)
+                        .eq("apply_id", 2)
+        ).stream().map(po -> (Long) po.get("id")).distinct().collect(Collectors.toList());
+
+        List<Long> adminRoleIds = srcDataList(
+                prodUser,
+                Wrappers.lambdaQuery(adminRoleUsersTable)
+                        .in("user_id", adminUserIds)
+        ).stream().map(po -> (Long) po.get("role_id")).distinct().collect(Collectors.toList());
+
+        List<Long> sonMenuIds = srcDataList(
+                prodUser,
+                Wrappers.lambdaQuery(adminMenuTable)
+                        .eq("pid", menuPid)
+        ).stream().map(po -> (Long) po.get("id")).distinct().collect(Collectors.toList());
+
+        for (Long sonMenuId : sonMenuIds) {
+            for (Long adminRoleId : adminRoleIds) {
+                List<Map<String, Object>> adminRoleMenus = srcDataList(
+                        prodUser,
+                        Wrappers.lambdaQuery(adminRoleMenuTable)
+                                .eq("menu_id", sonMenuId)
+                                .eq("role_id", adminRoleId));
+                if (!adminRoleMenus.isEmpty()) {
+                    continue;
+                }
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("utc_created", System.currentTimeMillis());
+                mapData.put("role_id", adminRoleId);
+                mapData.put("menu_id", sonMenuId);
+
+                String insertSql = getInsertSQl(mapData, adminRoleMenuTable);
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updateProdMenuPermissions", "insertSql", insertSql));
+                System.out.println("------------------------------------------------------------------------------------------------------------------");
+                desDataUpdate(prodUser, insertSql);
+            }
         }
     }
 

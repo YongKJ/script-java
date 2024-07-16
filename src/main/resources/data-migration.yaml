@@ -70,7 +70,7 @@ database-config:
   src: "dev"
   des: "test"
   databases:
-    - "order"
+    - "user"
 
 token-management:
   enable: false
@@ -93,8 +93,11 @@ token-management:
     admin-user-base-url: "https://admin.yongkj.cn/api/user"
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
 
-category-data-sync:
+sync-menu-permissions:
   enable: true
+
+category-data-sync:
+  enable: false
 
 small-assignment-update:
   enable: false

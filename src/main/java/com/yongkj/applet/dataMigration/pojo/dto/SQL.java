@@ -102,10 +102,10 @@ public class SQL {
     private static String getValueStr(Object value) {
         if (value == null) return null;
         if (value instanceof String) {
-            return ((String) value).contains("`") ||
+            return ((String) value).startsWith("`") &&
+                    ((String) value).endsWith("`") ||
                     ((String) value).contains(".") &&
-                            !((String) value).contains("/") &&
-                            !((String) value).contains("@") ?
+                            GenUtil.isNumeric((String) value) ?
                     (String) value : String.format("'%s'", value);
         } else if (value instanceof List || value instanceof Map) {
             return String.format("'%s'", GenUtil.toJsonString(value));

@@ -331,4 +331,8 @@ public class GenUtil {
         return Arrays.asList(str.trim().split(separator));
     }
 
+    public static boolean isNumeric(String str) {
+        String pattern = "^[-+]?\\d+(\\.\\d+)?$";
+        return str.matches(pattern);
+    }
 }
