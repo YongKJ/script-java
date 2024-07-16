@@ -337,6 +337,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 
     private void updatePlatformKind() {
         Map<Integer, Integer> mapOldApply = new HashMap<>();
+        mapOldApply.put(3, 3);
+        mapOldApply.put(13, 13);
         mapOldApply.put(18, 3);
         mapOldApply.put(19, 13);
 
