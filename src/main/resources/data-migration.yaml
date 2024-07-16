@@ -94,13 +94,13 @@ token-management:
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
 
 sync-menu-permissions:
-  enable: true
+  enable: false
 
 category-data-sync:
   enable: false
 
 small-assignment-update:
-  enable: false
+  enable: true
 
 agreements-update:
   enable: false

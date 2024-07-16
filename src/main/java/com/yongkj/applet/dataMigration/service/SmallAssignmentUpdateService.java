@@ -42,8 +42,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        organizationInfoUpdate();
 //        devApplyMenuDataFix();
 //        apiExport();
-//        updatePlatformKind();
-        updateProdMenuPermissions();
+        updatePlatformKind();
+//        updateProdMenuPermissions();
     }
 
 //    private void apiExport() {
@@ -336,7 +336,21 @@ public class SmallAssignmentUpdateService extends BaseService {
     }
 
     private void updatePlatformKind() {
-        List<Map<String, String>> lstData = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\店铺手机号.xlsx");
+        Map<Integer, Integer> mapOldApply = new HashMap<>();
+        mapOldApply.put(18, 3);
+        mapOldApply.put(19, 13);
+
+        Map<Integer, Integer> mapApply = new HashMap<>();
+        mapApply.put(3, 18);
+        mapApply.put(13, 19);
+        mapApply.put(18, 18);
+        mapApply.put(19, 19);
+
+        Map<Integer, String> mapApplyCode = new HashMap<>();
+        mapApplyCode.put(18, "ly.goods.shop");
+        mapApplyCode.put(19, "ly.health.shop");
+
+        List<Map<String, String>> lstData = PoiExcelUtil.toMap("C:\\Users\\admin\\Desktop\\店铺手机号.xlsx");
         List<Long> lstMobile = lstData.stream().map(po -> GenUtil.objToLong(po.get("mobile"))).collect(Collectors.toList());
 
         Database testUser = mapDatabase.get("test_user");
@@ -344,10 +358,12 @@ public class SmallAssignmentUpdateService extends BaseService {
         Table adminUserTable = testUser.getMapTable().get("admin_user");
         Table organizationTable = testUser.getMapTable().get("organization");
         Table shopBusinessCardTable = testUser.getMapTable().get("shop_business_card");
+        Table adminApplyOrganizationTable = testUser.getMapTable().get("admin_apply_organization");
         Map<String, Map<String, Object>> mapShop = getMapData(srcDataList(testUser, shopTable));
         Map<String, Map<String, Object>> mapAdminUser = getMapData(srcDataList(testUser, adminUserTable));
         Map<String, Map<String, Object>> mapOrganization = getMapData(srcDataList(testUser, organizationTable));
         Map<String, Map<String, Object>> mapShopBusinessCard = getMapData(srcDataList(testUser, shopBusinessCardTable));
+        Map<String, Map<String, Object>> mapAdminApplyOrganization = getMapData(srcDataList(testUser, adminApplyOrganizationTable));
 
         List<Long> lstAdminUserId = mapAdminUser.values().stream()
                 .filter(po -> lstMobile.contains((Long) po.get("mobile")))
@@ -358,8 +374,14 @@ public class SmallAssignmentUpdateService extends BaseService {
             if (adminUser == null) {
                 continue;
             }
+            Integer oldApplyId = mapOldApply.get((Integer) adminUser.get("apply_id"));
+            Integer applyId = mapApply.get(oldApplyId);
+            String applyCode = mapApplyCode.get(applyId);
 
             adminUser.put("platform_kind", 2);
+            adminUser.put("apply_id", applyId);
+            adminUser.put("apply_code", applyCode);
+            adminUser.put("apply_code_id", applyId);
             Long organizationId = (Long) adminUser.get("organization_id");
             String adminUserSql = getUpdateSQl(adminUser,
                     Wrappers.lambdaQuery(adminUserTable)
@@ -374,6 +396,9 @@ public class SmallAssignmentUpdateService extends BaseService {
             }
 
             organization.put("platform_kind", 2);
+            organization.put("apply_id", applyId);
+            organization.put("apply_code", applyCode);
+            organization.put("apply_code_id", applyId);
             String organizationSql = getUpdateSQl(organization,
                     Wrappers.lambdaQuery(organizationTable)
                             .eq("id", organization.get("id")));
@@ -387,12 +412,28 @@ public class SmallAssignmentUpdateService extends BaseService {
             }
 
             shop.put("platform_kind", 2);
+            shop.put("apply_id", applyId);
+            shop.put("apply_code", applyCode);
+            shop.put("apply_code_id", applyId);
             Long shopId = (Long) shop.get("id");
             String shopSql = getUpdateSQl(shop,
                     Wrappers.lambdaQuery(shopTable)
                             .eq("id", shop.get("id")));
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "shopSql", shopSql));
             desDataUpdate(testUser, shopSql);
+
+            Map<String, Object> adminApplyOrganization = mapAdminApplyOrganization.values().stream()
+                    .filter(po -> Objects.equals(po.get("apply_id"), oldApplyId) &&
+                            Objects.equals(po.get("organization_id"), organization.get("id"))).findFirst().orElse(null);
+            if (adminApplyOrganization != null) {
+                adminApplyOrganization.put("apply_id", applyId);
+                String adminApplyOrganizationSql = getUpdateSQl(adminApplyOrganization,
+                        Wrappers.lambdaQuery(adminApplyOrganizationTable)
+                                .eq("id", adminApplyOrganization.get("id")));
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "adminApplyOrganizationSql", adminApplyOrganizationSql));
+                desDataUpdate(testUser, adminApplyOrganizationSql);
+            }
+
 
             Map<String, Object> shopBusinessCard = mapShopBusinessCard.values().stream().filter(po -> Objects.equals(po.get("shop_id"), shopId)).findFirst().orElse(null);
             if (shopBusinessCard == null) {
@@ -401,13 +442,15 @@ public class SmallAssignmentUpdateService extends BaseService {
             }
 
             shopBusinessCard.put("platform_kind", 2);
+            shopBusinessCard.put("apply_id", applyId);
+            shopBusinessCard.put("apply_code", applyCode);
+            shopBusinessCard.put("apply_code_id", applyId);
             String shopBusinessCardSql = getUpdateSQl(shopBusinessCard,
                     Wrappers.lambdaQuery(shopBusinessCardTable)
                             .eq("id", shopBusinessCard.get("id")));
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updatePlatformKind", "shopBusinessCardSql", shopBusinessCardSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
             desDataUpdate(testUser, shopBusinessCardSql);
-
         }
     }
 
