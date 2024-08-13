@@ -66,11 +66,30 @@ prod:
     username: "prod"
     password: "vsHHhda@%DSAs996"
 
+max-compute:
+  - name: "dataphin_chun_dev"
+    driver: "com.aliyun.odps.jdbc.OdpsDriver"
+    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun_dev&useProjectTimeZone=true"
+    username: ""
+    password: ""
+
 database-config:
   src: "dev"
   des: "test"
   databases:
     - "user"
+
+max-compute-assignment:
+  enable: true
+
+sync-menu-permissions:
+  enable: false
+
+category-data-sync:
+  enable: false
+
+small-assignment-update:
+  enable: false
 
 token-management:
   enable: false
@@ -92,15 +111,6 @@ token-management:
     prod-order-base-url: "https://prod.baochuncare.com/api/order"
     admin-user-base-url: "https://admin.yongkj.cn/api/user"
     admin-order-base-url: "https://admin.yongkj.cn/api/order"
-
-sync-menu-permissions:
-  enable: false
-
-category-data-sync:
-  enable: false
-
-small-assignment-update:
-  enable: true
 
 agreements-update:
   enable: false

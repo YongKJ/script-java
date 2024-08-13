@@ -139,6 +139,9 @@ public class GenUtil {
     }
 
     public static List<String> getStrLines(String str) {
+        if (str == null) {
+            return new ArrayList<>();
+        }
         String lineBreak = str.contains("\r\n") ? "\r\n" : "\n";
         return Arrays.asList(str.split(lineBreak));
     }

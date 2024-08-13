@@ -4,6 +4,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.service.*;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
 import java.util.List;
@@ -19,12 +20,14 @@ public class DataMigration {
     private final Database preDatabase;
     private final Database testDatabase;
     private final Database prodDatabase;
+    private final Database dataphinChunDevDatabase;
     private final Map<String, Database> mapDatabase;
     private final TokenManagementService tokenManagementService;
     private final CategoryDataSyncService categoryDataSyncService;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
     private final SyncMenuPermissionsService syncMenuPermissionsService;
+    private final MaxComputeAssignmentService maxComputeAssignmentService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
     private final SmallAssignmentUpdateService smallAssignmentUpdateService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
@@ -32,19 +35,35 @@ public class DataMigration {
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
 
     private DataMigration() {
-        this.mapDatabase = Database.initDMapDatabase();
-        this.devDatabase = Database.get("dev", mapDatabase);
-        this.preDatabase = Database.get("pre", mapDatabase);
-        this.testDatabase = Database.get("test", mapDatabase);
-        this.prodDatabase = Database.get("prod", mapDatabase);
-        this.srcDatabase = Database.get("src", this);
-        this.desDatabase = Database.get("des", this);
+        Map<String, Object> mapMaxCompute = GenUtil.getMap("max-compute-assignment");
+        boolean maxCompute = GenUtil.objToBoolean(mapMaxCompute.get("enable"));
+
+        if (maxCompute) {
+            this.devDatabase = null;
+            this.preDatabase = null;
+            this.testDatabase = null;
+            this.prodDatabase = null;
+            this.srcDatabase = null;
+            this.desDatabase = null;
+            this.mapDatabase = Database.initMaxComputeMapDatabase();
+            this.dataphinChunDevDatabase = Database.get("dataphin_chun_dev", mapDatabase);
+        } else {
+            this.dataphinChunDevDatabase = null;
+            this.mapDatabase = Database.initMapDatabase();
+            this.devDatabase = Database.get("dev", mapDatabase);
+            this.preDatabase = Database.get("pre", mapDatabase);
+            this.testDatabase = Database.get("test", mapDatabase);
+            this.prodDatabase = Database.get("prod", mapDatabase);
+            this.srcDatabase = Database.get("src", this);
+            this.desDatabase = Database.get("des", this);
+        }
         this.tokenManagementService = new TokenManagementService(this);
         this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(this);
         this.categoryDataSyncService = new CategoryDataSyncService(this);
         this.agreementsUpdateService = new AgreementsUpdateService(this);
         this.shopCancelLogoutService = new ShopCancelLogoutService(this);
         this.syncMenuPermissionsService = new SyncMenuPermissionsService(this);
+        this.maxComputeAssignmentService = new MaxComputeAssignmentService(this);
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
         this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
         this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
@@ -78,6 +97,7 @@ public class DataMigration {
         agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
         syncMenuPermissionsService.apply();
+        maxComputeAssignmentService.apply();
         shopWorkerDataExportService.apply();
         smallAssignmentUpdateService.apply();
         adminMenuDataMigrationService.apply();
@@ -114,6 +134,10 @@ public class DataMigration {
 
     public Database getDesDatabase() {
         return desDatabase;
+    }
+
+    public Database getDataphinChunDevDatabase() {
+        return dataphinChunDevDatabase;
     }
 
     public void test() {

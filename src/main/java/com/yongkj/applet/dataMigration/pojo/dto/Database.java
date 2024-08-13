@@ -19,6 +19,7 @@ public class Database {
     private String password;
     private Manager manager;
     List<String> tableNames;
+    private boolean isMaxCompute;
     private List<String> databaseNames;
     private Map<String, Table> mapTable;
 
@@ -31,6 +32,7 @@ public class Database {
         this.url = url;
         this.username = username;
         this.password = password;
+        this.isMaxCompute = false;
         this.manager = new Manager();
         this.mapTable = new HashMap<>();
         this.tableNames = new ArrayList<>();
@@ -58,7 +60,17 @@ public class Database {
         }
     }
 
-    public static Map<String, Database> initDMapDatabase() {
+    public static Map<String, Database> initMaxComputeMapDatabase() {
+        Map<String, Database> mapDatabase = new HashMap<>();
+        List<Map<String, Object>> lstData = GenUtil.getListMap("max-compute");
+        for (Map<String, Object> mapData : lstData) {
+            String databaseName = GenUtil.objToStr(mapData.get("name"));
+            mapDatabase.put(databaseName, get(mapData, true));
+        }
+        return mapDatabase;
+    }
+
+    public static Map<String, Database> initMapDatabase() {
         Map<String, Database> mapDatabase = new HashMap<>();
         List<String> keys = Arrays.asList("dev", "test", "pre", "prod");
         Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
@@ -71,7 +83,7 @@ public class Database {
             String database = databases.get(i);
             for (String key : keys) {
                 String databaseName = key + "_" + database;
-                mapDatabase.put(databaseName, get(key, databaseName, mapDatabase));
+                mapDatabase.put(databaseName, get(key, databaseName));
             }
         }
         return mapDatabase;
@@ -80,11 +92,14 @@ public class Database {
     public static Database get(String key, Map<String, Database> mapDatabases) {
         Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
         String databaseName = key + "_" + ((List<String>) mapDatabaseConfig.get("databases")).get(0);
-        return get(key, databaseName, mapDatabases);
+        if (mapDatabases.containsKey(databaseName)) {
+            return mapDatabases.get(key);
+        }
+        mapDatabases.put(databaseName, get(key, databaseName));
+        return mapDatabases.get(databaseName);
     }
 
-    private static Database get(String key, String databaseName, Map<String, Database> mapDatabases) {
-
+    private static Database get(String key, String databaseName) {
         Object value = GenUtil.getObject(key);
         if (!(value instanceof List)) {
             return new Database();
@@ -94,6 +109,10 @@ public class Database {
         if (mapDatabase.isEmpty()) {
             return new Database();
         }
+        return get(mapDatabase, false);
+    }
+
+    private static Database get(Map<String, Object> mapDatabase, boolean isMaxCompute) {
         String name = GenUtil.objToStr(mapDatabase.get("name"));
         String driver = GenUtil.objToStr(mapDatabase.get("driver"));
         String url = GenUtil.objToStr(mapDatabase.get("url"));
@@ -101,10 +120,9 @@ public class Database {
         String password = GenUtil.objToStr(mapDatabase.get("password"));
         Database database = new Database(name, driver, url, username, password);
         database.setManager(JDBCUtil.getConnection(database));
-        database.setMapTable(Table.getTables(database.getManager()));
+        database.setMapTable(Table.getTables(database.getManager(), isMaxCompute));
         database.setDatabaseNames(getDatabasesBySql(database.getManager()));
         database.setTableNames(Table.getTableNamesBySql(database.getManager()));
-        mapDatabases.put(databaseName, database);
         return database;
     }
 
@@ -216,5 +234,13 @@ public class Database {
 
     public void setMapTable(Map<String, Table> mapTable) {
         this.mapTable = mapTable;
+    }
+
+    public boolean isMaxCompute() {
+        return isMaxCompute;
+    }
+
+    public void setMaxCompute(boolean maxCompute) {
+        isMaxCompute = maxCompute;
     }
 }

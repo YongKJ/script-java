@@ -25,6 +25,7 @@ public class Table {
     private String insertDataSql;
     private String updateDataSql;
     private String removeDataSql;
+    private boolean isMaxCompute;
     private List<String> fieldNames;
     private Map<String, Field> mapField;
 
@@ -40,22 +41,26 @@ public class Table {
         this.fieldNames = new ArrayList<>();
     }
 
-    public static Map<String, Table> getTables(Manager manager) {
+    public static Map<String, Table> getTables(Manager manager, boolean isMaxCompute) {
         Map<String, Table> mapTable = new HashMap<>();
         List<String> lstTableName = getTableNamesBySql(manager);
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
         for (String tableName : lstTableName) {
-            Map<String, String> mapRemark = getMapRemarkBySql(manager, tableName);
+            Map<String, String> mapRemark = new HashMap<>();
+            if (!isMaxCompute) {
+                mapRemark = getMapRemarkBySql(manager, tableName);
+            }
             List<Field> lstField = Field.getFields(manager, tableName, mapRemark);
-            String createSql = mapRemark.get("createSql");
+            String createSql = mapRemark.get("createSql") == null ? "" : mapRemark.get("createSql");
             List<String> fieldNames = lstField.stream().map(Field::getName).collect(Collectors.toList());
 
             Table table = new Table();
             table.setName(tableName);
             table.setCreateSql(createSql);
             table.setFieldNames(fieldNames);
+            table.setMaxCompute(isMaxCompute);
             table.setMapField(Field.getMapField(lstField, createSql, tableName));
             mapTable.put(tableName, getSqlTable(table));
         }
@@ -110,12 +115,14 @@ public class Table {
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
 
-            while (sqlResult.next()) {
-                String createTableSql = sqlResult.getString("Create Table");
+            if (sqlResult != null) {
+                while (sqlResult.next()) {
+                    String createTableSql = sqlResult.getString("Create Table");
 
-                List<String> lstLine = GenUtil.getStrLines(createTableSql);
-                mapRemark = getMapRemark(lstLine);
-                mapRemark.put("createSql", createTableSql);
+                    List<String> lstLine = GenUtil.getStrLines(createTableSql);
+                    mapRemark = getMapRemark(lstLine);
+                    mapRemark.put("createSql", createTableSql);
+                }
             }
 
             manager.setStatement(statement);
@@ -274,4 +281,11 @@ public class Table {
         this.fieldNames = fieldNames;
     }
 
+    public boolean isMaxCompute() {
+        return isMaxCompute;
+    }
+
+    public void setMaxCompute(boolean maxCompute) {
+        isMaxCompute = maxCompute;
+    }
 }
