@@ -81,7 +81,7 @@ max-compute:
 
 max-compute-config:
   tables:
-    - "testodpsdrivertable"
+    - "test_odps"
 
 max-compute-assignment:
   enable: true
