@@ -20,7 +20,7 @@ CREATE TABLE `event_data`
     `identity_ua`         STRING,
     `app_version`         STRING,
     `is_wifi`             INT,
-    `ip`                  BIGINT,
+    `ip` STRING,
     `manufacturer`        STRING,
     `model`               STRING,
     `os`                  STRING,
