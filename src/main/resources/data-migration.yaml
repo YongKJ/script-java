@@ -82,6 +82,9 @@ max-compute:
 max-compute-config:
   tables:
     - "test_odps"
+    - "ad_store_tt"
+    - "event_data"
+    - "device_user_info"
 
 max-compute-assignment:
   enable: true
