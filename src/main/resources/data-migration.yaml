@@ -66,6 +66,12 @@ prod:
     username: "prod"
     password: "vsHHhda@%DSAs996"
 
+database-config:
+  src: "dev"
+  des: "test"
+  databases:
+    - "user"
+
 max-compute:
   - name: "dataphin_chun_dev"
     driver: "com.aliyun.odps.jdbc.OdpsDriver"
@@ -73,11 +79,9 @@ max-compute:
     username: ""
     password: ""
 
-database-config:
-  src: "dev"
-  des: "test"
-  databases:
-    - "user"
+max-compute-config:
+  tables:
+    - "testodpsdrivertable"
 
 max-compute-assignment:
   enable: true

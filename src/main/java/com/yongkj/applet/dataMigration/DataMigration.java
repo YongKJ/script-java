@@ -7,6 +7,7 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -71,23 +72,24 @@ public class DataMigration {
     }
 
     private void apply() {
-        List<String> srcDatabases = Database.getDatabases(srcDatabase.getManager());
-        List<String> desDatabases = Database.getDatabases(desDatabase.getManager());
+        List<String> srcDatabases = srcDatabase == null ? new ArrayList<>() : Database.getDatabases(srcDatabase.getManager());
+        List<String> desDatabases = desDatabase == null ? new ArrayList<>() : Database.getDatabases(desDatabase.getManager());
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases", srcDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases.size()", srcDatabases.size()));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases", desDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases.size()", desDatabases.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
-        srcDatabases = Database.getDatabasesBySql(srcDatabase.getManager());
-        desDatabases = Database.getDatabasesBySql(desDatabase.getManager());
+        srcDatabases = srcDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(srcDatabase.getManager(), false);
+        desDatabases = desDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(desDatabase.getManager(), false);
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases", srcDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases.size()", srcDatabases.size()));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases", desDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases.size()", desDatabases.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
-        if (!srcDatabases.contains(srcDatabase.getName()) || !desDatabases.contains(desDatabase.getName())) {
+        if (srcDatabase != null && !srcDatabases.contains(srcDatabase.getName()) ||
+                desDatabase != null && !desDatabases.contains(desDatabase.getName())) {
             System.out.println("数据库不存在！");
             return;
         }

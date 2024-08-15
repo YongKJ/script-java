@@ -90,10 +90,13 @@ public class Database {
     }
 
     public static Database get(String key, Map<String, Database> mapDatabases) {
+        if (mapDatabases.containsKey(key)) {
+            return mapDatabases.get(key);
+        }
         Map<String, Object> mapDatabaseConfig = GenUtil.getMap("database-config");
         String databaseName = key + "_" + ((List<String>) mapDatabaseConfig.get("databases")).get(0);
         if (mapDatabases.containsKey(databaseName)) {
-            return mapDatabases.get(key);
+            return mapDatabases.get(databaseName);
         }
         mapDatabases.put(databaseName, get(key, databaseName));
         return mapDatabases.get(databaseName);
@@ -121,12 +124,15 @@ public class Database {
         Database database = new Database(name, driver, url, username, password);
         database.setManager(JDBCUtil.getConnection(database));
         database.setMapTable(Table.getTables(database.getManager(), isMaxCompute));
-        database.setDatabaseNames(getDatabasesBySql(database.getManager()));
+        database.setDatabaseNames(getDatabasesBySql(database.getManager(), isMaxCompute));
         database.setTableNames(Table.getTableNamesBySql(database.getManager()));
         return database;
     }
 
-    public static List<String> getDatabasesBySql(Manager manager) {
+    public static List<String> getDatabasesBySql(Manager manager, boolean isMaxCompute) {
+        if (isMaxCompute) {
+            return new ArrayList<>();
+        }
         List<String> databases = new ArrayList<>();
         try {
             String sql = "SHOW DATABASES";

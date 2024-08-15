@@ -47,7 +47,16 @@ public class Table {
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
+
+        List<String> filterTableName = new ArrayList<>();
+        if (isMaxCompute) {
+            Map<String, Object> mapData = GenUtil.getMap("max-compute-config");
+            filterTableName = (List<String>) mapData.get("tables");
+        }
         for (String tableName : lstTableName) {
+            if (isMaxCompute && !filterTableName.isEmpty() && !filterTableName.contains(tableName)) {
+                continue;
+            }
             Map<String, String> mapRemark = new HashMap<>();
             if (!isMaxCompute) {
                 mapRemark = getMapRemarkBySql(manager, tableName);
