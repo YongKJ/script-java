@@ -32,8 +32,10 @@ public class MaxComputeAssignmentService extends BaseService {
     }
 
     private void createTestData() {
+//        String sqlPath = FileUtil.getAbsPath(false,
+//                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
         String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
+                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
         String sqlStr = FileUtil.read(sqlPath);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "sqlStr", sqlStr));
         System.out.println("==========================================================================================================");
@@ -52,7 +54,8 @@ public class MaxComputeAssignmentService extends BaseService {
     }
 
     private void getAllData() {
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
+//        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ad_store_tt");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
