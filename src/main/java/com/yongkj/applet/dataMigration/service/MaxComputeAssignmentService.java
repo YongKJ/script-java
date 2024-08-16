@@ -27,13 +27,15 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
-        getAllData();
+//        getAllData();
 //        createTestData();
-//        modifyTable();
+        modifyTable();
     }
 
     private void modifyTable() {
-        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
+//        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
+//        String sql = "ALTER TABLE `test_odps` MODIFY COLUMN `data` INT";
+        String sql = "ALTER TABLE `test_odps` DROP COLUMN `data`";
         boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
     }
