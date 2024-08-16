@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `event_data`;
 CREATE TABLE `event_data`
 (
     `id`                  BIGINT,
-    `event`               TINYINT,
+    `event` INT,
     `event_name`          STRING,
     `union_id`            BIGINT,
     `create_time`         BIGINT,
@@ -20,7 +20,7 @@ CREATE TABLE `event_data`
     `identity_ua`         STRING,
     `app_version`         STRING,
     `is_wifi`             INT,
-    `ip` STRING,
+    `ip`    STRING,
     `manufacturer`        STRING,
     `model`               STRING,
     `os`                  STRING,
