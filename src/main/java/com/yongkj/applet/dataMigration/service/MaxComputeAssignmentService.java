@@ -27,8 +27,15 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
-//        getAllData();
-        createTestData();
+        getAllData();
+//        createTestData();
+//        modifyTable();
+    }
+
+    private void modifyTable() {
+        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
+        boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
     }
 
     private void createTestData() {
@@ -58,7 +65,7 @@ public class MaxComputeAssignmentService extends BaseService {
     private void getAllData() {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ad_store_tt");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("event_data");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
