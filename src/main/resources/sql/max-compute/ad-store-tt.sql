@@ -18,7 +18,7 @@ CREATE TABLE `ad_store_tt`
     `cid_name`       STRING,
     `campaign_id`    BIGINT,
     `campaign_name`  STRING,
-    `c_type`         TINYINT,
+    `c_type`         INT,
     `advertiser_id`  BIGINT,
     `c_site`         INT,
     `convert_id`     BIGINT,
@@ -31,7 +31,7 @@ CREATE TABLE `ad_store_tt`
     `android_id`     STRING,
     `o_aid`          STRING,
     `o_aid_md5`      STRING,
-    `os`             TINYINT,
+    `os`             INT,
     `mac`            STRING,
     `mac1`           STRING,
     `ipv4`           STRING,
@@ -49,8 +49,8 @@ CREATE TABLE `ad_store_tt`
     `product_id`     STRING,
     `outer_id`       STRING,
     `timestamp`      BIGINT,
-    `status`         TINYINT,
+    `status`         INT,
     `event_type`     STRING,
     `utc_created`    BIGINT,
     `utc_modified`   BIGINT
-)
+) tblproperties("transactional"="true")

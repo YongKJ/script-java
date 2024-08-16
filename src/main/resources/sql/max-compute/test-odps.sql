@@ -4,7 +4,7 @@ CREATE TABLE `test_odps`
 (
     `key`   INT,
     `value` STRING
-);
+) tblproperties("transactional"="true");
 INSERT INTO `test_odps`
     (`key`, `value`)
 VALUES (1, 'Hello world!'),

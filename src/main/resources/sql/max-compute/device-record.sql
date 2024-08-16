@@ -34,7 +34,7 @@ CREATE TABLE `event_data`
     `ad_id`               INT,
     `promotion_media`     INT,
     `platform_kind`       INT
-);
+) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `device_user_info`;
 CREATE TABLE `device_user_info`
 (
@@ -58,4 +58,4 @@ CREATE TABLE `device_user_info`
     `os`                  STRING,
     `os_version`          STRING,
     `platform_kind`       STRING
-)
+) tblproperties("transactional"="true")
