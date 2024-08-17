@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS `testodpsdrivertable`;
 DROP TABLE IF EXISTS `test_odps`;
 CREATE TABLE `test_odps`
 (
-    `key`   INT,
-    `value` STRING
+    `key`   INT    NOT NULL DEFAULT 0,
+    `value` STRING NOT NULL DEFAULT ''
 ) tblproperties("transactional"="true");
 INSERT INTO `test_odps`
     (`key`, `value`)

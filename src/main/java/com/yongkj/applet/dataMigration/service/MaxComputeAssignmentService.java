@@ -27,9 +27,9 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
-//        getAllData();
+        getAllData();
 //        createTestData();
-        modifyTable();
+//        modifyTable();
     }
 
     private void modifyTable() {
@@ -41,12 +41,14 @@ public class MaxComputeAssignmentService extends BaseService {
     }
 
     private void createTestData() {
-        String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
+//        String sqlPath = FileUtil.getAbsPath(false,
+//                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
+        String sqlPath = FileUtil.getAbsPath(false,
+                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
         String sqlStr = FileUtil.read(sqlPath);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "sqlStr", sqlStr));
         System.out.println("==========================================================================================================");
@@ -67,7 +69,8 @@ public class MaxComputeAssignmentService extends BaseService {
     private void getAllData() {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ad_store_tt");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
+//        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ocean_engine_advertising_report");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));

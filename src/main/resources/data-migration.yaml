@@ -85,6 +85,7 @@ max-compute-config:
     - "ad_store_tt"
     - "event_data"
     - "device_user_info"
+    - "ocean_engine_advertising_report"
 
 max-compute-assignment:
   enable: true
