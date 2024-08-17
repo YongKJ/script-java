@@ -81,11 +81,11 @@ max-compute:
 
 max-compute-config:
   tables:
-    - "test_odps"
-    - "ad_store_tt"
-    - "event_data"
-    - "device_user_info"
-    - "ocean_engine_advertising_report"
+    - "ods_test_odps"
+    - "ods_ad_store_tt"
+    - "ods_event_data"
+    - "ods_device_user_info"
+    - "ods_ocean_engine_advertising_report"
 
 max-compute-assignment:
   enable: true

@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `ad_store_tt`;
-CREATE TABLE `ad_store_tt`
+DROP TABLE IF EXISTS `ods_ad_store_tt`;
+CREATE TABLE `ods_ad_store_tt`
 (
     `id`             BIGINT NOT NULL DEFAULT 0,
     `promotion_id`   BIGINT NOT NULL DEFAULT 0,

@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `event_data`;
-CREATE TABLE `event_data`
+DROP TABLE IF EXISTS `ods_event_data`;
+CREATE TABLE `ods_event_data`
 (
     `id`                  BIGINT NOT NULL DEFAULT 0,
     `event`               INT    NOT NULL DEFAULT 0,
@@ -36,7 +36,8 @@ CREATE TABLE `event_data`
     `platform_kind`       INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `device_user_info`;
-CREATE TABLE `device_user_info`
+DROP TABLE IF EXISTS `ods_device_user_info`;
+CREATE TABLE `ods_device_user_info`
 (
     `id`                  BIGINT NOT NULL DEFAULT 0,
     `login_id`            STRING NOT NULL DEFAULT '',

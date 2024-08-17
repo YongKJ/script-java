@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `ocean_engine_advertising_report`;
-CREATE TABLE `ocean_engine_advertising_report`
+DROP TABLE IF EXISTS `ods_ocean_engine_advertising_report`;
+CREATE TABLE `ods_ocean_engine_advertising_report`
 (
     `id`                                  BIGINT        NOT NULL DEFAULT 0,
     `cdp_promotion_id`                    BIGINT        NOT NULL DEFAULT 0,

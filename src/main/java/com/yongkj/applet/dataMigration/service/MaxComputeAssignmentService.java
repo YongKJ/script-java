@@ -67,10 +67,10 @@ public class MaxComputeAssignmentService extends BaseService {
     }
 
     private void getAllData() {
-//        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
-//        Table testTable = dataphinChunDevDatabase.getMapTable().get("ad_store_tt");
-//        Table testTable = dataphinChunDevDatabase.getMapTable().get("test_odps");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("ocean_engine_advertising_report");
+//        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
+//        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ad_store_tt");
+//        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
