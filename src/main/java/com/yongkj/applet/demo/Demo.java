@@ -1,5 +1,6 @@
 package com.yongkj.applet.demo;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.yongkj.AppTest;
 import com.yongkj.deploy.pojo.dto.BuildConfig;
 import com.yongkj.deploy.pojo.po.Dependency;
@@ -8,6 +9,13 @@ import com.yongkj.deploy.pojo.po.Script;
 import com.yongkj.deploy.pojo.po.SourceCode;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,8 +26,8 @@ import rufus.lzstring4java.LZString;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.FileInputStream;
-import java.io.StringReader;
+import java.io.*;
+import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -549,9 +557,79 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test36", "lstData.size()", lstData.size()));
     }
 
+
+    public static JSONObject getAdvertiserInfo() {
+        String access_token = "809fa49e8af01b049fe8029c730c15d336e0a4b2";
+        final Long advertiser_id = 1667291069364296L;
+
+        // 请求地址
+        String open_api_url_prefix = "https://ad.oceanengine.com/open_api/2/";
+        String uri = "advertiser/info/";
+
+        // 请求参数
+        Map data = new HashMap() {
+            {
+                put("advertiser_ids", new Long[]{advertiser_id});
+                put("fields", new String[]{"id", "name", "status"});
+            }
+        };
+
+        // 构造请求
+        HttpEntityEnclosingRequestBase httpEntity = new HttpEntityEnclosingRequestBase() {
+            @Override
+            public String getMethod() {
+                return "GET";
+            }
+        };
+
+        httpEntity.setHeader("Access-Token", access_token);
+
+        CloseableHttpResponse response = null;
+        CloseableHttpClient client = null;
+
+        try {
+            client = HttpClientBuilder.create().build();
+            httpEntity.setURI(URI.create(open_api_url_prefix + uri));
+            httpEntity.setEntity(new StringEntity(JSONObject.toJSONString(data), ContentType.APPLICATION_JSON));
+
+            response = client.execute(httpEntity);
+            if (response != null && response.getStatusLine().getStatusCode() == 200) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                StringBuffer result = new StringBuffer();
+                String line = "";
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line);
+                }
+                bufferedReader.close();
+                return JSONObject.parseObject(result.toString());
+            }
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (response != null) {
+                    response.close();
+                }
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private void test37() {
+        JSONObject jsonObject = getAdvertiserInfo();
+        LogUtil.loggerLine(Log.of("Demo", "test37", "jsonObject", jsonObject));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test36();
+        demo.test37();
+//        demo.test36();
 //        demo.test35();
 //        demo.test34();
 //        demo.test33();
