@@ -12,6 +12,7 @@ CREATE TABLE `ods_ocean_engine_advertising_report`
     `show_cost`                           DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
     `click_cnt`                           INT            NOT NULL DEFAULT 0,
     `cpc_platform`                        DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
+    `click_cost`                          DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
     `attribution_customer_effective_cost` DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
     `stat_time_day`                       BIGINT         NOT NULL DEFAULT 0,
     `utc_created`                         BIGINT         NOT NULL DEFAULT 0,
