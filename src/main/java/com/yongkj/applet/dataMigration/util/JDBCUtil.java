@@ -99,7 +99,7 @@ public class JDBCUtil {
                     data = getJsonData(resultSet.getString(fieldName));
                     break;
                 default:
-                    data = resultSet.getString(fieldName);
+                    data = fieldType.contains("DECIMAL") ? Double.valueOf(resultSet.getDouble(fieldName)) : resultSet.getString(fieldName);
             }
         } catch (Exception e) {
             e.printStackTrace();
