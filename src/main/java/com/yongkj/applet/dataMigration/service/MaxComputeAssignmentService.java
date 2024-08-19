@@ -45,10 +45,10 @@ public class MaxComputeAssignmentService extends BaseService {
 //                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
-//        String sqlPath = FileUtil.getAbsPath(false,
-//                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
         String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
+                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
+//        String sqlPath = FileUtil.getAbsPath(false,
+//                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
         String sqlStr = FileUtil.read(sqlPath);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "sqlStr", sqlStr));
         System.out.println("==========================================================================================================");
@@ -70,7 +70,7 @@ public class MaxComputeAssignmentService extends BaseService {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ad_store_tt");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));

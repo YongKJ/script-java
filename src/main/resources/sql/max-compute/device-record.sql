@@ -31,11 +31,10 @@ CREATE TABLE `ods_event_data`
     `promotion_channel`   INT    NOT NULL DEFAULT 0,
     `promotion_method`    INT    NOT NULL DEFAULT 0,
     `app_type`            INT    NOT NULL DEFAULT 0,
-    `ad_id`               INT    NOT NULL DEFAULT 0,
+    `ad_id`               STRING NOT NULL DEFAULT '',
     `promotion_media`     INT    NOT NULL DEFAULT 0,
     `platform_kind`       INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
-DROP TABLE IF EXISTS `device_user_info`;
 DROP TABLE IF EXISTS `ods_device_user_info`;
 CREATE TABLE `ods_device_user_info`
 (
