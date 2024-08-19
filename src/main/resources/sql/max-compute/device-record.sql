@@ -33,6 +33,7 @@ CREATE TABLE `ods_event_data`
     `app_type`            INT    NOT NULL DEFAULT 0,
     `ad_id`               STRING NOT NULL DEFAULT '',
     `promotion_media`     INT    NOT NULL DEFAULT 0,
+    `promotion_id`        STRING NOT NULL DEFAULT '',
     `platform_kind`       INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `ods_device_user_info`;
