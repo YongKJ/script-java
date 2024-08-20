@@ -51,6 +51,7 @@ public class SQLValue {
             case andWrapper:
             case orWrapper:
                 return String.format(operate.getValue(), value);
+            case limit:
             case groupBy:
             case orderByAsc:
             case orderByDesc:

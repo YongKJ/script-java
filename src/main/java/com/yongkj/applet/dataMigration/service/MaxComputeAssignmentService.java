@@ -4,14 +4,22 @@ import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
+import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MaxComputeAssignmentService extends BaseService {
 
@@ -71,9 +79,40 @@ public class MaxComputeAssignmentService extends BaseService {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ad_store_tt");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
         Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
-        List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, testTable);
+        List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase,
+                Wrappers.lambdaQuery(testTable)
+                        .eq("cdp_promotion_id", 7342330130100224039L)
+                        .between("stat_time_day", strToTimestamp("2024-03-01"), strToTimestamp("2024-03-31"))
+//                        .in("stat_time_day", strToTimestamp("2024-02-28"), strToTimestamp("2024-02-29"))
+                        .orderByDesc("stat_time_day")
+        );
+
+        lstData = lstData.stream().sorted(
+                        Comparator.comparing(
+                                po -> (Long) ((Map<String, Object>) po).get("stat_time_day")).reversed())
+                .collect(Collectors.toList());
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
     }
 
+    private String localDateToStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    private LocalDate strToLocalDate(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateStr, formatter);
+    }
+
+    private Long strToTimestamp(String dateStr) {
+        LocalDate date = strToLocalDate(dateStr);
+        ZonedDateTime zonedDateTime = date.atStartOfDay().atZone(ZoneId.systemDefault());
+        return zonedDateTime.toInstant().getEpochSecond();
+    }
+
+    public String timestampToStr(long timestamp) {
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        return localDateToStr(instant.atZone(ZoneId.systemDefault()).toLocalDate());
+    }
 }

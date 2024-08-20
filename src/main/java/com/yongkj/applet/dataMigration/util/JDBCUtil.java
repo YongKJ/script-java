@@ -74,7 +74,7 @@ public class JDBCUtil {
         Map<String, Object> mapData = new LinkedHashMap<>();
         List<Field> lstField = Field.getFields(resultSet);
         for (Field field : lstField) {
-            if (field == null || filterFields.size() > 0 && !filterFields.contains(field.getName())) continue;
+            if (field == null || !filterFields.isEmpty() && !filterFields.contains(field.getName())) continue;
             mapData.put(field.getName(), getValue(field.getType(), field.getName(), resultSet));
         }
         return mapData;

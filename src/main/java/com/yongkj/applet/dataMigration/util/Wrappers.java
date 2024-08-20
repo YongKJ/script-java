@@ -4,10 +4,7 @@ import com.yongkj.applet.dataMigration.pojo.dict.SQLOperate;
 import com.yongkj.applet.dataMigration.pojo.dto.SQLValue;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Wrappers {
@@ -60,6 +57,7 @@ public class Wrappers {
                     lstSqlSegment.removeLast();
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
                     break;
+                case limit:
                 case andWrapper:
                 case orWrapper:
                 case groupBy:
@@ -74,7 +72,7 @@ public class Wrappers {
                     lstSqlSegment.addLast(SQLOperate.and.getValue());
             }
         }
-        if (lstSqlSegment.size() > 0) {
+        if (!lstSqlSegment.isEmpty()) {
             lstSqlSegment.removeLast();
         }
         return String.join(" ", lstSqlSegment);
@@ -259,7 +257,32 @@ public class Wrappers {
         return this;
     }
 
-    public Wrappers between(String field, Object value) {
+    public Wrappers limit(Integer value) {
+        sqlValues.add(SQLValue.of(
+                "",
+                SQLOperate.limit,
+                Collections.singletonList(value)
+        ));
+        return this;
+    }
+
+    public Wrappers limit(Integer startValue, Integer endValue) {
+        sqlValues.add(SQLValue.of(
+                "",
+                SQLOperate.limit,
+                Arrays.asList(startValue, endValue)
+        ));
+        return this;
+    }
+
+    public Wrappers between(String field, Object startValue, Object endValue) {
+        Map<Integer, Object> mapData = new HashMap<>();
+        mapData.put(1, startValue);
+        mapData.put(2, endValue);
+        return between(field, mapData);
+    }
+
+    private Wrappers between(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.between,
@@ -268,7 +291,14 @@ public class Wrappers {
         return this;
     }
 
-    public Wrappers notBetween(String field, Object value) {
+    public Wrappers notBetween(String field, Object startValue, Object endValue) {
+        Map<Integer, Object> mapData = new HashMap<>();
+        mapData.put(1, startValue);
+        mapData.put(2, endValue);
+        return notBetween(field, mapData);
+    }
+
+    private Wrappers notBetween(String field, Object value) {
         sqlValues.add(SQLValue.of(
                 field,
                 SQLOperate.notBetween,

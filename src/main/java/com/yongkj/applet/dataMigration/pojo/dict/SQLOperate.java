@@ -25,7 +25,8 @@ public enum SQLOperate {
     notBetween("NOT BETWEEN %s AND %s"),
     groupBy("GROUP BY %s"),
     orderByAsc("ORDER BY %s ASC"),
-    orderByDesc("ORDER BY %s DESC");
+    orderByDesc("ORDER BY %s DESC"),
+    limit("LIMIT %s");
 
     private final String value;
 
