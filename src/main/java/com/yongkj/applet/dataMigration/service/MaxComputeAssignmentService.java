@@ -35,8 +35,8 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
-        getAllData();
-//        createTestData();
+//        getAllData();
+        createTestData();
 //        modifyTable();
     }
 
@@ -55,8 +55,10 @@ public class MaxComputeAssignmentService extends BaseService {
 //                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
+//        String sqlPath = FileUtil.getAbsPath(false,
+//                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
         String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
+                "src", "main", "resources", "sql", "max-compute", "tencent-advertising-report.sql");
         String sqlStr = FileUtil.read(sqlPath);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "sqlStr", sqlStr));
         System.out.println("==========================================================================================================");
@@ -82,7 +84,7 @@ public class MaxComputeAssignmentService extends BaseService {
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase,
                 Wrappers.lambdaQuery(testTable)
                         .eq("cdp_promotion_id", 7342330130100224039L)
-                        .between("stat_time_day", strToTimestamp("2024-03-01"), strToTimestamp("2024-03-31"))
+                        .between("stat_time_day", strToTimestamp("2024-04-01"), strToTimestamp("2024-04-30"))
 //                        .in("stat_time_day", strToTimestamp("2024-02-28"), strToTimestamp("2024-02-29"))
                         .orderByDesc("stat_time_day")
         );

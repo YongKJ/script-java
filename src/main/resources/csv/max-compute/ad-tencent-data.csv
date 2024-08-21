@@ -1,0 +1,7 @@
+指标名称,指标类型,指标来源,数据字段,报表指标,报表指标含义,计算公式
+花费金额,原子指标,广告投放平台,cost,cost,花费,花费
+曝光次数,原子指标,广告投放平台,view_count,view_count,曝光次数,曝光次数
+曝光成本,原子指标,保椿照护,view_cost,view_count、thousand_display_price,曝光次数、千次展现均价,曝光次数×千次展现均价÷1000
+点击次数,原子指标,广告投放平台,valid_click_count,valid_click_count,点击次数,点击次数
+点击成本,原子指标,保椿照护,valid_click_cost,valid_click_count、cpc,点击次数、点击均价,点击次数×点击均价
+获客成本（元）,原子指标,保椿照护,effect_leads_purchase_cost,effect_leads_purchase_cost,有效线索成本（人数）,有效线索成本（人数）

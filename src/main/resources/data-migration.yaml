@@ -87,6 +87,8 @@ max-compute-config:
     - "ods_device_user_info"
     - "ods_ocean_engine_advertising"
     - "ods_ocean_engine_advertising_report"
+    - "ods_tencent_advertising"
+    - "ods_tencent_advertising_report"
 
 max-compute-assignment:
   enable: true
