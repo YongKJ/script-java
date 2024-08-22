@@ -16,6 +16,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,10 +29,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.net.URI;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
@@ -626,9 +624,27 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test37", "jsonObject", jsonObject));
     }
 
+    private void test38() {
+        String url = "https://prod.baochuncare.com/api/user/v1/bc/public/ad_store/tt/listener";
+        String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
+        List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
+        Map<String, Object> mapParams = new LinkedHashMap<>();
+        for (Map<String, String> mapData : lstData) {
+            String field = mapData.get("field");
+            String param = mapData.get("param");
+            if (StringUtils.hasText(param)) {
+                param = String.format("__%s__", param);
+            }
+            mapParams.put(field, param);
+        }
+        url = ApiUtil.getUrl(url, mapParams);
+        LogUtil.loggerLine(Log.of("Demo", "test38", "url", url));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test37();
+        demo.test38();
+//        demo.test37();
 //        demo.test36();
 //        demo.test35();
 //        demo.test34();

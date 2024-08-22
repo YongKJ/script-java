@@ -1,0 +1,48 @@
+field,param,desc
+promotion_id,PROMOTION_ID,广告ID
+project_id,PROJECT_ID,项目ID
+promotion_name,PROMOTION_NAME,广告名称
+project_name,PROJECT_NAME,项目名称
+mid1,MID1,图片ID
+mid2,MID2,标题ID
+mid3,MID3,视频ID
+mid4,MID4,搭配试玩ID
+mid5,MID5,落地页ID
+mid6,MID6,安卓下载详情页ID
+aid,AID,广告计划id
+aid_name,AID_NAME,广告计划名称
+cid,CID,广告创意 id
+cid_name,CID_NAME,广告创意名称
+campaign_id,CAMPAIGN_ID,广告组 id
+campaign_name,CAMPAIGN_NAME,广告组名称
+c_type,CTYPE,创意样式
+advertiser_id,ADVERTISER_ID,广告主id
+c_site,CSITE,广告投放位置
+convert_id,CONVERT_ID,转化id
+request_id,REQUEST_ID,请求下发的id
+track_id,TRACK_ID,请求下发的id&创意id的md5
+sl,SL,这次请求的语言
+imei,IMEI,安卓的设备 ID 的 md5
+idfa,IDFA,IOS 6+的设备id
+idfa_md5,IDFA_MD5,IOS 6+的设备id的md5
+android_id,ANDROIDID,安卓id原值的md5
+o_aid,OAID,Android Q及更高版本的设备号
+o_aid_md5,OAID_MD5,Android Q及更高版本的设备号的md5
+os,OS,操作系统平台
+mac,MAC,移动设备mac地址
+mac1,MAC1,移动设备 mac 地址
+ipv4,IPV4,IP 地址
+ipv6,IPV6,IP 地址
+ip,IP,IP 地址
+ua,UA,用户代理
+geo,GEO,位置信息
+ts,TS,客户端发生广告点击事件的时间
+callback_param,CALLBACK_PARAM,回调参数
+callback_url,CALLBACK_URL,回传接口的url
+model,MODEL,手机型号
+union_site,UNION_SITE,对外广告位编码
+c_aid,CAID,互联网广告标识
+c_aid_md5,CAID_MD5,广告标识
+product_id,PRODUCTID,商品id
+outer_id,OUTERID,商品id
+event_type,,事件类型
