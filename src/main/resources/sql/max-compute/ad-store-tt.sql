@@ -43,7 +43,7 @@ CREATE TABLE `ods_ad_store_tt`
     `callback_param` STRING NOT NULL DEFAULT '',
     `callback_url`   STRING NOT NULL DEFAULT '',
     `model`          STRING NOT NULL DEFAULT '',
-    `union_site`     INT    NOT NULL DEFAULT 0,
+    `union_site`     BIGINT NOT NULL DEFAULT 0,
     `c_aid`          STRING NOT NULL DEFAULT '',
     `c_aid_md5`      STRING NOT NULL DEFAULT '',
     `product_id`     STRING NOT NULL DEFAULT '',
