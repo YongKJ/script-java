@@ -48,7 +48,6 @@ CREATE TABLE `ods_ad_store_tt`
     `c_aid_md5`      STRING NOT NULL DEFAULT '',
     `product_id`     STRING NOT NULL DEFAULT '',
     `outer_id`       STRING NOT NULL DEFAULT '',
-    `timestamp`      BIGINT NOT NULL DEFAULT 0,
     `status`         INT    NOT NULL DEFAULT 0,
     `event_type`     STRING NOT NULL DEFAULT '',
     `utc_created`    BIGINT NOT NULL DEFAULT 0,
