@@ -641,9 +641,34 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test38", "url", url));
     }
 
+    private void test39() {
+        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\ocean-engine-callback.csv";
+        List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
+        List<Map<String, String>> datas = new ArrayList<>();
+        for (Map<String, String> mapData : lstData) {
+            String param = mapData.get("param");
+            String desc = mapData.get("desc");
+            String field = mapData.get("field");
+
+            String fieldHump = field.replace("_", "-");
+            fieldHump = GenUtil.toHump(fieldHump);
+            fieldHump = fieldHump.substring(0, 1).toLowerCase() + fieldHump.substring(1);
+
+            Map<String, String> tempMapData = new LinkedHashMap<>();
+            tempMapData.put("field", field);
+            tempMapData.put("fieldHump", fieldHump);
+            tempMapData.put("param", param);
+            tempMapData.put("desc", desc);
+            datas.add(tempMapData);
+        }
+
+        CsvUtil.printRecords(csvPath, datas, "field", "fieldHump", "param", "desc");
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test38();
+        demo.test39();
+//        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();
