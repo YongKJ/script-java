@@ -625,20 +625,28 @@ public class Demo {
     }
 
     private void test38() {
-        String url = "https://prod.baochuncare.com/api/user/v1/bc/public/ad_store/tt/listener";
         String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
         List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
         Map<String, Object> mapParams = new LinkedHashMap<>();
+        mapParams.put("eventType", "");
         for (Map<String, String> mapData : lstData) {
-            String field = mapData.get("field");
+            String fieldHump = mapData.get("fieldHump");
             String param = mapData.get("param");
             if (StringUtils.hasText(param)) {
                 param = String.format("__%s__", param);
             }
-            mapParams.put(field, param);
+            mapParams.put(fieldHump, param);
         }
-        url = ApiUtil.getUrl(url, mapParams);
-        LogUtil.loggerLine(Log.of("Demo", "test38", "url", url));
+
+        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/listener";
+        List<String> eventTypes = Arrays.asList("active", "in_app_order", "active_register");
+        for (String eventType : eventTypes) {
+            mapParams.put("eventType", eventType);
+
+            String tempUrl = ApiUtil.getUrl(url, mapParams);
+            LogUtil.loggerLine(Log.of("Demo", "test38", "tempUrl", tempUrl));
+            System.out.println("-------------------------------------------------------------------------------------------");
+        }
     }
 
     private void test39() {
@@ -667,8 +675,8 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test39();
-//        demo.test38();
+//        demo.test39();
+        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();
