@@ -50,6 +50,7 @@ public class SQLValue {
                 return operate.getValue();
             case andWrapper:
             case orWrapper:
+            case having:
                 return String.format(operate.getValue(), value);
             case limit:
             case groupBy:

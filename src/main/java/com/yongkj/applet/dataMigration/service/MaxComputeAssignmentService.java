@@ -33,9 +33,27 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
-        getAllData();
-//        createTestData();
+//        getAllData();
+        createTestData();
 //        modifyTable();
+//        countTableData();
+    }
+
+    private void countTableData() {
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstData = srcSetDataList(dataphinChunDevDatabase,
+                Wrappers.lambdaQuery(testTable)
+                        .eq("event", 8)
+                        .in("promotion_id", "1826230234437730306")
+                        .select("COUNT(*)"));
+//        List<Map<String, Object>> lstData = srcSetDataList(dataphinChunDevDatabase,
+//                Wrappers.lambdaQuery(testTable)
+//                        .eq("event", 8)
+//                        .in("promotion_id", "1826230234437730306", "1826584778565984258")
+//                        .groupBy("promotion_id", "event")
+//                        .select("promotion_id", "event", "COUNT(*)"));
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "countTableData", "lstData", lstData));
     }
 
     private void modifyTable() {
@@ -49,10 +67,10 @@ public class MaxComputeAssignmentService extends BaseService {
     private void createTestData() {
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
-        String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
-//                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
+//                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
+        String sqlPath = FileUtil.getAbsPath(false,
+                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,

@@ -121,6 +121,10 @@ public abstract class BaseService {
         return JDBCUtil.getResult(desDatabase, removeSql);
     }
 
+    protected List<Map<String, Object>> srcSetDataList(Database database, Wrappers query) {
+        return listSet(database, query);
+    }
+
     protected List<Map<String, Object>> srcSetDataList(Wrappers query) {
         return listSet(srcDatabase, query);
     }

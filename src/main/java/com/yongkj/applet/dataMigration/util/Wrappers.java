@@ -57,13 +57,16 @@ public class Wrappers {
                     lstSqlSegment.removeLast();
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
                     break;
-                case limit:
                 case andWrapper:
                 case orWrapper:
+                case having:
                 case groupBy:
+                case limit:
                 case orderByAsc:
                 case orderByDesc:
-                    lstSqlSegment.removeLast();
+                    if (!lstSqlSegment.isEmpty()) {
+                        lstSqlSegment.removeLast();
+                    }
                     lstSqlSegment.addLast(sqlValue.getSqlSegment());
                     lstSqlSegment.addLast(SQLOperate.and.getValue());
                     break;
@@ -271,6 +274,16 @@ public class Wrappers {
                 "",
                 SQLOperate.limit,
                 Arrays.asList(startValue, endValue)
+        ));
+        return this;
+    }
+
+    public Wrappers having(Consumer<Wrappers> consumer) {
+        Wrappers query = Wrappers.lambdaQuery();
+        consumer.accept(query);
+        sqlValues.add(SQLValue.of(
+                SQLOperate.having,
+                query.getSqlSegment()
         ));
         return this;
     }

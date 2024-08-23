@@ -26,7 +26,8 @@ public enum SQLOperate {
     groupBy("GROUP BY %s"),
     orderByAsc("ORDER BY %s ASC"),
     orderByDesc("ORDER BY %s DESC"),
-    limit("LIMIT %s");
+    limit("LIMIT %s"),
+    having("HAVING %s");
 
     private final String value;
 

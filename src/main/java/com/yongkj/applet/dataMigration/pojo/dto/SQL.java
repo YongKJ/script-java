@@ -46,7 +46,7 @@ public class SQL {
     public static String getDataSelectSql(List<String> fields, List<String> tables, String where) {
         String field = getFieldOrTableStr(fields);
         String table = getFieldOrTableStr(tables);
-        where = where.isEmpty() ? where : String.format("WHERE %s", where);
+        where = where.isEmpty() || where.startsWith("GROUP BY") ? where : String.format("WHERE %s", where);
         return String.format(DATA_SELECT_SQL, field, table, where);
     }
 
@@ -116,7 +116,7 @@ public class SQL {
 
     private static String getFieldOrTableStr(List<String> lstData) {
         lstData = lstData.stream().map(
-                f -> f.contains("`") || f.contains(" ") || f.contains(".") ?
+                f -> f.contains("`") || f.contains(" ") || f.contains(".") || f.contains("(") || f.contains("*") ?
                         String.format("%s", f) : String.format("`%s`", f)).collect(Collectors.toList());
         return String.join(", ", lstData);
     }
