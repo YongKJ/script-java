@@ -61,6 +61,15 @@ public class CsvUtil {
             InputStream stream = Arrays.asList("/", "\\").contains(fileName.substring(0, 1)) ?
                     new ClassPathResource(fileName).getInputStream() :
                     Files.newInputStream(Paths.get(fileName));
+            return toMap(stream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public static List<Map<String, String>> toMap(InputStream stream) {
+        try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             return toMap(CSVFormat.Builder.create()
                     .setTrim(true)
