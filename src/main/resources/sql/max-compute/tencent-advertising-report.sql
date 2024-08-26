@@ -4,8 +4,6 @@ CREATE TABLE `ods_tencent_advertising_report`
     `id`                         BIGINT         NOT NULL DEFAULT 0,
     `adgroup_id`                 BIGINT         NOT NULL DEFAULT 0,
     `adgroup_name`               STRING         NOT NULL DEFAULT '',
-    `ad_id`                      BIGINT         NOT NULL DEFAULT 0,
-    `ad_name`                    STRING         NOT NULL DEFAULT '',
     `cost`                       DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
     `view_count`                 INT            NOT NULL DEFAULT 0,
     `thousand_display_price`     DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
@@ -25,8 +23,6 @@ CREATE TABLE `ods_tencent_advertising`
     `id`           BIGINT NOT NULL DEFAULT 0,
     `adgroup_id`   BIGINT NOT NULL DEFAULT 0,
     `adgroup_name` STRING NOT NULL DEFAULT '',
-    `ad_id`        BIGINT NOT NULL DEFAULT 0,
-    `ad_name`      STRING NOT NULL DEFAULT '',
     `utc_created`  BIGINT NOT NULL DEFAULT 0,
     `utc_modified` BIGINT NOT NULL DEFAULT 0,
     `utc_deleted`  BIGINT NOT NULL DEFAULT 0

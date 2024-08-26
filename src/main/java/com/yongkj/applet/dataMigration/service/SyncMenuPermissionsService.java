@@ -32,43 +32,44 @@ public class SyncMenuPermissionsService extends BaseService {
         Database preUser = mapDatabase.get("pre_user");
         Database prodUser = mapDatabase.get("prod_user");
 
-        distinctRoleMenuData(devUser, "admin_role_menu", "role_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_role_menu", "role_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(preUser, "admin_role_menu", "role_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(devUser, "admin_role_menu", "role_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(devUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+//
+//        distinctRoleMenuData(testUser, "admin_role_menu", "role_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+
+//        distinctRoleMenuData(preUser, "admin_role_menu", "role_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "desc", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
+
         distinctRoleMenuData(prodUser, "admin_role_menu", "role_id", "menu_id");
         System.out.println("==================================================================================================================\n");
-
-        distinctRoleMenuData(devUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
         distinctRoleMenuData(prodUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-
-        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
         System.out.println("==================================================================================================================\n");
         distinctRoleMenuData(prodUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
         System.out.println("==================================================================================================================\n");
 
-        diffRoleMenuData(devUser, testUser, "admin_menu", "id");
-        diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
-        diffRoleMenuData(devUser, testUser, "admin_role_menu", "role_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
+//        diffRoleMenuData(devUser, testUser, "admin_menu", "id");
+//        diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
+//        diffRoleMenuData(devUser, testUser, "admin_role_menu", "role_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
 
 //        diffRoleMenuData(testUser, preUser, "admin_menu", "id");
 //        diffRoleMenuData(testUser, preUser, "admin_role_menu", "role_id", "menu_id");
 //        diffRoleMenuData(testUser, preUser, "admin_apply_menu", "apply_id", "menu_id");
 //        System.out.println("==================================================================================================================\n");
-//
+
 //        diffRoleMenuData(preUser, prodUser, "admin_menu", "id");
 //        diffRoleMenuData(preUser, prodUser, "admin_role_menu", "role_id", "menu_id");
 //        diffRoleMenuData(preUser, prodUser, "admin_apply_menu", "apply_id", "menu_id");

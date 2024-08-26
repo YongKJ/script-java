@@ -69,12 +69,12 @@ public class MaxComputeAssignmentService extends BaseService {
 //                "src", "main", "resources", "sql", "max-compute", "test-odps.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "ad-store-tt.sql");
-        String sqlPath = FileUtil.getAbsPath(false,
-                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
+//        String sqlPath = FileUtil.getAbsPath(false,
+//                "src", "main", "resources", "sql", "max-compute", "device-record.sql");
 //        String sqlPath = FileUtil.getAbsPath(false,
 //                "src", "main", "resources", "sql", "max-compute", "ocean-engine-advertising-report.sql");
-//        String sqlPath = FileUtil.getAbsPath(false,
-//                "src", "main", "resources", "sql", "max-compute", "tencent-advertising-report.sql");
+        String sqlPath = FileUtil.getAbsPath(false,
+                "src", "main", "resources", "sql", "max-compute", "tencent-advertising-report.sql");
         String sqlStr = FileUtil.read(sqlPath);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "sqlStr", sqlStr));
         System.out.println("==========================================================================================================");
