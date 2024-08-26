@@ -3,13 +3,12 @@ package com.yongkj.applet.webDataCollect;
 import com.yongkj.applet.webDataCollect.driver.ChromeDriverProxy;
 import com.yongkj.applet.webDataCollect.pojo.dto.NetWorkRecord;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.http.Contents;
 import org.openqa.selenium.remote.http.HttpHandler;
 import org.openqa.selenium.remote.http.HttpResponse;
@@ -53,27 +52,44 @@ public class WebDataCollect {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));
         driver.manage().window().maximize();
 
-        DevTools devTools = driver.getDevTools();
-        devTools.createSessionIfThereIsNotOne();
-        devTools.getDomains().network().interceptTrafficWith(this::getFilter);
+//        DevTools devTools = driver.getDevTools();
+//        devTools.createSessionIfThereIsNotOne();
+//        devTools.getDomains().network().interceptTrafficWith(this::getFilter);
 
         try {
             driver.get(webUrl);
 
-            TimeUnit.MINUTES.sleep(3);
+            TimeUnit.MINUTES.sleep(2);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             driver.quit();
         }
 
-        for (Map.Entry<String, List<NetWorkRecord>> map : mapRecord.entrySet()) {
-            if (map.getKey().contains(dataUrl)) {
-                int index = map.getValue().size() - 1;
-                parseNetwork(map.getValue().get(index));
-            }
-            LogUtil.loggerLine(Log.of("WebDataCollect", "testWebUrl", "uri", map.getKey()));
+//        for (Map.Entry<String, List<NetWorkRecord>> map : mapRecord.entrySet()) {
+//            if (map.getKey().contains(dataUrl)) {
+//                int index = map.getValue().size() - 1;
+//                parseNetwork(map.getValue().get(index));
+//            }
+//            LogUtil.loggerLine(Log.of("WebDataCollect", "testWebUrl", "uri", map.getKey()));
+//        }
+
+        checkLogData(driver.manage().logs());
+    }
+
+    private void checkLogData(Logs logs) {
+//        Set<String> availableLogTypes = logs.getAvailableLogTypes();
+//        if (!availableLogTypes.contains(LogType.PERFORMANCE)) {
+//            return;
+//        }
+
+        LogEntries logEntries = logs.get(LogType.PERFORMANCE);
+        List<String> lstMessage = new ArrayList<>();
+        for (LogEntry entry : logEntries) {
+            lstMessage.add(entry.getMessage());
         }
+        String content = GenUtil.toJsonString(lstMessage);
+        FileUtil.write("C:\\Users\\Admin\\Desktop\\logs.json", content);
     }
 
     private HttpHandler getFilter(HttpHandler next) {

@@ -1,7 +1,7 @@
 web-data-collect:
-#  chrome-binary: "D:/Software/scoop/apps/googlechrome-beta/current/chrome.exe"
-  chrome-binary: "C:/Program Files/Google/Chrome/Application/chrome.exe"
+  chrome-binary: "D:/Software/scoop/apps/googlechrome-beta/current/chrome.exe"
+#  chrome-binary: "C:/Program Files/Google/Chrome/Application/chrome.exe"
   web-url: "https://ad.qq.com/cm/43042933/report?tab=adgroup"
-#  chrome-driver: "D:/Software/scoop/shims/chromedriver.exe"
-  chrome-driver: "E:/Software/chromedriver.exe"
+  chrome-driver: "D:/Software/scoop/shims/chromedriver.exe"
+#  chrome-driver: "E:/Software/chromedriver.exe"
   remote-chrome: "http://192.168.66.234:4444/wd/hub"
