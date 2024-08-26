@@ -34,9 +34,10 @@ public class MaxComputeAssignmentService extends BaseService {
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
 //        getAllData();
-        createTestData();
+//        createTestData();
 //        modifyTable();
 //        countTableData();
+        testSql();
     }
 
     private void countTableData() {
@@ -111,6 +112,14 @@ public class MaxComputeAssignmentService extends BaseService {
 //                .collect(Collectors.toList());
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
+    }
+
+    private void testSql() {
+//        String sql = "show full columns from ods_tencent_advertising_report";
+//        String sql = "desc extended ods_tencent_advertising_report";
+        String sql = "show create table ods_tencent_advertising_report";
+        List<Map<String, Object>> lstData = JDBCUtil.getResultSet(dataphinChunDevDatabase, sql);
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "testSql", "lstData.size()", lstData.size()));
     }
 
     private String localDateToStr(LocalDate date) {
