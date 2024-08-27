@@ -35,9 +35,9 @@ public class MaxComputeAssignmentService extends BaseService {
 
 //        getAllData();
 //        createTestData();
-//        modifyTable();
+        modifyTable();
 //        countTableData();
-        testSql();
+//        testSql();
     }
 
     private void countTableData() {
@@ -59,8 +59,9 @@ public class MaxComputeAssignmentService extends BaseService {
 
     private void modifyTable() {
 //        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
+        String sql = "ALTER TABLE `ods_event_data` ADD COLUMN `item_id` BIGINT";
 //        String sql = "ALTER TABLE `test_odps` MODIFY COLUMN `data` INT";
-        String sql = "ALTER TABLE `test_odps` DROP COLUMN `data`";
+//        String sql = "ALTER TABLE `test_odps` DROP COLUMN `data`";
         boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
     }

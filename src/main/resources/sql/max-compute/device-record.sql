@@ -35,6 +35,7 @@ CREATE TABLE `ods_event_data`
     `promotion_media`     INT    NOT NULL DEFAULT 0,
     `promotion_id`        STRING NOT NULL DEFAULT '',
     `device_id`           STRING NOT NULL DEFAULT '',
+    `item_id`             BIGINT NOT NULL DEFAULT 0,
     `platform_kind`       INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `ods_device_user_info`;
@@ -59,6 +60,6 @@ CREATE TABLE `ods_device_user_info`
     `model`               STRING NOT NULL DEFAULT '',
     `os`                  STRING NOT NULL DEFAULT '',
     `device_id`           STRING NOT NULL DEFAULT '',
-    `os_version`          STRING NOT NULL DEFAULT '',
+    `device_id`           STRING NOT NULL DEFAULT '',
     `platform_kind`       INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true")
