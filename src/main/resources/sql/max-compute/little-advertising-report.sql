@@ -2,8 +2,9 @@ DROP TABLE IF EXISTS `ods_little_advertising_report`;
 CREATE TABLE `ods_little_advertising_report`
 (
     `id`                BIGINT         NOT NULL DEFAULT 0,
-    `adgroup_id`        BIGINT         NOT NULL DEFAULT 0,
-    `adgroup_name`      STRING         NOT NULL DEFAULT '',
+    `promotion_id`      BIGINT         NOT NULL DEFAULT 0,
+    `promotion_name`    STRING         NOT NULL DEFAULT '',
+    `promotion_type`    INT            NOT NULL DEFAULT 0,
     `fee`               DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
     `impression`        INT            NOT NULL DEFAULT 0,
     `cpm`               DECIMAL(12, 6) NOT NULL DEFAULT 0.0BD,
