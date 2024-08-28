@@ -75,13 +75,12 @@ CREATE TABLE `ods_event_data`
     `ts`                  BIGINT NOT NULL DEFAULT 0,
     `callback_param`      STRING NOT NULL DEFAULT '',
     `callback_url`        STRING NOT NULL DEFAULT '',
-    `model`               STRING NOT NULL DEFAULT '',
     `union_site`          BIGINT NOT NULL DEFAULT 0,
     `c_aid`               STRING NOT NULL DEFAULT '',
     `c_aid_md5`           STRING NOT NULL DEFAULT '',
     `product_id`          STRING NOT NULL DEFAULT '',
     `outer_id`            STRING NOT NULL DEFAULT '',
-    `status`              INT    NOT NULL DEFAULT 0,
+    `status`              INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `ods_device_user_info`;
 CREATE TABLE `ods_device_user_info`
