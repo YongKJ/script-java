@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,19 +35,67 @@ public class MaxComputeAssignmentService extends BaseService {
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
 //        getAllData();
-        createTestData();
+//        createTestData();
 //        modifyTable();
 //        countTableData();
 //        testSql();
+//        saveData();
+        updateData();
+    }
+
+    private void updateData() {
+        Table reportTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\table-data.json");
+        List<Map<String, Object>> lstData = GenUtil.fromJsonString(content, List.class);
+        for (Map<String, Object> mapData : lstData) {
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(reportTable)
+                            .eq("id", mapData.get("id")));
+
+            LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "updateData", "updateSql", updateSql));
+            System.out.println("===========================================================================================================");
+
+            desDataUpdate(dataphinChunDevDatabase, updateSql);
+        }
+    }
+
+    private void saveData() {
+        Table reportTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
+        Map<String, Map<String, Object>> mapReportData = getMapData(srcDataList(dataphinChunDevDatabase, reportTable));
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : mapReportData.entrySet()) {
+            Double statCost = (Double) map.getValue().get("stat_cost") * 100;
+            Double cpmPlatform = (Double) map.getValue().get("cpm_platform") * 100;
+            Double showCost = (Double) map.getValue().get("show_cost") * 100;
+            Double cpcPlatform = (Double) map.getValue().get("cpc_platform") * 100;
+            Double clickCost = (Double) map.getValue().get("click_cost") * 100;
+            Double attributionCustomerEffectiveCost = (Double) map.getValue().get("attribution_customer_effective_cost") * 100;
+
+            map.getValue().put("stat_cost", statCost);
+            map.getValue().put("cpm_platform", cpmPlatform);
+            map.getValue().put("show_cost", showCost);
+            map.getValue().put("cpc_platform", cpcPlatform);
+            map.getValue().put("click_cost", clickCost);
+            map.getValue().put("attribution_customer_effective_cost", attributionCustomerEffectiveCost);
+
+            lstData.add(map.getValue());
+        }
+
+        if (!lstData.isEmpty()) {
+            FileUtil.write(
+                    "C:\\Users\\Admin\\Desktop\\table-data.json",
+                    GenUtil.toJsonString(lstData)
+            );
+        }
     }
 
     private void countTableData() {
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_event_data");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
         List<Map<String, Object>> lstData = srcSetDataList(dataphinChunDevDatabase,
                 Wrappers.lambdaQuery(testTable)
-                        .eq("event", 8)
-                        .in("promotion_id", "1826230234437730306")
-                        .select("COUNT(*)"));
+//                        .eq("event", 8)
+//                        .in("promotion_id", "1826230234437730306")
+                        .select("COUNT(*) `count`"));
 //        List<Map<String, Object>> lstData = srcSetDataList(dataphinChunDevDatabase,
 //                Wrappers.lambdaQuery(testTable)
 //                        .eq("event", 8)
@@ -100,13 +149,13 @@ public class MaxComputeAssignmentService extends BaseService {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ad_store_tt");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_tencent_advertising_report");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase,
                 Wrappers.lambdaQuery(testTable)
-//                        .eq("cdp_promotion_id", 7342330130100224039L)
-//                        .between("stat_time_day", strToTimestamp("2024-04-01"), strToTimestamp("2024-04-30"))
+                        .eq("cdp_promotion_id", 7350259605072920617L)
+                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-08-28"))
 //                        .in("stat_time_day", strToTimestamp("2024-02-28"), strToTimestamp("2024-02-29"))
-//                        .orderByDesc("stat_time_day")
+                        .orderByDesc("stat_time_day")
         );
 
 //        lstData = lstData.stream().sorted(
