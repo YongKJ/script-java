@@ -21,6 +21,7 @@ public class DataMigration {
     private final Database preDatabase;
     private final Database testDatabase;
     private final Database prodDatabase;
+    private final Database dataphinChunDatabase;
     private final Database dataphinChunDevDatabase;
     private final Map<String, Database> mapDatabase;
     private final TokenManagementService tokenManagementService;
@@ -47,8 +48,10 @@ public class DataMigration {
             this.srcDatabase = null;
             this.desDatabase = null;
             this.mapDatabase = Database.initMaxComputeMapDatabase();
+            this.dataphinChunDatabase = Database.get("dataphin_chun", mapDatabase);
             this.dataphinChunDevDatabase = Database.get("dataphin_chun_dev", mapDatabase);
         } else {
+            this.dataphinChunDatabase = null;
             this.dataphinChunDevDatabase = null;
             this.mapDatabase = Database.initMapDatabase();
             this.devDatabase = Database.get("dev", mapDatabase);
@@ -136,6 +139,10 @@ public class DataMigration {
 
     public Database getDesDatabase() {
         return desDatabase;
+    }
+
+    public Database getDataphinChunDatabase() {
+        return dataphinChunDatabase;
     }
 
     public Database getDataphinChunDevDatabase() {

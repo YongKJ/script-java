@@ -24,6 +24,7 @@ public abstract class BaseService {
     protected final Database prodDatabase;
     protected final List<Database> databases;
     protected Map<String, Database> mapDatabase;
+    protected final Database dataphinChunDatabase;
     protected final Database dataphinChunDevDatabase;
 
     protected BaseService(DataMigration dataMigration) {
@@ -34,6 +35,7 @@ public abstract class BaseService {
         this.preDatabase = dataMigration.getPreDatabase();
         this.testDatabase = dataMigration.getTestDatabase();
         this.prodDatabase = dataMigration.getProdDatabase();
+        this.dataphinChunDatabase = dataMigration.getDataphinChunDatabase();
         this.dataphinChunDevDatabase = dataMigration.getDataphinChunDevDatabase();
         this.databases = Arrays.asList(
                 this.devDatabase, this.testDatabase,

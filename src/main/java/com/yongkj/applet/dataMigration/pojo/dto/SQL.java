@@ -15,7 +15,7 @@ public class SQL {
     private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s %s %s %s";
     private static String FIELD_DELETE_SQL = "ALTER TABLE `%s` DROP COLUMN `%s`";
     private static String DATA_SELECT_SQL = "SELECT %s FROM %s %s";
-    private static String DATA_INSERT_SQL = "INSERT INTO `%s` (%s) VALUE(%s)";
+    private static String DATA_INSERT_SQL = "INSERT INTO `%s` (%s) VALUES (%s)";
     private static String DATA_UPDATE_SQL = "UPDATE `%s` SET %s %s";
     private static String DATA_REMOVE_SQL = "DELETE FROM `%s` WHERE %s";
 

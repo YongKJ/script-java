@@ -78,6 +78,11 @@ max-compute:
     url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun_dev&useProjectTimeZone=true"
     username: ""
     password: ""
+  - name: "dataphin_chun"
+    driver: "com.aliyun.odps.jdbc.OdpsDriver"
+    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun&useProjectTimeZone=true"
+    username: ""
+    password: ""
 
 max-compute-config:
   tables:
@@ -89,6 +94,8 @@ max-compute-config:
     - "ods_ocean_engine_advertising_report"
     - "ods_tencent_advertising"
     - "ods_tencent_advertising_report"
+    - "ods_little_advertising"
+    - "ods_little_advertising_report"
 
 max-compute-assignment:
   enable: true

@@ -16,9 +16,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MaxComputeAssignmentService extends BaseService {
 
@@ -40,7 +39,32 @@ public class MaxComputeAssignmentService extends BaseService {
 //        countTableData();
 //        testSql();
 //        saveData();
-        updateData();
+//        updateData();
+        syncTableData();
+    }
+
+    private void syncTableData() {
+        List<String> tableNames = Arrays.asList(
+//                "ods_ocean_engine_advertising",
+                "ods_ocean_engine_advertising_report",
+//                "ods_tencent_advertising",
+                "ods_tencent_advertising_report",
+//                "ods_little_advertising",
+                "ods_little_advertising_report"
+        );
+
+        for (String tableName : tableNames) {
+            Table table = dataphinChunDevDatabase.getMapTable().get(tableName);
+            List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase, table);
+            for (Map<String, Object> mapData : lstData) {
+                String insertSql = getInsertSQl(mapData, table);
+                LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "syncTableData", "insertSql", insertSql));
+
+                boolean result = JDBCUtil.getResult(dataphinChunDatabase, insertSql);
+                LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "result", result));
+                System.out.println("----------------------------------------------------------------------------------------------------------");
+            }
+        }
     }
 
     private void updateData() {
@@ -137,7 +161,7 @@ public class MaxComputeAssignmentService extends BaseService {
             if (!StringUtils.hasText(createSql)) {
                 continue;
             }
-            boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, createSql);
+            boolean result = JDBCUtil.getResult(dataphinChunDatabase, createSql);
 
             LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "createSql", createSql));
             LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "result", result));
@@ -153,15 +177,15 @@ public class MaxComputeAssignmentService extends BaseService {
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase,
                 Wrappers.lambdaQuery(testTable)
                         .eq("cdp_promotion_id", 7350259605072920617L)
-                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-08-28"))
+                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-09-02"))
 //                        .in("stat_time_day", strToTimestamp("2024-02-28"), strToTimestamp("2024-02-29"))
                         .orderByDesc("stat_time_day")
         );
 
-//        lstData = lstData.stream().sorted(
-//                        Comparator.comparing(
-//                                po -> (Long) ((Map<String, Object>) po).get("stat_time_day")).reversed())
-//                .collect(Collectors.toList());
+        lstData = lstData.stream().sorted(
+                        Comparator.comparing(
+                                po -> (Long) ((Map<String, Object>) po).get("stat_time_day")).reversed())
+                .collect(Collectors.toList());
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
     }
