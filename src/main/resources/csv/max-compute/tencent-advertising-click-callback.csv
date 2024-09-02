@@ -24,11 +24,11 @@ deeplink_url,deeplinkUrl,__DEEPLINK_URL__,应用直达链接（Android）
 universal_link,universalLink,__UNIVERSAL_LINK__,应用直达链接（iOS）
 page_url,pageUrl,__PAGE_URL__,落地页地址
 device_os_type,deviceOsType,__DEVICE_OS_TYPE__,设备类型
-process_time,processTime,__PROCESS_TIME__,请求时间
+process_time,process_time,__PROCESS_TIME__,请求时间
 promoted_object_id,promotedObjectId,__PROMOTED_OBJECT_ID__,应用id
 promoted_object_type,promotedObjectType,__PROMOTED_OBJECT_TYPE__,推广类型
 request_id,requestId,__REQUEST_ID__,请求id
-impression_id,impressionId,__IMPRESSION_ID__,设备id（imei或idfa的加密值）
+impression_id,impressionId,__IMPRESSION_ID__,曝光id
 muid,muid,__MUID__,设备id（imei或idfa的加密值）
 hash_android_id,hashAndroidId,__HASH_ANDROID_ID__,安卓id做md5加密后小写
 ip,ip,__IP__,媒体投放系统获取的用户终端的公共IPV4地址
@@ -37,7 +37,7 @@ callback,callback,__CALLBACK__,上报信息回传接口的 url
 encrypted_position_id,encryptedPositionId,__ENCRYPTED_POSITION_ID__,联盟广告位id
 ipv6,ipv6,__IPV6__,媒体投放系统获取的用户终端的公共IPV6地址
 hash_oaid,hashOaid,__HASH_OAID__,Android Q 及更高版本的设备号，64位及以下，取原值后做md5加密
-caid,caid,__QAID_CAA__,URL Encode后的JSON数组
+qaid_caid,qaidCaid,__QAID_CAA__,URL Encode后的JSON数组
 adgroup_name,adgroupName,__ADGROUP_NAME__,广告组名称
 site_set_name,siteSetName,__SITE_SET_NAME__,广告版位
 model,model,__MODEL__,机型
