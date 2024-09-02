@@ -37,7 +37,7 @@ callback,callback,__CALLBACK__,上报信息回传接口的 url
 encrypted_position_id,encryptedPositionId,__ENCRYPTED_POSITION_ID__,联盟广告位id
 ipv6,ipv6,__IPV6__,媒体投放系统获取的用户终端的公共IPV6地址
 hash_oaid,hashOaid,__HASH_OAID__,Android Q 及更高版本的设备号，64位及以下，取原值后做md5加密
-qaid_caid,qaidCaid,__QAID_CAA__,URL Encode后的JSON数组
+q_aid_c_aid,qAidCAid,__QAID_CAA__,URL Encode后的JSON数组
 adgroup_name,adgroupName,__ADGROUP_NAME__,广告组名称
 site_set_name,siteSetName,__SITE_SET_NAME__,广告版位
 model,model,__MODEL__,机型

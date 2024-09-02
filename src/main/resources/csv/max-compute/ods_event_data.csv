@@ -94,7 +94,7 @@ processTime,请求时间,,,process_time,请求时间
 promotedObjectId,应用id,,,promotedObjectId,应用id
 impressionId,曝光id,,,impressionId,曝光id
 encryptedPositionId,联盟广告位id,,,encryptedPositionId,联盟广告位id
-qaidCaid,URL Encode后的JSON数组,,,qaidCaid,URL Encode后的JSON数组
+qAidCAid,URL Encode后的JSON数组,,,qaidCaid,URL Encode后的JSON数组
 ipMd5,公共IPV4地址MD5,,,ipMd5,公共IPV4地址MD5
 ipv6Md5,公共IPV6地址MD5,,,ipv6Md5,公共IPV6地址MD5
 channelPackageId,渠道包id,,,channelPackageId,渠道包id
