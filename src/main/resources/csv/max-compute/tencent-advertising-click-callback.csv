@@ -1,0 +1,52 @@
+field,fieldHump,param,desc
+click_id,clickId,__CLICK_ID__,点击id
+click_time,clickTime,__CLICK_TIME__,点击时间
+impression_time,impressionTime,__IMPRESSION_TIME__,曝光时间
+adgroup_id,adgroupId,__ADGROUP_ID__,广告组id（实际为广告id）
+dynamic_creative_id,dynamicCreativeId,__DYNAMIC_CREATIVE_ID__,创意 ID
+dynamic_creative_name,dynamicCreativeName,__DYNAMIC_CREATIVE_NAME__,创意名称
+creative_components_info,creativeComponentsInfo,__CREATIVE_COMPONENTS_INFO__,创意组件信息
+element_info,elementInfo,__ELEMENT_INFO__,素材信息
+marketing_goal,marketingGoal,__MARKETING_GOAL__,一级营销目的
+marketing_sub_goal,marketingSubGoal,__MARKETING_SUB_GOAL__,二级营销目的
+marketing_target_id,marketingTargetId,__MARKETING_TARGET_ID__,营销对象
+marketing_carrier_id,marketingCarrierId,__MARKETING_CARRIER_ID__,一级营销载体
+marketing_sub_carrier_id,marketingSubCarrierId,__MARKETING_SUB_CARRIER_ID__,二级营销载体
+marketing_asset_id,marketingAssetId,__MARKETING_ASSET_ID__,营销资产ID
+material_package_id,materialPackageId,__MATERIAL_PACKAGE_ID__,素材标签ID
+ad_platform_type,adPlatformType,__AD_PLATFORM_TYPE__,广告投放平台
+ad_type,adType,__AD_TYPE__,广告类型
+account_id,accountId,__ACCOUNT_ID__,广告主id
+agency_id,agencyId,__AGENCY_ID__,代理商id
+click_sku_id,clickSkuId,__CLICK_SKU_ID__,点击sku
+billing_event,billingEvent,__BILLING_EVENT__,计费类型
+deeplink_url,deeplinkUrl,__DEEPLINK_URL__,应用直达链接（Android）
+universal_link,universalLink,__UNIVERSAL_LINK__,应用直达链接（iOS）
+page_url,pageUrl,__PAGE_URL__,落地页地址
+device_os_type,deviceOsType,__DEVICE_OS_TYPE__,设备类型
+process_time,processTime,__PROCESS_TIME__,请求时间
+promoted_object_id,promotedObjectId,__PROMOTED_OBJECT_ID__,应用id
+promoted_object_type,promotedObjectType,__PROMOTED_OBJECT_TYPE__,推广类型
+request_id,requestId,__REQUEST_ID__,请求id
+impression_id,impressionId,__IMPRESSION_ID__,设备id（imei或idfa的加密值）
+muid,muid,__MUID__,设备id（imei或idfa的加密值）
+hash_android_id,hashAndroidId,__HASH_ANDROID_ID__,安卓id做md5加密后小写
+ip,ip,__IP__,媒体投放系统获取的用户终端的公共IPV4地址
+user_agent,userAgent,__USER_AGENT__,用户代理（user_agent）
+callback,callback,__CALLBACK__,上报信息回传接口的 url
+encrypted_position_id,encryptedPositionId,__ENCRYPTED_POSITION_ID__,联盟广告位id
+ipv6,ipv6,__IPV6__,媒体投放系统获取的用户终端的公共IPV6地址
+hash_oaid,hashOaid,__HASH_OAID__,Android Q 及更高版本的设备号，64位及以下，取原值后做md5加密
+caid,caid,__QAID_CAA__,URL Encode后的JSON数组
+adgroup_name,adgroupName,__ADGROUP_NAME__,广告组名称
+site_set_name,siteSetName,__SITE_SET_NAME__,广告版位
+model,model,__MODEL__,机型
+wechat_openid,wechatOpenid,__WECHAT_OPEN_ID__,小程序OpenID
+ip_md5,ipMd5,__IP_MD5__,公共IPV4地址MD5
+ipv6_md5,ipv6Md5,__IPV6_MD5__,公共IPV6地址MD5
+caid,caid,__CAID__,URL Encode后的JSON数组
+channel_package_id,channelPackageId,__CHANNEL_PACKAGE_ID__,渠道包id
+device_os_version,deviceOsVersion,__DEVICE_OS_VERSION__,操作系统版本
+act_type,actType,__ACT_TYPE__,行为类型
+act_time,actTime,__ACT_TIME__,行为时间
+event_type,eventType,,事件类型

@@ -650,7 +650,8 @@ public class Demo {
     }
 
     private void test39() {
-        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\ocean-engine-callback.csv";
+//        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\ocean-engine-callback.csv";
+        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\tencent-advertising-click-callback.csv";
         List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
         List<Map<String, String>> datas = new ArrayList<>();
         for (Map<String, String> mapData : lstData) {
@@ -661,6 +662,9 @@ public class Demo {
             String fieldHump = field.replace("_", "-");
             fieldHump = GenUtil.toHump(fieldHump);
             fieldHump = fieldHump.substring(0, 1).toLowerCase() + fieldHump.substring(1);
+            if (StringUtils.hasText(param) && !param.startsWith("__") && !param.endsWith("__")) {
+                param = String.format("__%s__", param);
+            }
 
             Map<String, String> tempMapData = new LinkedHashMap<>();
             tempMapData.put("field", field);
@@ -675,8 +679,8 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-//        demo.test39();
-        demo.test38();
+        demo.test39();
+//        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();

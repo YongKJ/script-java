@@ -1,48 +1,48 @@
 field,fieldHump,param,desc
-promotion_id,promotionId,PROMOTION_ID,广告ID
-project_id,projectId,PROJECT_ID,项目ID
-promotion_name,promotionName,PROMOTION_NAME,广告名称
-project_name,projectName,PROJECT_NAME,项目名称
-mid1,mid1,MID1,图片ID
-mid2,mid2,MID2,标题ID
-mid3,mid3,MID3,视频ID
-mid4,mid4,MID4,搭配试玩ID
-mid5,mid5,MID5,落地页ID
-mid6,mid6,MID6,安卓下载详情页ID
-aid,aid,AID,广告计划id
-aid_name,aidName,AID_NAME,广告计划名称
-cid,cid,CID,广告创意 id
-cid_name,cidName,CID_NAME,广告创意名称
-campaign_id,campaignId,CAMPAIGN_ID,广告组 id
-campaign_name,campaignName,CAMPAIGN_NAME,广告组名称
-c_type,cType,CTYPE,创意样式
-advertiser_id,advertiserId,ADVERTISER_ID,广告主id
-c_site,cSite,CSITE,广告投放位置
-convert_id,convertId,CONVERT_ID,转化id
-request_id,requestId,REQUEST_ID,请求下发的id
-track_id,trackId,TRACK_ID,请求下发的id&创意id的md5
-sl,sl,SL,这次请求的语言
-imei,imei,IMEI,安卓的设备 ID 的 md5
-idfa,idfa,IDFA,IOS 6+的设备id
-idfa_md5,idfaMd5,IDFA_MD5,IOS 6+的设备id的md5
-android_id,androidId,ANDROIDID,安卓id原值的md5
-o_aid,oAid,OAID,Android Q及更高版本的设备号
-o_aid_md5,oAidMd5,OAID_MD5,Android Q及更高版本的设备号的md5
-os,os,OS,操作系统平台
-mac,mac,MAC,移动设备mac地址
-mac1,mac1,MAC1,移动设备 mac 地址
-ipv4,ipv4,IPV4,IP 地址
-ipv6,ipv6,IPV6,IP 地址
-ip,ip,IP,IP 地址
-ua,ua,UA,用户代理
-geo,geo,GEO,位置信息
-ts,ts,TS,客户端发生广告点击事件的时间
-callback_param,callbackParam,CALLBACK_PARAM,回调参数
-callback_url,callbackUrl,CALLBACK_URL,回传接口的url
-model,model,MODEL,手机型号
-union_site,unionSite,UNION_SITE,对外广告位编码
-c_aid,cAid,CAID,互联网广告标识
-c_aid_md5,cAidMd5,CAID_MD5,广告标识
-product_id,productId,PRODUCTID,商品id
-outer_id,outerId,OUTERID,商品id
+promotion_id,promotionId,__PROMOTION_ID__,广告ID
+project_id,projectId,__PROJECT_ID__,项目ID
+promotion_name,promotionName,__PROMOTION_NAME__,广告名称
+project_name,projectName,__PROJECT_NAME__,项目名称
+mid1,mid1,__MID1__,图片ID
+mid2,mid2,__MID2__,标题ID
+mid3,mid3,__MID3__,视频ID
+mid4,mid4,__MID4__,搭配试玩ID
+mid5,mid5,__MID5__,落地页ID
+mid6,mid6,__MID6__,安卓下载详情页ID
+aid,aid,__AID__,广告计划id
+aid_name,aidName,__AID_NAME__,广告计划名称
+cid,cid,__CID__,广告创意 id
+cid_name,cidName,__CID_NAME__,广告创意名称
+campaign_id,campaignId,__CAMPAIGN_ID__,广告组 id
+campaign_name,campaignName,__CAMPAIGN_NAME__,广告组名称
+c_type,cType,__CTYPE__,创意样式
+advertiser_id,advertiserId,__ADVERTISER_ID__,广告主id
+c_site,cSite,__CSITE__,广告投放位置
+convert_id,convertId,__CONVERT_ID__,转化id
+request_id,requestId,__REQUEST_ID__,请求下发的id
+track_id,trackId,__TRACK_ID__,请求下发的id&创意id的md5
+sl,sl,__SL__,这次请求的语言
+imei,imei,__IMEI__,安卓的设备 ID 的 md5
+idfa,idfa,__IDFA__,IOS 6+的设备id
+idfa_md5,idfaMd5,__IDFA_MD5__,IOS 6+的设备id的md5
+android_id,androidId,__ANDROIDID__,安卓id原值的md5
+o_aid,oAid,__OAID__,Android Q及更高版本的设备号
+o_aid_md5,oAidMd5,__OAID_MD5__,Android Q及更高版本的设备号的md5
+os,os,__OS__,操作系统平台
+mac,mac,__MAC__,移动设备mac地址
+mac1,mac1,__MAC1__,移动设备 mac 地址
+ipv4,ipv4,__IPV4__,IP 地址
+ipv6,ipv6,__IPV6__,IP 地址
+ip,ip,__IP__,IP 地址
+ua,ua,__UA__,用户代理
+geo,geo,__GEO__,位置信息
+ts,ts,__TS__,客户端发生广告点击事件的时间
+callback_param,callbackParam,__CALLBACK_PARAM__,回调参数
+callback_url,callbackUrl,__CALLBACK_URL__,回传接口的url
+model,model,__MODEL__,手机型号
+union_site,unionSite,__UNION_SITE__,对外广告位编码
+c_aid,cAid,__CAID__,互联网广告标识
+c_aid_md5,cAidMd5,__CAID_MD5__,广告标识
+product_id,productId,__PRODUCTID__,商品id
+outer_id,outerId,__OUTERID__,商品id
 event_type,eventType,,事件类型
