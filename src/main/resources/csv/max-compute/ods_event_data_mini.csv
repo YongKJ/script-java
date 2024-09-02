@@ -1,0 +1,23 @@
+field,desc,ocean-field,ocean-desc,tencent-field,tencent-desc
+identityImei,国际移动设备设备码,imei,安卓的设备 ID 的 md5,muid,设备id（imei或idfa的加密值）
+identityOaid,匿名设备标识符,oAid,Android Q及更高版本的设备号,,
+wxOpenId,微信应用用户OpenID,,,wechatOpenid,小程序OpenID
+identityAndroidId,ANDROID_ID,androidId,安卓id原值的md5,hashAndroidId,安卓id做md5加密后小写
+identityMac,mac地址,mac,移动设备mac地址,,
+identityIdfa,iOS广告标识符,idfa,IOS 6+的设备id,,
+identityUa,ua信息,ua,用户代理,userAgent,用户代理（user_agent）
+ip,IP,ip,IP 地址,ip,媒体投放系统获取的用户终端的公共IPV4地址
+model,设备型号,model,手机型号,model,机型
+os,操作系统,os,操作系统平台,deviceOsType,设备类型
+osVersion,操作系统版本,,,deviceOsVersion,操作系统版本
+promotionMethod,推广方式,,,promotedObjectType,推广类型
+adId,广告ID,promotionId,广告ID,adgroupId,广告组id（实际为广告id）
+adName,广告名称,promotionName,广告名称,adgroupName,广告组名称
+cid,广告创意 id,,,dynamicCreativeId,创意 ID
+cidName,广告创意名称,,,dynamicCreativeName,创意名称
+advertiserId,广告主id,,,accountId,广告主id
+cSite,广告投放位置,,,siteSetName,广告版位
+oAidMd5,Android Q及更高版本的设备号的md5,,,hashOaid,Android Q 及更高版本的设备号，64位及以下，取原值后做md5加密
+ipv6,IP 地址,,,ipv6,媒体投放系统获取的用户终端的公共IPV6地址
+callbackUrl,回传接口的url,,,callback,上报信息回传接口的 url
+cAid,互联网广告标识,,,caid,URL Encode后的JSON数组
