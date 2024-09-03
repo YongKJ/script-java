@@ -699,10 +699,32 @@ public class Demo {
         return stringBuilder.toString();
     }
 
+    private void test41() {
+        String csvPath = "/csv/max-compute/tencent-advertising-click-callback.csv";
+        List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
+        Map<String, Object> mapParams = new LinkedHashMap<>();
+        mapParams.put("eventType", "");
+        for (Map<String, String> mapData : lstData) {
+            String fieldHump = mapData.get("fieldHump");
+            String value = mapData.get("value");
+            mapParams.put(fieldHump, value);
+        }
+
+        String url = "https://admin.yongkj.cn/api/warehouse/v1/bc/public/adStore/tt/tencent/listener";
+        List<String> eventTypes = Arrays.asList("active", "in_app_order", "active_register");
+        for (String eventType : eventTypes) {
+            mapParams.put("eventType", eventType);
+
+            String tempUrl = ApiUtil.getUrl(url, mapParams);
+            LogUtil.loggerLine(Log.of("Demo", "test38", "tempUrl", tempUrl));
+            System.out.println("-------------------------------------------------------------------------------------------");
+        }
+    }
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test40();
+        demo.test41();
+//        demo.test40();
 //        demo.test39();
 //        demo.test38();
 //        demo.test37();
