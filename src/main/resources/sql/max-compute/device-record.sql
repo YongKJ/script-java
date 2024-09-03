@@ -93,7 +93,7 @@ CREATE TABLE `ods_event_data`
     `billing_event`            INT    NOT NULL DEFAULT 0,
     `deeplink_url`             STRING NOT NULL DEFAULT '',
     `universal_link`           STRING NOT NULL DEFAULT '',
-    `page_url`                 INT    NOT NULL DEFAULT 0,
+    `page_url`                 STRING NOT NULL DEFAULT '',
     `process_time`             BIGINT NOT NULL DEFAULT 0,
     `promoted_object_id`       STRING NOT NULL DEFAULT '',
     `impression_id`            STRING NOT NULL DEFAULT '',
