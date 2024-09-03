@@ -677,9 +677,33 @@ public class Demo {
         CsvUtil.printRecords(csvPath, datas, "field", "fieldHump", "param", "desc");
     }
 
+    private void test40() {
+        Long ipv4 = 730583415L;
+        String ipStr = longToIpv4(ipv4);
+        LogUtil.loggerLine(Log.of("Demo", "test40", "ipStr", ipStr));
+    }
+
+    /**
+     * 长整型数字转为ip地址（ipv4）
+     *
+     * @param ipv4Long
+     * @return
+     */
+    public static String longToIpv4(long ipv4Long) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(ipv4Long >>> 24).append(".")
+                .append((ipv4Long >>> 16) & 0xFF).append(".")
+                .append((ipv4Long >>> 8) & 0xFF).append(".")
+                .append(ipv4Long & 0xFF);
+
+        return stringBuilder.toString();
+    }
+
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test39();
+        demo.test40();
+//        demo.test39();
 //        demo.test38();
 //        demo.test37();
 //        demo.test36();
