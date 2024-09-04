@@ -626,12 +626,24 @@ public class Demo {
 
     private void test38() {
         List<String> filterParams = Arrays.asList(
+                "__SITE_SET_NAME__",
+                "__DEVICE_OS_VERSION__",
+                "__HASH_OAID__",
+                "__DEEPLINK_URL__",
+                "__MUID__",
+                "__MODEL__",
+                "__HASH_ANDROID_ID__",
+                "__CHANNEL_PACKAGE_ID__",
                 "__UNIVERSAL_LINK__",
                 "__CAID__",
                 "__ACT_TIME__",
-                "__WECHAT_OPEN_ID__",
                 "__ACT_TYPE__",
-                "__QAID_CAA__"
+                "__QAID_CAA__",
+                "__IP_MD5__",
+                "__USER_AGENT__",
+                "__IPV6__",
+                "__IPV6_MD5__",
+                "__IP__"
         );
 //        String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
         String csvPath = "/csv/max-compute/tencent-advertising-click-callback.csv";
