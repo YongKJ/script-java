@@ -103,7 +103,8 @@ CREATE TABLE `ods_event_data`
     `ipv6_md5`                 STRING NOT NULL DEFAULT '',
     `channel_package_id`       STRING NOT NULL DEFAULT '',
     `act_type`                 STRING NOT NULL DEFAULT '',
-    `act_time`                 BIGINT NOT NULL DEFAULT 0
+    `act_time`                 BIGINT NOT NULL DEFAULT 0,
+    `status`                   INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `ods_device_user_info`;
 CREATE TABLE `ods_device_user_info`

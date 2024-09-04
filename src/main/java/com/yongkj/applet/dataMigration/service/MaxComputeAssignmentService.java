@@ -34,8 +34,8 @@ public class MaxComputeAssignmentService extends BaseService {
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.dataphinChunDevDatabase.getMapTable().size()", this.dataphinChunDevDatabase.getMapTable().size()));
 
 //        getAllData();
-        createTestData();
-//        modifyTable();
+//        createTestData();
+        modifyTable();
 //        countTableData();
 //        testSql();
 //        saveData();
@@ -132,10 +132,11 @@ public class MaxComputeAssignmentService extends BaseService {
 
     private void modifyTable() {
 //        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
-        String sql = "ALTER TABLE `ods_event_data` ADD COLUMN `item_id` BIGINT";
+        String sql = "ALTER TABLE `ods_event_data` ADD COLUMN `status` INT";
 //        String sql = "ALTER TABLE `test_odps` MODIFY COLUMN `data` INT";
 //        String sql = "ALTER TABLE `test_odps` DROP COLUMN `data`";
         boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
+//        boolean result = JDBCUtil.getResult(dataphinChunDatabase, sql);
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
     }
 
@@ -161,8 +162,8 @@ public class MaxComputeAssignmentService extends BaseService {
             if (!StringUtils.hasText(createSql)) {
                 continue;
             }
-            boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, createSql);
-//            boolean result = JDBCUtil.getResult(dataphinChunDatabase, createSql);
+//            boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, createSql);
+            boolean result = JDBCUtil.getResult(dataphinChunDatabase, createSql);
 
             LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "createSql", createSql));
             LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "createTestData", "result", result));
