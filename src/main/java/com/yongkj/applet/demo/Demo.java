@@ -625,20 +625,32 @@ public class Demo {
     }
 
     private void test38() {
-        String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
+        List<String> filterParams = Arrays.asList(
+                "__UNIVERSAL_LINK__",
+                "__CAID__",
+                "__ACT_TIME__",
+                "__WECHAT_OPEN_ID__",
+                "__ACT_TYPE__",
+                "__QAID_CAA__"
+        );
+//        String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
+        String csvPath = "/csv/max-compute/tencent-advertising-click-callback.csv";
         List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
         Map<String, Object> mapParams = new LinkedHashMap<>();
         mapParams.put("eventType", "");
         for (Map<String, String> mapData : lstData) {
             String fieldHump = mapData.get("fieldHump");
             String param = mapData.get("param");
-            if (StringUtils.hasText(param)) {
+            if (StringUtils.hasText(param) && !(param.startsWith("__") && param.endsWith("__"))) {
                 param = String.format("__%s__", param);
+            }
+            if (filterParams.contains(param)) {
+                continue;
             }
             mapParams.put(fieldHump, param);
         }
 
-        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/listener";
+        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/tencent/listener";
         List<String> eventTypes = Arrays.asList("active", "in_app_order", "active_register");
         for (String eventType : eventTypes) {
             mapParams.put("eventType", eventType);
@@ -723,10 +735,10 @@ public class Demo {
 
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test41();
+//        demo.test41();
 //        demo.test40();
 //        demo.test39();
-//        demo.test38();
+        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();
