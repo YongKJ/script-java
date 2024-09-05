@@ -104,7 +104,25 @@ CREATE TABLE `ods_event_data`
     `channel_package_id`       STRING NOT NULL DEFAULT '',
     `act_type`                 STRING NOT NULL DEFAULT '',
     `act_time`                 BIGINT NOT NULL DEFAULT 0,
-    `status`                   INT    NOT NULL DEFAULT 0
+    `status`                   INT    NOT NULL DEFAULT 0,
+    `imei_md5`                 STRING NOT NULL DEFAULT '',
+    `oaid1`                    STRING NOT NULL DEFAULT '',
+    `idfa`                     STRING NOT NULL DEFAULT '',
+    `idfa1`                    STRING NOT NULL DEFAULT '',
+    `android_id`               STRING NOT NULL DEFAULT '',
+    `android_id_md5`           STRING NOT NULL DEFAULT '',
+    `ua1`                      STRING NOT NULL DEFAULT '',
+    `readds`                   STRING NOT NULL DEFAULT '',
+    `custid1`                  STRING NOT NULL DEFAULT '',
+    `timestamp`                BIGINT NOT NULL DEFAULT 0,
+    `app_key`                  STRING NOT NULL DEFAULT '',
+    `app_name`                 STRING NOT NULL DEFAULT '',
+    `unit_id`                  BIGINT NOT NULL DEFAULT 0,
+    `creativity_id`            BIGINT NOT NULL DEFAULT 0,
+    `content`                  STRING NOT NULL DEFAULT '',
+    `red_id`                   STRING NOT NULL DEFAULT '',
+    `paid`                     STRING NOT NULL DEFAULT '',
+    `placement`                INT    NOT NULL DEFAULT 0
 ) tblproperties("transactional"="true");
 DROP TABLE IF EXISTS `ods_device_user_info`;
 CREATE TABLE `ods_device_user_info`

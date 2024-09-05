@@ -1,0 +1,34 @@
+field,fieldHump,param,desc
+imei,imei,__IMEI__,imei md5 小写
+imei_md5,imeiMd5,__IMEI_MD5__,imei md5 大写
+oaid,oaid,__OAID__,oaid md5 小写
+o_aid_md5,oAidMd5,__OAID_MD5__,oaid md5 大写
+oaid1,oaid1,__OAID1__,oaid加密值
+idfa,idfa,__IDFA__,iOS IDFA 加密值 小写
+idfa1,idfa1,__IDFA1__,大写idfa加密值
+idfa_md5,idfaMd5,__IDFA_MD5__,大写iOS IDFA md5 大写
+android_id,androidId,__ANDROIDID__,Android ID md5 小写
+android_id_md5,androidIdMd5,__ANDROIDID_MD5__,大写Android ID md5 大写
+idfa_android_id,idfaAndroidId,__IDFA_ANDROIDID__,iOS -> idfa，Android → AndroidIdMd5
+os,os,__OS__,系统
+ip,ip,__IP__,ip
+ts,ts,__TS__,时间戳 秒
+ua,ua,__UA__,ua
+ua1,ua1,__UA1__,浏览器UA
+request_id,requestId,__REQUESTID__,uuid 随机
+readds,readds,__REDADS__,uuid 随机
+custid1,custid1,__CUSTID1__,uuid 随机
+id,id,__ID__,uuid 随机
+timestamp,timestamp,__TIMESTAMP__,时间戳 秒
+app_key,appKey,__APP_KEY__,应用Key
+app_name,appName,__APP_NAME__,应用名称
+unit_id,unitId,__UNIT_ID__,单元id
+campaign_id,campaignId,__CAMPAIGN_ID__,计划id
+creativity_id,creativityId,__CREATIVITY_ID__,创意id
+content,content,__CONTENT__,周围笔记链接（欧莱雅要求品牌安全性）
+red_id,redId,__RED_ID__,小红书userid两次MD5加密值
+c_aid,cAid,__CAID__,CAID的urlEncode值
+c_aid_md5,cAidMd5,__CAID_MD5__,CAID的md5加密后的urlEncode值
+paid,paid,__PAID__,用于开发者归因，可解决iOS14.5后无法默认采集IDFA问题，类似CAID
+placement,placement,__PLACEMENT__,广告类型（投放场景）
+click_id,clickId,__CLICK_ID__,广告类型（投放场景）
