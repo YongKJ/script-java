@@ -675,7 +675,8 @@ public class Demo {
 
     private void test39() {
 //        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\ocean-engine-callback.csv";
-        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\tencent-advertising-click-callback.csv";
+//        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\tencent-advertising-click-callback.csv";
+        String csvPath = "D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\little-advertising-callback.csv";
         List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
         List<Map<String, String>> datas = new ArrayList<>();
         for (Map<String, String> mapData : lstData) {
@@ -749,8 +750,8 @@ public class Demo {
         Demo demo = new Demo();
 //        demo.test41();
 //        demo.test40();
-//        demo.test39();
-        demo.test38();
+        demo.test39();
+//        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();
