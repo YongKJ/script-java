@@ -17,7 +17,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MaxComputeAssignmentService extends BaseService {
 
@@ -132,12 +131,45 @@ public class MaxComputeAssignmentService extends BaseService {
 
     private void modifyTable() {
 //        String sql = "ALTER TABLE `test_odps` ADD COLUMN `data` STRING";
-        String sql = "ALTER TABLE `ods_event_data` ADD COLUMN `status` INT";
+//        String sql = "ALTER TABLE `ods_event_data` ADD COLUMN `status` INT";
 //        String sql = "ALTER TABLE `test_odps` MODIFY COLUMN `data` INT";
 //        String sql = "ALTER TABLE `test_odps` DROP COLUMN `data`";
-        boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
+//        boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
 //        boolean result = JDBCUtil.getResult(dataphinChunDatabase, sql);
-        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
+//        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
+
+        Map<String, String> mapField = getMapField();
+        for (Map.Entry<String, String> map : mapField.entrySet()) {
+            String sql = String.format("ALTER TABLE `ods_event_data` ADD COLUMN `%s` %s", map.getKey(), map.getValue());
+            LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "sql", sql));
+
+            boolean result = JDBCUtil.getResult(dataphinChunDevDatabase, sql);
+            LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "modifyTable", "result", result));
+            System.out.println("--------------------------------------------------------------------------------------------------------");
+        }
+    }
+
+    private Map<String, String> getMapField() {
+        Map<String, String> mapField = new HashMap<>();
+        mapField.put("imei_md5", "STRING");
+        mapField.put("oaid1", "STRING");
+        mapField.put("idfa", "STRING");
+        mapField.put("idfa1", "STRING");
+        mapField.put("android_id", "STRING");
+        mapField.put("android_id_md5", "STRING");
+        mapField.put("ua1", "STRING");
+        mapField.put("readds", "STRING");
+        mapField.put("custid1", "STRING");
+        mapField.put("timestamp", "BIGINT");
+        mapField.put("app_key", "STRING");
+        mapField.put("app_name", "STRING");
+        mapField.put("unit_id", "BIGINT");
+        mapField.put("creativity_id", "BIGINT");
+        mapField.put("content", "STRING");
+        mapField.put("red_id", "STRING");
+        mapField.put("paid", "STRING");
+        mapField.put("placement", "INT");
+        return mapField;
     }
 
     private void createTestData() {
@@ -175,19 +207,22 @@ public class MaxComputeAssignmentService extends BaseService {
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ad_store_tt");
 //        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_test_odps");
-        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_ocean_engine_advertising_report");
+        Table testTable = dataphinChunDevDatabase.getMapTable().get("ods_event_data");
         List<Map<String, Object>> lstData = srcDataList(dataphinChunDevDatabase,
                 Wrappers.lambdaQuery(testTable)
-                        .eq("cdp_promotion_id", 7350259605072920617L)
-                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-09-02"))
+//                        .eq("cdp_promotion_id", 7350259605072920617L)
+//                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-09-02"))
+//                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-09-02"))
 //                        .in("stat_time_day", strToTimestamp("2024-02-28"), strToTimestamp("2024-02-29"))
-                        .orderByDesc("stat_time_day")
+//                        .orderByDesc("stat_time_day")
         );
 
-        lstData = lstData.stream().sorted(
-                        Comparator.comparing(
-                                po -> (Long) ((Map<String, Object>) po).get("stat_time_day")).reversed())
-                .collect(Collectors.toList());
+//        lstData = lstData.stream().sorted(
+//                        Comparator.comparing(
+//                                po -> (Long) ((Map<String, Object>) po).get("stat_time_day")).reversed())
+//                .collect(Collectors.toList());
+
+        Collections.reverse(lstData);
 
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getAllData", "lstData.size()", lstData.size()));
     }
