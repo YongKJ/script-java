@@ -625,31 +625,68 @@ public class Demo {
     }
 
     private void test38() {
+//        List<String> filterParams = Arrays.asList(
+//                "__SITE_SET_NAME__",
+//                "__DEVICE_OS_VERSION__",
+//                "__HASH_OAID__",
+//                "__DEEPLINK_URL__",
+//                "__MUID__",
+//                "__MODEL__",
+//                "__HASH_ANDROID_ID__",
+//                "__CHANNEL_PACKAGE_ID__",
+//                "__UNIVERSAL_LINK__",
+//                "__CAID__",
+//                "__ACT_TIME__",
+//                "__ACT_TYPE__",
+//                "__QAID_CAA__",
+//                "__IP_MD5__",
+//                "__USER_AGENT__",
+//                "__IPV6__",
+//                "__IPV6_MD5__",
+//                "__IP__"
+//        );
         List<String> filterParams = Arrays.asList(
-                "__SITE_SET_NAME__",
-                "__DEVICE_OS_VERSION__",
-                "__HASH_OAID__",
-                "__DEEPLINK_URL__",
-                "__MUID__",
-                "__MODEL__",
-                "__HASH_ANDROID_ID__",
-                "__CHANNEL_PACKAGE_ID__",
-                "__UNIVERSAL_LINK__",
+                "__IMEI__",
+                "__IMEI_MD5__",
+//                "__OAID__",
+                "__OAID_MD5__",
+                "__OAID1__",
+                "__IDFA__",
+                "__IDFA1__",
+                "__IDFA_MD5__",
+                "__ANDROIDID__",
+                "__ANDROIDID_MD5__",
+                "__IDFA_ANDROIDID__",
+//                "__OS__",
+//                "__IP__",
+//                "__MAC__",
+//                "__TS__",
+//                "__UA__",
+//                "__UA1__",
+//                "__REQUESTID__",
+//                "__REDADS__",
+//                "__CUSTID1__",
+//                "__ID__",
+//                "__TIMESTAMP__",
+//                "__APP_KEY__",
+//                "__APP_NAME__",
+//                "__UNIT_ID__",
+//                "__CAMPAIGN_ID__",
+//                "__CREATIVITY_ID__",
+//                "__CONTENT__",
+                "__RED_ID__",
                 "__CAID__",
-                "__ACT_TIME__",
-                "__ACT_TYPE__",
-                "__QAID_CAA__",
-                "__IP_MD5__",
-                "__USER_AGENT__",
-                "__IPV6__",
-                "__IPV6_MD5__",
-                "__IP__"
+                "__CAID_MD5__"
+//                "__PAID__",
+//                "__PLACEMENT__"
+//                "__CLICK_ID__"
         );
 //        String csvPath = "/csv/max-compute/ocean-engine-callback.csv";
-        String csvPath = "/csv/max-compute/tencent-advertising-click-callback.csv";
+//        String csvPath = "/csv/max-compute/tencent-advertising-click-callback.csv";
+        String csvPath = "/csv/max-compute/little-advertising-callback.csv";
         List<Map<String, String>> lstData = CsvUtil.toMap(csvPath);
         Map<String, Object> mapParams = new LinkedHashMap<>();
-        mapParams.put("eventType", "");
+        mapParams.put("event", "");
         for (Map<String, String> mapData : lstData) {
             String fieldHump = mapData.get("fieldHump");
             String param = mapData.get("param");
@@ -662,10 +699,11 @@ public class Demo {
             mapParams.put(fieldHump, param);
         }
 
-        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/tencent/listener";
-        List<String> eventTypes = Arrays.asList("active", "in_app_order", "active_register");
-        for (String eventType : eventTypes) {
-            mapParams.put("eventType", eventType);
+//        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/tencent/listener";
+        String url = "https://test.baochuncare.com/api/warehouse/v1/bc/public/adStore/tt/little/listener";
+        List<Integer> events = Arrays.asList(1, 2);
+        for (Integer event : events) {
+            mapParams.put("event", event);
 
             String tempUrl = ApiUtil.getUrl(url, mapParams);
             LogUtil.loggerLine(Log.of("Demo", "test38", "tempUrl", tempUrl));
@@ -750,8 +788,8 @@ public class Demo {
         Demo demo = new Demo();
 //        demo.test41();
 //        demo.test40();
-        demo.test39();
-//        demo.test38();
+//        demo.test39();
+        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();
