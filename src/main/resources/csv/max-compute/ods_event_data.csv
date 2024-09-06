@@ -11,7 +11,7 @@ loginId,登录ID,,,,,,
 wxOpenId,微信应用用户OpenID,,,wechatOpenid,小程序OpenID,,
 wxUnionId,微信应用用户UnionId,,,,,,
 identityAndroidId,ANDROID_ID,androidId,安卓id原值的md5,hashAndroidId,安卓id做md5加密后小写,idfaAndroidId,iOS -> idfa，Android → AndroidIdMd5
-identityMac,mac地址,mac,移动设备mac地址,,,,
+identityMac,mac地址,mac,移动设备mac地址,,,mac,mac
 identityIdfa,iOS广告标识符,idfa,IOS 6+的设备id,,,idfaAndroidId,iOS -> idfa，Android → AndroidIdMd5
 identityIdfv,iOS应用开发商标识符,,,,,,
 identityMobile,手机号,,,,,,

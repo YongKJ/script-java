@@ -3,7 +3,7 @@ identityImei,国际移动设备设备码,imei,安卓的设备 ID 的 md5,muid,�
 identityOaid,匿名设备标识符,oAid,Android Q及更高版本的设备号,,,oaid,oaid md5 小写
 wxOpenId,微信应用用户OpenID,,,wechatOpenid,小程序OpenID,,
 identityAndroidId,ANDROID_ID,androidId,安卓id原值的md5,hashAndroidId,安卓id做md5加密后小写,idfaAndroidId,iOS -> idfa，Android → AndroidIdMd5
-identityMac,mac地址,mac,移动设备mac地址,,,,
+identityMac,mac地址,mac,移动设备mac地址,,,mac,mac
 identityIdfa,iOS广告标识符,idfa,IOS 6+的设备id,,,idfaAndroidId,iOS -> idfa，Android → AndroidIdMd5
 identityUa,ua信息,ua,用户代理,userAgent,用户代理（user_agent）,ua,浏览器UA
 ip,IP,ip,IP 地址,ip,媒体投放系统获取的用户终端的公共IPV4地址,ip,ip
