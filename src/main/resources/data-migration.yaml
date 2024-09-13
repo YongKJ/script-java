@@ -73,14 +73,14 @@ database-config:
     - "user"
 
 max-compute:
-  - name: "dataphin_chun_dev"
+  - name: "pre_warehouse"
     driver: "com.aliyun.odps.jdbc.OdpsDriver"
-    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun_dev&useProjectTimeZone=true"
+    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=pre_warehouse&useProjectTimeZone=true"
     username: ""
     password: ""
-  - name: "dataphin_chun"
+  - name: "prod_warehouse"
     driver: "com.aliyun.odps.jdbc.OdpsDriver"
-    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun&useProjectTimeZone=true"
+    url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=prod_warehouse&useProjectTimeZone=true"
     username: ""
     password: ""
   - name: "pre_warehouse"
@@ -101,6 +101,8 @@ max-compute-config:
     - "ods_tencent_advertising_report"
     - "ods_little_advertising"
     - "ods_little_advertising_report"
+    - "dws_customer_registration_statistics_di"
+    - "dws_customer_registration_atomic_di"
 
 max-compute-assignment:
   enable: true

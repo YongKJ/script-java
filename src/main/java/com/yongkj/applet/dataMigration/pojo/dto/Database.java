@@ -65,7 +65,12 @@ public class Database {
         List<Map<String, Object>> lstData = GenUtil.getListMap("max-compute");
         for (Map<String, Object> mapData : lstData) {
             String databaseName = GenUtil.objToStr(mapData.get("name"));
-            mapDatabase.put(databaseName, get(mapData, true));
+            String driver = GenUtil.objToStr(mapData.get("driver"));
+            if (driver.contains("postgresql")) {
+                mapDatabase.put(databaseName, get(mapData, false));
+            } else {
+                mapDatabase.put(databaseName, get(mapData, true));
+            }
         }
         return mapDatabase;
     }
