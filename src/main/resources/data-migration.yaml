@@ -83,6 +83,11 @@ max-compute:
     url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=dataphin_chun&useProjectTimeZone=true"
     username: ""
     password: ""
+  - name: "pre_warehouse"
+    driver: "org.postgresql.Driver"
+    url: "jdbc:postgresql://127.0.0.1:43306/pre_warehouse?charSet=utf-8&reWriteBatchedInserts=true&ApplicationName=service-warehouse"
+    username: ""
+    password: ""
 
 max-compute-config:
   tables:
