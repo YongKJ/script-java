@@ -32,6 +32,7 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.preDatabaseMaxCompute.getMapTable().size()", this.preDatabaseMaxCompute.getMapTable().size()));
 
+//        insertData();
         getAllData();
 //        createTestData();
 //        modifyTable();
@@ -40,6 +41,30 @@ public class MaxComputeAssignmentService extends BaseService {
 //        saveData();
 //        updateData();
 //        syncTableData();
+    }
+
+    private void insertData() {
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_registration_atomic_di");
+
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("registered_customer_cnt", 891);
+        mapData.put("registered_customer_miniprogram_cnt", 594);
+        mapData.put("registered_customer_app_cnt", 297);
+        mapData.put("login_customer_cnt", 534);
+        mapData.put("registered_customer_login_cnt", 534);
+        mapData.put("ds", "20240912");
+
+//        String insertSql = getInsertSQl(mapData, table);
+//        String insertSql = "INSERT INTO `dws_customer_registration_atomic_di` PARTITION(ds = '20240912') (`registered_customer_cnt`, `login_customer_cnt`, `registered_customer_login_cnt`, `registered_customer_app_cnt`, `registered_customer_miniprogram_cnt`) VALUES (891, 534, 534, 297, 594)";
+//        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "insertData", "insertSql", insertSql));
+        String removeSql = getRemoveSQl(
+                Wrappers.lambdaQuery(table)
+                        .eq("ds", "20240912"));
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "insertData", "removeSql", removeSql));
+
+//        boolean result = desDataInsert(preDatabaseMaxCompute, insertSql);
+        boolean result = desDataInsert(preDatabaseMaxCompute, removeSql);
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "insertData", "result", result));
     }
 
     private void syncTableData() {

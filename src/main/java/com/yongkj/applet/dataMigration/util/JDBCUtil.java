@@ -16,15 +16,12 @@ import java.util.Map;
 
 public class JDBCUtil {
 
-    private static boolean isPostGreSQl;
-
     public static Manager getConnection(Database database) {
         if (database == null) {
             return new Manager();
         }
         try {
             Class.forName(database.getDriver());
-            isPostGreSQl = database.isPostGreSQl();
             return Manager.get(DriverManager.getConnection(
                     database.getUrl(),
                     database.getUsername(),
@@ -39,7 +36,7 @@ public class JDBCUtil {
     public static boolean getResult(Database database, String sql) {
         boolean result = false;
         Statement statement = null;
-        if (isPostGreSQl && sql.contains("`")) {
+        if (database.isPostGreSQl() && sql.contains("`")) {
             sql = sql.replaceAll("`", "");
         }
         try {
@@ -60,7 +57,7 @@ public class JDBCUtil {
     public static List<Map<String, Object>> getResultSet(Database database, String sql, List<String> filterFields) {
         Statement statement = null;
         ResultSet resultSet = null;
-        if (isPostGreSQl && sql.contains("`")) {
+        if (database.isPostGreSQl() && sql.contains("`")) {
             sql = sql.replaceAll("`", "");
         }
         List<Map<String, Object>> lstData = new ArrayList<>();
