@@ -9,6 +9,8 @@ import java.util.List;
 
 public class Manager {
 
+    private boolean isPostGreSQl;
+    private boolean isMaxCompute;
     private Connection connection;
     private List<Statement> statements;
     private List<ResultSet> resultSets;
@@ -16,20 +18,24 @@ public class Manager {
 
     public Manager() {
         this.connection = null;
+        this.isMaxCompute = false;
+        this.isPostGreSQl = false;
         this.statements = new ArrayList<>();
         this.resultSets = new ArrayList<>();
         this.preparedStatements = new ArrayList<>();
     }
 
-    private Manager(Connection connection) {
+    private Manager(Connection connection, boolean isMaxCompute, boolean isPostGreSQl) {
         this.connection = connection;
+        this.isMaxCompute = isMaxCompute;
+        this.isPostGreSQl = isPostGreSQl;
         this.statements = new ArrayList<>();
         this.resultSets = new ArrayList<>();
         this.preparedStatements = new ArrayList<>();
     }
 
-    public static Manager get(Connection connection) {
-        return new Manager(connection);
+    public static Manager get(Connection connection, boolean isMaxCompute, boolean isPostGreSQl) {
+        return new Manager(connection, isMaxCompute, isPostGreSQl);
     }
 
     public void setStatement(Statement statement) {
@@ -38,6 +44,14 @@ public class Manager {
 
     public void setResultSet(ResultSet resultSet) {
         this.resultSets.add(resultSet);
+    }
+
+    public boolean isPostGreSQl() {
+        return isPostGreSQl;
+    }
+
+    public boolean isMaxCompute() {
+        return isMaxCompute;
     }
 
     public Connection getConnection() {

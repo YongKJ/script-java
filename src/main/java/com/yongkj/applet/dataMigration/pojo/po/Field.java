@@ -64,6 +64,9 @@ public class Field {
         List<Field> fields = new ArrayList<>();
         try {
             String sql = String.format("SELECT * FROM `%s` WHERE 1=2", tableName);
+            if (manager.isPostGreSQl()) {
+                sql = String.format("SELECT * FROM %s WHERE 1=2", tableName);
+            }
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
             ResultSetMetaData sqlResultMeta = sqlResult.getMetaData();
@@ -71,7 +74,7 @@ public class Field {
             int count = sqlResultMeta.getColumnCount();
             for (int col = 1; col <= count; col++) {
                 String fieldName = sqlResultMeta.getColumnName(col);
-                String type = sqlResultMeta.getColumnTypeName(col);
+                String type = sqlResultMeta.getColumnTypeName(col).toUpperCase();
                 int length = sqlResultMeta.getColumnDisplaySize(col);
                 String comment = mapComment.get(fieldName) == null ? "" : mapComment.get(fieldName);
                 boolean isNotNull = sqlResultMeta.isNullable(col) != ResultSetMetaData.columnNullable;

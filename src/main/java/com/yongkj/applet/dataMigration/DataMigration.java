@@ -48,8 +48,8 @@ public class DataMigration {
             this.srcDatabase = null;
             this.desDatabase = null;
             this.mapDatabase = Database.initMaxComputeMapDatabase();
-            this.preDatabaseMaxCompute = Database.get("pre_warehouse", mapDatabase);
-            this.prodDatabaseMaxCompute = Database.get("prod_warehouse", mapDatabase);
+            this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
+            this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
         } else {
             this.preDatabaseMaxCompute = null;
             this.prodDatabaseMaxCompute = null;
@@ -83,8 +83,8 @@ public class DataMigration {
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases.size()", desDatabases.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
-        srcDatabases = srcDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(srcDatabase.getManager(), false);
-        desDatabases = desDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(desDatabase.getManager(), false);
+        srcDatabases = srcDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(srcDatabase.getManager());
+        desDatabases = desDatabase == null ? new ArrayList<>() : Database.getDatabasesBySql(desDatabase.getManager());
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases", srcDatabases));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "srcDatabases.size()", srcDatabases.size()));
         LogUtil.loggerLine(Log.of("DataMigration", "apply", "desDatabases", desDatabases));

@@ -41,7 +41,7 @@ public class Table {
         this.fieldNames = new ArrayList<>();
     }
 
-    public static Map<String, Table> getTables(Manager manager, boolean isMaxCompute) {
+    public static Map<String, Table> getTables(Manager manager) {
         Map<String, Table> mapTable = new HashMap<>();
         List<String> lstTableName = getTableNamesBySql(manager);
         LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
@@ -49,16 +49,16 @@ public class Table {
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
         List<String> filterTableName = new ArrayList<>();
-        if (isMaxCompute) {
+        if (manager.isMaxCompute()) {
             Map<String, Object> mapData = GenUtil.getMap("max-compute-config");
             filterTableName = (List<String>) mapData.get("tables");
         }
         for (String tableName : lstTableName) {
-            if (isMaxCompute && !filterTableName.isEmpty() && !filterTableName.contains(tableName)) {
+            if (manager.isMaxCompute() && !filterTableName.isEmpty() && !filterTableName.contains(tableName)) {
                 continue;
             }
             Map<String, String> mapRemark = new HashMap<>();
-            if (!isMaxCompute) {
+            if (!manager.isMaxCompute() && !manager.isPostGreSQl()) {
                 mapRemark = getMapRemarkBySql(manager, tableName);
             }
             List<Field> lstField = Field.getFields(manager, tableName, mapRemark);
@@ -69,7 +69,7 @@ public class Table {
             table.setName(tableName);
             table.setCreateSql(createSql);
             table.setFieldNames(fieldNames);
-            table.setMaxCompute(isMaxCompute);
+            table.setMaxCompute(manager.isMaxCompute());
             table.setMapField(Field.getMapField(lstField, createSql, tableName));
             mapTable.put(tableName, getSqlTable(table));
         }
@@ -159,7 +159,7 @@ public class Table {
     public static List<String> getTableNamesBySql(Manager manager) {
         List<String> tables = new ArrayList<>();
         try {
-            String sql = "SHOW TABLES";
+            String sql = !manager.isPostGreSQl() ? "SHOW TABLES" : "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public';";
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
 

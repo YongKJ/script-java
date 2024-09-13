@@ -73,12 +73,12 @@ database-config:
     - "user"
 
 max-compute:
-  - name: "pre_warehouse"
+  - name: "pre_warehouse_max_compute"
     driver: "com.aliyun.odps.jdbc.OdpsDriver"
     url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=pre_warehouse&useProjectTimeZone=true"
     username: ""
     password: ""
-  - name: "prod_warehouse"
+  - name: "prod_warehouse_max_compute"
     driver: "com.aliyun.odps.jdbc.OdpsDriver"
     url: "jdbc:odps:http://service.cn-shenzhen.maxcompute.aliyun.com/api?project=prod_warehouse&useProjectTimeZone=true"
     username: ""

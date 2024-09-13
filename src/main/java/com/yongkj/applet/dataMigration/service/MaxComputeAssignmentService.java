@@ -208,7 +208,7 @@ public class MaxComputeAssignmentService extends BaseService {
 //        Table testTable = preDatabaseMaxCompute.getMapTable().get("ods_ad_store_tt");
 //        Table testTable = preDatabaseMaxCompute.getMapTable().get("ods_test_odps");
         Table testTable = preDatabaseMaxCompute.getMapTable().get("dws_customer_registration_atomic_di");
-        List<Map<String, Object>> lstData = srcDataList(prodDatabaseMaxCompute,
+        List<Map<String, Object>> lstData = srcDataList(preDatabaseMaxCompute,
                 Wrappers.lambdaQuery(testTable)
 //                        .eq("cdp_promotion_id", 7350259605072920617L)
 //                        .between("stat_time_day", strToTimestamp("2024-08-01"), strToTimestamp("2024-09-02"))

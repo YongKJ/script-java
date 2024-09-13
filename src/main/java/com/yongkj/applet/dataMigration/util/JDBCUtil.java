@@ -26,7 +26,7 @@ public class JDBCUtil {
                     database.getUrl(),
                     database.getUsername(),
                     database.getPassword()
-            ));
+            ), database.isMaxCompute(), database.isPostGreSQl());
         } catch (Exception e) {
             e.printStackTrace();
             return new Manager();

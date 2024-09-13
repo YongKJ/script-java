@@ -20,6 +20,7 @@ public class Database {
     private Manager manager;
     List<String> tableNames;
     private boolean isMaxCompute;
+    private boolean isPostGreSQl;
     private List<String> databaseNames;
     private Map<String, Table> mapTable;
 
@@ -33,6 +34,7 @@ public class Database {
         this.username = username;
         this.password = password;
         this.isMaxCompute = false;
+        this.isPostGreSQl = false;
         this.manager = new Manager();
         this.mapTable = new HashMap<>();
         this.tableNames = new ArrayList<>();
@@ -65,12 +67,7 @@ public class Database {
         List<Map<String, Object>> lstData = GenUtil.getListMap("max-compute");
         for (Map<String, Object> mapData : lstData) {
             String databaseName = GenUtil.objToStr(mapData.get("name"));
-            String driver = GenUtil.objToStr(mapData.get("driver"));
-            if (driver.contains("postgresql")) {
-                mapDatabase.put(databaseName, get(mapData, false));
-            } else {
-                mapDatabase.put(databaseName, get(mapData, true));
-            }
+            mapDatabase.put(databaseName, get(mapData));
         }
         return mapDatabase;
     }
@@ -117,30 +114,35 @@ public class Database {
         if (mapDatabase.isEmpty()) {
             return new Database();
         }
-        return get(mapDatabase, false);
+        return get(mapDatabase);
     }
 
-    private static Database get(Map<String, Object> mapDatabase, boolean isMaxCompute) {
+    private static Database get(Map<String, Object> mapDatabase) {
         String name = GenUtil.objToStr(mapDatabase.get("name"));
         String driver = GenUtil.objToStr(mapDatabase.get("driver"));
         String url = GenUtil.objToStr(mapDatabase.get("url"));
         String username = GenUtil.objToStr(mapDatabase.get("username"));
         String password = GenUtil.objToStr(mapDatabase.get("password"));
         Database database = new Database(name, driver, url, username, password);
+        database.setMaxCompute(driver.endsWith("OdpsDriver"));
+        database.setPostGreSQl(driver.contains("postgresql"));
         database.setManager(JDBCUtil.getConnection(database));
-        database.setMapTable(Table.getTables(database.getManager(), isMaxCompute));
-        database.setDatabaseNames(getDatabasesBySql(database.getManager(), isMaxCompute));
+        database.setMapTable(Table.getTables(database.getManager()));
+        database.setDatabaseNames(getDatabasesBySql(database.getManager()));
         database.setTableNames(Table.getTableNamesBySql(database.getManager()));
         return database;
     }
 
-    public static List<String> getDatabasesBySql(Manager manager, boolean isMaxCompute) {
-        if (isMaxCompute) {
+    public static List<String> getDatabasesBySql(Manager manager) {
+        if (manager.isMaxCompute()) {
             return new ArrayList<>();
         }
         List<String> databases = new ArrayList<>();
         try {
             String sql = "SHOW DATABASES";
+            if (manager.isPostGreSQl()) {
+                sql = "SELECT datname FROM pg_database";
+            }
             Statement statement = manager.getConnection().createStatement();
             ResultSet sqlResult = statement.executeQuery(sql);
 
@@ -245,6 +247,14 @@ public class Database {
 
     public void setMapTable(Map<String, Table> mapTable) {
         this.mapTable = mapTable;
+    }
+
+    public boolean isPostGreSQl() {
+        return isPostGreSQl;
+    }
+
+    public void setPostGreSQl(boolean postGreSQl) {
+        isPostGreSQl = postGreSQl;
     }
 
     public boolean isMaxCompute() {
