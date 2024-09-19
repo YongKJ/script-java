@@ -104,8 +104,11 @@ max-compute-config:
     - "dws_customer_registration_statistics_di"
     - "dws_customer_registration_atomic_di"
 
-max-compute-assignment:
+max-compute-statistics-init:
   enable: true
+
+max-compute-assignment:
+  enable: false
 
 sync-menu-permissions:
   enable: false

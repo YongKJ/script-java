@@ -87,6 +87,10 @@ public abstract class BaseService {
         return JDBCUtil.getResult(srcDatabase, insertSql);
     }
 
+    protected boolean srcDataInsert(Database database, String insertSql) {
+        return JDBCUtil.getResult(database, insertSql);
+    }
+
     protected boolean desDataInsert(Database database, String insertSql) {
         return JDBCUtil.getResult(database, insertSql);
     }
@@ -239,6 +243,17 @@ public abstract class BaseService {
                 table.getName(),
                 new ArrayList<>(mapData.keySet()),
                 new ArrayList<>(mapData.values()));
+    }
+
+    protected String getMaxComputeInsertSQl(Map<String, Object> mapData, Table table) {
+        Map<String, Object> mapObjectData = mapData.entrySet().stream()
+                .filter(po -> !Objects.equals(po.getKey(), "ds"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return SQL.getMaxComputeDataInsertSqlByObject(
+                table.getName(),
+                mapData.get("ds").toString(),
+                new ArrayList<>(mapObjectData.keySet()),
+                new ArrayList<>(mapObjectData.values()));
     }
 
     protected String getInsertSQl(Map<String, Object> mapData, String tableName, Wrappers query) {

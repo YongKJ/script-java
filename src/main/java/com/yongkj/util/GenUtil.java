@@ -11,10 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -220,6 +217,24 @@ public class GenUtil {
         Object value = getConfig(getProfile() + ".yaml").get(key);
         if (value instanceof List) return (List<Map<String, Object>>) value;
         return new ArrayList<>();
+    }
+
+    public static LocalDate strToLocalDate(String dateStr) {
+        return strToLocalDate(dateStr, "yyyy-MM-dd");
+    }
+
+    public static String localDateToStr(LocalDate date) {
+        return localDateToStr(date, "yyyy-MM-dd");
+    }
+
+    public static String localDateToStr(LocalDate date, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return date.format(formatter);
+    }
+
+    public static LocalDate strToLocalDate(String dateStr, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDate.parse(dateStr, formatter);
     }
 
     public static String localDateTimeToStr(LocalDateTime value) {

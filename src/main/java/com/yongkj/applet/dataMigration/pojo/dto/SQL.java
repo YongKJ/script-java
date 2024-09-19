@@ -15,6 +15,7 @@ public class SQL {
     private static String FIELD_MODIFY_SQL = "ALTER TABLE `%s` MODIFY COLUMN `%s` %s %s %s %s %s";
     private static String FIELD_DELETE_SQL = "ALTER TABLE `%s` DROP COLUMN `%s`";
     private static String DATA_SELECT_SQL = "SELECT %s FROM %s %s";
+    private static String DATA_INSERT_SQL_MAX_COMPUTE = "INSERT INTO `%s` PARTITION(ds = '%s') (%s) VALUES (%s)";
     private static String DATA_INSERT_SQL = "INSERT INTO `%s` (%s) VALUES (%s)";
     private static String DATA_UPDATE_SQL = "UPDATE `%s` SET %s %s";
     private static String DATA_REMOVE_SQL = "DELETE FROM `%s` WHERE %s";
@@ -48,6 +49,12 @@ public class SQL {
         String table = getFieldOrTableStr(tables);
         where = where.isEmpty() || where.startsWith("GROUP BY") ? where : String.format("WHERE %s", where);
         return String.format(DATA_SELECT_SQL, field, table, where);
+    }
+
+    public static String getMaxComputeDataInsertSqlByObject(String table, String ds, List<String> fields, List<Object> lstData) {
+        String field = getFieldOrTableStr(fields);
+        String data = getLstDataStr(lstData);
+        return String.format(DATA_INSERT_SQL_MAX_COMPUTE, table, ds, field, data);
     }
 
     public static String getDataInsertSqlByObject(String table, List<String> fields, List<Object> lstData) {

@@ -35,6 +35,7 @@ public class DataMigration {
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
+    private final MaxComputeStatisticsInitService maxComputeStatisticsInitService;
 
     private DataMigration() {
         Map<String, Object> mapMaxCompute = GenUtil.getMap("max-compute-assignment");
@@ -72,6 +73,7 @@ public class DataMigration {
         this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
         this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
         this.fieldIncrementMigrationService = new FieldIncrementMigrationService(this);
+        this.maxComputeStatisticsInitService = new MaxComputeStatisticsInitService(this);
     }
 
     private void apply() {
@@ -108,6 +110,7 @@ public class DataMigration {
         adminMenuDataMigrationService.apply();
         dataIncrementMigrationService.apply();
         fieldIncrementMigrationService.apply();
+        maxComputeStatisticsInitService.apply();
         for (Map.Entry<String, Database> map : mapDatabase.entrySet()) {
             JDBCUtil.closeAll(map.getValue().getManager());
         }
