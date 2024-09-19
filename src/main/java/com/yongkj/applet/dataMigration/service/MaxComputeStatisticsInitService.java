@@ -3,14 +3,12 @@ package com.yongkj.applet.dataMigration.service;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.util.CsvUtil;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MaxComputeStatisticsInitService extends BaseService {
 
@@ -25,7 +23,113 @@ public class MaxComputeStatisticsInitService extends BaseService {
     public void apply() {
         if (!enable) return;
 
-        statisticsRegistrationData();
+//        statisticsRegistrationData();
+//        statisticsLoginData();
+        statisticsLoginDwsData();
+    }
+
+    private void statisticsLoginDwsData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/customer-login.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        LocalDate endDate = LocalDate.now();
+        List<Map<String, Object>> lstStatistics = new ArrayList<>();
+        LocalDate startDate = LocalDate.of(2024, 9, 11);
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            lstStatistics.add(statisticsLoginDwsData(lstData, date));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_login_statistics_di");
+        for (Map<String, Object> statisticsData : lstStatistics) {
+            String insertSql = getMaxComputeInsertSQl(statisticsData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+
+    }
+
+
+    private Map<String, Object> statisticsLoginDwsData(List<Map<String, Object>> lstData, LocalDate date) {
+        Integer login_customer_cnt_1d = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_cnt"))).sum();
+        Integer login_customer_cnt_1d_miniprogram = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_miniprogram_cnt"))).sum();
+        Integer login_customer_cnt_1d_app = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_app_cnt"))).sum();
+        Integer login_customer_cnt_3d = lstData.stream().filter(po -> date.minusDays(4).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_cnt"))).sum();
+        Integer login_customer_cnt_1w = lstData.stream().filter(po -> date.minusDays(8).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_cnt"))).sum();
+        Integer login_customer_cnt_1m = lstData.stream().filter(po -> date.minusDays(31).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_cnt"))).sum();
+
+        Integer active_customer_cnt_1d = lstData.stream().filter(po -> date.minusDays(2).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("active_customer_cnt"))).sum();
+        Integer active_customer_cnt_3d = lstData.stream().filter(po -> date.minusDays(4).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("active_customer_cnt"))).sum();
+        Integer active_customer_cnt_1w = lstData.stream().filter(po -> date.minusDays(8).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("active_customer_cnt"))).sum();
+        Integer active_customer_cnt_1m = lstData.stream().filter(po -> date.minusDays(31).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("active_customer_cnt"))).sum();
+
+        double login_customer_percent_3d = getPercentData(date, 3, lstData, login_customer_cnt_3d);
+        double login_customer_percent_1w = getPercentData(date, 7, lstData, login_customer_cnt_1w);
+        double login_customer_percent_1m = getPercentData(date, 30, lstData, login_customer_cnt_1m);
+
+        double active_customer_percent_3d = getPercentData(date, 3, lstData, active_customer_cnt_3d);
+        double active_customer_percent_1w = getPercentData(date, 7, lstData, active_customer_cnt_1w);
+        double active_customer_percent_1m = getPercentData(date, 30, lstData, active_customer_cnt_1m);
+
+        double login_customer_retention_rate_1d = getPercentData(date, 1, lstData);
+        double login_customer_retention_rate_1w = getPercentData(date, 3, lstData);
+        double login_customer_retention_rate_1m = getPercentData(date, 7, lstData);
+
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("login_customer_cnt_1d", login_customer_cnt_1d);
+        mapData.put("login_customer_cnt_1d_miniprogram", login_customer_cnt_1d_miniprogram);
+        mapData.put("login_customer_cnt_1d_app", login_customer_cnt_1d_app);
+        mapData.put("active_customer_cnt_1d", active_customer_cnt_1d);
+        mapData.put("active_customer_cnt_1w", active_customer_cnt_1w);
+        mapData.put("active_customer_cnt_1m", active_customer_cnt_1m);
+        mapData.put("login_customer_percent_3d", login_customer_percent_3d);
+        mapData.put("login_customer_percent_1w", login_customer_percent_1w);
+        mapData.put("login_customer_percent_1m", login_customer_percent_1m);
+        mapData.put("active_customer_percent_3d", active_customer_percent_3d);
+        mapData.put("active_customer_percent_1w", active_customer_percent_1w);
+        mapData.put("active_customer_percent_1m", active_customer_percent_1m);
+        mapData.put("login_customer_retention_rate_1d", login_customer_retention_rate_1d);
+        mapData.put("login_customer_retention_rate_1w", login_customer_retention_rate_1w);
+        mapData.put("login_customer_retention_rate_1m", login_customer_retention_rate_1m);
+        mapData.put("ds", GenUtil.localDateToStr(date, "yyyyMMdd"));
+        return mapData;
+    }
+
+    private Double getPercentData(LocalDate date, Integer dateNum, List<Map<String, Object>> lstData) {
+        Integer customer_login_cnt = lstData.stream().filter(po -> date.minusDays(dateNum).minusDays(1).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("login_customer_cnt"))).sum();
+        Integer registered_customer_cnt = lstData.stream().filter(po -> date.minusDays(dateNum).minusDays(1).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum();
+        return GenUtil.round(customer_login_cnt / registered_customer_cnt.doubleValue(), 2);
+    }
+
+    private Double getPercentData(LocalDate date, Integer dateNum, List<Map<String, Object>> lstData, Integer loginNumber) {
+        Integer registered_customer_cnt = lstData.stream().filter(po -> date.minusDays(dateNum).minusDays(1).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum();
+        return GenUtil.round(loginNumber / registered_customer_cnt.doubleValue(), 2);
+    }
+
+    private void statisticsLoginData() {
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_registration_atomic_di");
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/customer-registration.csv");
+//        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/customer-login.csv");
+        for (Map<String, String> data : csvData) {
+            String insertSql = getMaxComputeInsertSQl(getMapData(data), table);
+            System.out.println(insertSql);
+
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+    }
+
+    private Map<String, Object> getMapData(Map<String, String> mapData) {
+        Map<String, Object> mapCsvData = new HashMap<>();
+        for (Map.Entry<String, String> map : mapData.entrySet()) {
+            if (Objects.equals(map.getKey(), "ds")) {
+                mapCsvData.put(map.getKey(), map.getValue());
+                continue;
+            }
+            mapCsvData.put(map.getKey(), GenUtil.strToInteger(map.getValue()));
+        }
+        return mapCsvData;
     }
 
     private void statisticsRegistrationData() {
@@ -55,14 +159,14 @@ public class MaxComputeStatisticsInitService extends BaseService {
     }
 
     private Map<String, Object> statisticsData(List<Map<String, Object>> lstData, LocalDate date) {
-        Integer registered_customer_total_cnt = lstData.stream().filter(po -> !getLocalDate(po).isAfter(date)).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum();
+        Integer registered_customer_total_cnt = lstData.stream().filter(po -> getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum();
 
         double registered_customer_cnt_avg_1w = lstData.stream().filter(po -> date.minusWeeks(1).minusDays(1).isBefore(getLocalDate(po)) && getLocalDate(po).isBefore(date)).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum() / 7D;
         registered_customer_cnt_avg_1w = GenUtil.round(registered_customer_cnt_avg_1w, 2);
 
-        Integer registered_customer_cnt_1d = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_cnt"))).sum();
         Integer registered_customer_cnt_1d_miniprogram = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_miniprogram_cnt"))).sum();
         Integer registered_customer_cnt_1d_app = lstData.stream().filter(po -> getLocalDate(po).equals(date.minusDays(1))).mapToInt(po -> GenUtil.objToInteger(po.get("registered_customer_app_cnt"))).sum();
+        Integer registered_customer_cnt_1d = registered_customer_cnt_1d_miniprogram + registered_customer_cnt_1d_app;
 
         double registered_customer_retention_rate_1d = getCustomerRetentionRate(date, 1, lstData);
         double registered_customer_retention_rate_3d = getCustomerRetentionRate(date, 3, lstData);

@@ -41,6 +41,11 @@ public class DataMigration {
         Map<String, Object> mapMaxCompute = GenUtil.getMap("max-compute-assignment");
         boolean maxCompute = GenUtil.objToBoolean(mapMaxCompute.get("enable"));
 
+        if (!maxCompute) {
+            Map<String, Object> mapMaxComputeStatisticsInit = GenUtil.getMap("max-compute-statistics-init");
+            maxCompute = GenUtil.objToBoolean(mapMaxComputeStatisticsInit.get("enable"));
+        }
+
         if (maxCompute) {
             this.devDatabase = null;
             this.preDatabase = null;
