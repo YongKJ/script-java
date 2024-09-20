@@ -46,11 +46,20 @@ public class MaxComputeStatisticsInitService extends BaseService {
                 LocalDate.of(2024, 9, 18)
         );
         for (int i = 0; i < 300; i++) {
-            int hour = GenUtil.random(0, 24);
-            int minute = GenUtil.random(0, 60);
-            Integer os_type = GenUtil.random(1, 2);
-            Integer login_time = hour * 100 + minute;
+            int hour = GenUtil.random(0, 23);
+            int minute = GenUtil.random(0, 59);
+            String hourStr = hour < 10 ? "0" + hour : "" + hour;
+            String minuteStr = minute < 10 ? "0" + minute : "" + minute;
+
             LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String dateStr = GenUtil.localDateToStr(date);
+
+            String login_time_str = String.format("%s %s:%s:%s", dateStr, hourStr, minuteStr, "00");
+            System.out.println(login_time_str);
+            Long login_time = GenUtil.strToTimestamp(login_time_str);
+
+            Integer os_type = GenUtil.random(1, 2);
+
             String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
 
             Map<String, Object> mapData = new HashMap<>();

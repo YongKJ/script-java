@@ -227,6 +227,21 @@ public class GenUtil {
         return localDateToStr(date, "yyyy-MM-dd");
     }
 
+    public static Long strToTimestamp(String dateStr) {
+        LocalDateTime dateTime = strToLocalDateTime(dateStr);
+        ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.systemDefault());
+        return zonedDateTime.toInstant().getEpochSecond();
+    }
+
+    private static LocalDateTime strToLocalDateTime(String dateStr) {
+       return strToLocalDateTime(dateStr, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    private static LocalDateTime strToLocalDateTime(String dateStr, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDateTime.parse(dateStr, formatter);
+    }
+
     public static String localDateToStr(LocalDate date, String format) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return date.format(formatter);
