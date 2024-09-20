@@ -353,4 +353,12 @@ public class GenUtil {
         String pattern = "^[-+]?\\d+(\\.\\d+)?$";
         return str.matches(pattern);
     }
+
+    public static int random(int min, int max) {
+        return new Random(System.currentTimeMillis()).nextInt(max - min + 1) + min;
+    }
+
+    public static double randomDouble(double min, double max) {
+        return min + new Random(System.currentTimeMillis()).nextDouble() * (max - min);
+    }
 }
