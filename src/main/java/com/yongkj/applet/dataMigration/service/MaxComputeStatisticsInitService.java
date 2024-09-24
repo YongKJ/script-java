@@ -29,7 +29,68 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsEvaluateDwsData();
 //        statisticsOverallCustomerAdsDwsData();
 //        statisticsEvaluateDwdData();
-        statisticsLoginDwdData();
+//        statisticsLoginDwdData();
+//        statisticsMerchantDwsData();
+        statisticsMerchantDwdData();
+    }
+
+    private void statisticsMerchantDwdData() {
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_merchant_review_di");
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 9, 15),
+                LocalDate.of(2024, 9, 16),
+                LocalDate.of(2024, 9, 17),
+                LocalDate.of(2024, 9, 18),
+                LocalDate.of(2024, 9, 19),
+                LocalDate.of(2024, 9, 20),
+                LocalDate.of(2024, 9, 21),
+                LocalDate.of(2024, 9, 22),
+                LocalDate.of(2024, 9, 23),
+                LocalDate.of(2024, 9, 24)
+        );
+        List<Integer> seconds = Arrays.asList(
+                0,
+                24 * 60 * 60 - 1,
+                2 * 24 * 60 * 60 - 1,
+                3 * 24 * 60 * 60 - 1
+        );
+        for (int i = 0; i < 300; i++) {
+            int review_submit_cnt = GenUtil.random(1, 12);
+            int review_fail_type = GenUtil.random(1, 6);
+
+            int index = GenUtil.random(0, seconds.size() - 1);
+            Integer startSeconds = seconds.get(index);
+            int endSeconds = startSeconds + 24 * 60 * 60;
+            Integer review_time = GenUtil.random(startSeconds, endSeconds);
+
+            LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("review_submit_cnt", review_submit_cnt);
+            mapData.put("review_fail_type", review_fail_type);
+            mapData.put("review_time", review_time);
+            mapData.put("ds", ds);
+
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println(insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+    }
+
+    private void statisticsMerchantDwsData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/merchant-registered-dws.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_registered_merchant_statistics_di");
+        for (Map<String, Object> mapData : lstData) {
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
     }
 
     private void statisticsLoginDwdData() {
