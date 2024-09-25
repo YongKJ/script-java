@@ -30,8 +30,8 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsOverallCustomerAdsDwsData();
 //        statisticsEvaluateDwdData();
 //        statisticsLoginDwdData();
-//        statisticsMerchantDwsData();
-        statisticsMerchantDwdData();
+        statisticsMerchantDwsData();
+//        statisticsMerchantDwdData();
     }
 
     private void statisticsMerchantDwdData() {
