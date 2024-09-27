@@ -21,6 +21,8 @@ public class DataMigration {
     private final Database preDatabase;
     private final Database testDatabase;
     private final Database prodDatabase;
+    private final Database preDatabaseHologres;
+    private final Database prodDatabaseHologres;
     private final Database preDatabaseMaxCompute;
     private final Database prodDatabaseMaxCompute;
     private final Map<String, Database> mapDatabase;
@@ -54,9 +56,13 @@ public class DataMigration {
             this.srcDatabase = null;
             this.desDatabase = null;
             this.mapDatabase = Database.initMaxComputeMapDatabase();
+            this.preDatabaseHologres = Database.get("pre_warehouse", mapDatabase);
+            this.prodDatabaseHologres = Database.get("prod_warehouse", mapDatabase);
             this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
             this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
         } else {
+            this.preDatabaseHologres = null;
+            this.prodDatabaseHologres = null;
             this.preDatabaseMaxCompute = null;
             this.prodDatabaseMaxCompute = null;
             this.mapDatabase = Database.initMapDatabase();
@@ -147,6 +153,14 @@ public class DataMigration {
 
     public Database getDesDatabase() {
         return desDatabase;
+    }
+
+    public Database getPreDatabaseHologres() {
+        return preDatabaseHologres;
+    }
+
+    public Database getProdDatabaseHologres() {
+        return prodDatabaseHologres;
     }
 
     public Database getPreDatabaseMaxCompute() {

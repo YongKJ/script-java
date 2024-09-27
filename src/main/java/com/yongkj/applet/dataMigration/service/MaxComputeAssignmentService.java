@@ -6,9 +6,10 @@ import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.FileUtil;
-import com.yongkj.util.GenUtil;
-import com.yongkj.util.LogUtil;
+import com.yongkj.util.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
@@ -17,6 +18,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MaxComputeAssignmentService extends BaseService {
 
@@ -32,8 +35,9 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.preDatabaseMaxCompute.getMapTable().size()", this.preDatabaseMaxCompute.getMapTable().size()));
 
+        tencentSceneTest();
 //        insertData();
-        getAllData();
+//        getAllData();
 //        createTestData();
 //        modifyTable();
 //        countTableData();
@@ -41,6 +45,85 @@ public class MaxComputeAssignmentService extends BaseService {
 //        saveData();
 //        updateData();
 //        syncTableData();
+    }
+
+    private void tencentSceneTest() {
+        Table preTable = preDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstWxOpenId = srcDataList(preDatabaseHologres,
+                Wrappers.lambdaQuery(preTable)
+                        .eq("type", 3)
+                        .isNotNUll("wx_open_id")
+                        .groupBy("wx_open_id")
+                        .select("wx_open_id")
+        );
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "tencentSceneTest", "lstWxOpenId.size()", lstWxOpenId.size()));
+        Map<String, String> mapWxOpenId = lstWxOpenId.stream()
+                .filter(po -> !po.get("wx_open_id").toString().isEmpty())
+                .map(po -> po.get("wx_open_id").toString())
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
+
+        Table prodTable = prodDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(prodTable)
+                        .eq("event", 6)
+                        .isNotNUll("scene_value")
+                        .isNotNUll("wx_open_id")
+                        .select("wx_open_id", "scene_value")
+        );
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "tencentSceneTest", "lstData.size()", lstData.size()));
+
+        Map<String, List<Map<String, Object>>> mapSceneValue = new HashMap<>();
+        for (Map<String, Object> mapData : lstData) {
+            String wxOpenId = (String) mapData.get("wx_open_id");
+            if (!mapWxOpenId.containsKey(wxOpenId)) {
+                continue;
+            }
+
+            String sceneValue = (String) mapData.get("scene_value");
+            if (!mapSceneValue.containsKey(sceneValue)) {
+                mapSceneValue.put(sceneValue, new ArrayList<>());
+            }
+            mapSceneValue.get(sceneValue).add(mapData);
+        }
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("广点通场景值");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("微信小程序标识"),
+                Collections.singletonList("场景值"),
+                Collections.singletonList("场景值含义")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = 1;
+        List<Map<String, String>> lstScene = CsvUtil.toMap("/csv/小程序场景值.csv");
+        for (Map.Entry<String, List<Map<String, Object>>> map : mapSceneValue.entrySet()) {
+            for (Map<String, Object> mapData : map.getValue()) {
+                String wxOpenId = mapData.get("wx_open_id").toString();
+                String sceneValue = mapData.get("scene_value").toString();
+                Map<String, String> mapScene = lstScene.stream()
+                        .filter(po -> Objects.equals(po.get("scene"), sceneValue)).findFirst().orElse(new HashMap<>());
+                String sceneDesc = mapScene.get("desc");
+                if (!StringUtils.hasText(sceneDesc)) {
+                    continue;
+                }
+
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, wxOpenId);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 2, sceneValue);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 3, sceneDesc);
+                rowIndex++;
+            }
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\微信小程序场景值(广点通)-" + System.currentTimeMillis() + ".xlsx");
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "tencentSceneTest", "mapSceneValue.size()", mapSceneValue.size()));
     }
 
     private void insertData() {

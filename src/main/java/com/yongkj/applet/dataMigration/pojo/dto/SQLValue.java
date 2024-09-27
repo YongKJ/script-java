@@ -44,6 +44,7 @@ public class SQLValue {
     }
 
     public String getSqlSegment() {
+        List<Object> lstValue;
         switch (operate) {
             case and:
             case or:
@@ -53,11 +54,13 @@ public class SQLValue {
             case having:
                 return String.format(operate.getValue(), value);
             case limit:
-            case groupBy:
             case orderByAsc:
             case orderByDesc:
-                List<Object> lstValue = (List<Object>) value;
-                return String.format(operate.getValue(), getListValueStr(lstValue));
+                lstValue = (List<Object>) value;
+                return String.format(operate.getValue(), getListValueStr(lstValue, false));
+            case groupBy:
+                lstValue = (List<Object>) value;
+                return String.format(operate.getValue(), getListValueStr(lstValue, true));
             default:
                 return fieldName.contains("`") || fieldName.contains(".") ?
                         String.format("%s %s", fieldName, getOperateValue()) :
@@ -83,7 +86,7 @@ public class SQLValue {
                 List<Object> lstValue = (List<Object>) value;
                 return String.format(
                         operate.getValue(),
-                        getListValueStr(lstValue)
+                        getListValueStr(lstValue, false)
                 );
             case between:
             case notBetween:
@@ -102,9 +105,13 @@ public class SQLValue {
         }
     }
 
-    private String getListValueStr(List<Object> lstValue) {
+    private String getListValueStr(List<Object> lstValue, boolean isGroupBy) {
         List<String> lstValueStr = new ArrayList<>();
         for (Object value : lstValue) {
+            if (isGroupBy) {
+                lstValueStr.add(value.toString());
+                continue;
+            }
             lstValueStr.add(getValueStr(value));
         }
         return String.join(", ", lstValueStr);

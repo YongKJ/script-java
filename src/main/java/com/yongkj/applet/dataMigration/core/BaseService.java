@@ -24,6 +24,8 @@ public abstract class BaseService {
     protected final Database prodDatabase;
     protected final List<Database> databases;
     protected Map<String, Database> mapDatabase;
+    protected final Database preDatabaseHologres;
+    protected final Database prodDatabaseHologres;
     protected final Database preDatabaseMaxCompute;
     protected final Database prodDatabaseMaxCompute;
 
@@ -35,6 +37,8 @@ public abstract class BaseService {
         this.preDatabase = dataMigration.getPreDatabase();
         this.testDatabase = dataMigration.getTestDatabase();
         this.prodDatabase = dataMigration.getProdDatabase();
+        this.preDatabaseHologres = dataMigration.getPreDatabaseHologres();
+        this.prodDatabaseHologres = dataMigration.getProdDatabaseHologres();
         this.preDatabaseMaxCompute = dataMigration.getPreDatabaseMaxCompute();
         this.prodDatabaseMaxCompute = dataMigration.getProdDatabaseMaxCompute();
         this.databases = Arrays.asList(
