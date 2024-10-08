@@ -41,21 +41,21 @@ public class SyncMenuPermissionsService extends BaseService {
 //        distinctRoleMenuData(devUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
 //        System.out.println("==================================================================================================================\n");
 
-        distinctRoleMenuData(testUser, "admin_role_menu", "role_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_apply_organization", "apply_id", "organization_id");
-        System.out.println("==================================================================================================================\n");
-        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
-        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_role_menu", "role_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_apply_menu", "apply_id", "menu_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_apply_organization", "apply_id", "organization_id");
+//        System.out.println("==================================================================================================================\n");
+//        distinctRoleMenuData(testUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
+//        System.out.println("==================================================================================================================\n");
 
 //        distinctRoleMenuData(preUser, "admin_role_menu", "role_id", "menu_id");
 //        System.out.println("==================================================================================================================\n");
 //        distinctRoleMenuData(preUser, "admin_apply_menu", "apply_id", "menu_id");
 //        System.out.println("==================================================================================================================\n");
-//        distinctRoleMenuData(preUser, "admin_apply_organization", "apply_id", "organization_id");
-//        System.out.println("==================================================================================================================\n");
+        distinctRoleMenuData(preUser, "admin_apply_organization", "apply_id", "organization_id");
+        System.out.println("==================================================================================================================\n");
 //        distinctRoleMenuData(preUser, "admin_menu", "pid", "name", "alias_name", "desc", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
 //        System.out.println("==================================================================================================================\n");
 
@@ -66,12 +66,12 @@ public class SyncMenuPermissionsService extends BaseService {
 //        distinctRoleMenuData(prodUser, "admin_menu", "pid", "name", "alias_name", "type", "sort", "apply_kind", "platform_kind", "apply_id", "route", "route_param");
 //        System.out.println("==================================================================================================================\n");
 
-        diffRoleMenuData(devUser, testUser, "admin_menu", "id");
-        diffRoleMenuData(devUser, testUser, "admin_apply", "id");
-        diffRoleMenuData(devUser, testUser, "admin_role_menu", "role_id", "menu_id");
-        diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
-        diffRoleMenuData(devUser, testUser, "admin_apply_organization", "apply_id", "organization_id");
-        System.out.println("==================================================================================================================\n");
+//        diffRoleMenuData(devUser, testUser, "admin_menu", "id");
+//        diffRoleMenuData(devUser, testUser, "admin_apply", "id");
+//        diffRoleMenuData(devUser, testUser, "admin_role_menu", "role_id", "menu_id");
+//        diffRoleMenuData(devUser, testUser, "admin_apply_menu", "apply_id", "menu_id");
+//        diffRoleMenuData(devUser, testUser, "admin_apply_organization", "apply_id", "organization_id");
+//        System.out.println("==================================================================================================================\n");
 
 //        diffRoleMenuData(testUser, preUser, "admin_menu", "id");
 //        diffRoleMenuData(testUser, preUser, "admin_apply", "id");
@@ -100,11 +100,27 @@ public class SyncMenuPermissionsService extends BaseService {
             }
 
             String deleteSql = getRemoveSQl(data, desTableName);
+            if (Objects.equals(desTableName, "admin_apply_organization")) {
+                Map<String, Object> tempMapData = getMapData(data, Arrays.asList(fields));
+                deleteSql = getRemoveSQl(tempMapData, desTableName);
+            }
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "distinctRoleMenuData", "deleteSql", deleteSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataRemove(database, deleteSql);
+//            desDataRemove(database, deleteSql);
         }
+    }
+
+    private Map<String, Object> getMapData(Map<String, Object> mapData, List<String> fields) {
+        Map<String, Object> tempMapData = new HashMap<>();
+        for (Map.Entry<String, Object> map : mapData.entrySet()) {
+            if (!fields.contains(map.getKey())) {
+                continue;
+            }
+
+            tempMapData.put(map.getKey(), map.getValue());
+        }
+        return tempMapData;
     }
 
     private void diffRoleMenuData(Database srcDatabase, Database desDatabase, String tableName, String... fields) {
@@ -138,7 +154,7 @@ public class SyncMenuPermissionsService extends BaseService {
                     LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "updateSql", updateSql));
                     System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-                    desDataUpdate(desDatabase, updateSql);
+//                    desDataUpdate(desDatabase, updateSql);
                 }
                 continue;
             }
@@ -147,7 +163,7 @@ public class SyncMenuPermissionsService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "diffRoleMenuData", "insertSql", insertSql));
             System.out.println("------------------------------------------------------------------------------------------------------------------");
 
-            desDataInsert(desDatabase, insertSql);
+//            desDataInsert(desDatabase, insertSql);
         }
     }
 
