@@ -118,6 +118,7 @@ public class MaxComputeAssignmentService extends BaseService {
                 PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 2, sceneValue);
                 PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 3, sceneDesc);
                 rowIndex++;
+                break;
             }
         }
 
