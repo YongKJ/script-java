@@ -3,12 +3,15 @@ package com.yongkj.applet.dataMigration.service;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.CsvUtil;
 import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
+import com.yongkj.util.LogUtil;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MaxComputeStatisticsInitService extends BaseService {
 
@@ -30,8 +33,108 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsOverallCustomerAdsDwsData();
 //        statisticsEvaluateDwdData();
 //        statisticsLoginDwdData();
-        statisticsMerchantDwsData();
+//        statisticsMerchantDwsData();
 //        statisticsMerchantDwdData();
+        statisticsWorkerInfoDwdData();
+    }
+
+    public void statisticsWorkerInfoDwdData() {
+        List<Long> workerIds = getWorkerIds();
+
+        LogUtil.loggerLine(Log.of("MaxComputeStatisticsInitService", "statisticsWorkerInfoDwdData", "workerIds", workerIds));
+
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 10, 1),
+                LocalDate.of(2024, 10, 2),
+                LocalDate.of(2024, 10, 3),
+                LocalDate.of(2024, 10, 4),
+                LocalDate.of(2024, 10, 5),
+                LocalDate.of(2024, 10, 6),
+                LocalDate.of(2024, 10, 7),
+                LocalDate.of(2024, 10, 8),
+                LocalDate.of(2024, 10, 9),
+                LocalDate.of(2024, 10, 10),
+                LocalDate.of(2024, 10, 11)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_info_di");
+        for (Long workerId : workerIds) {
+            int serviceTimeRank = GenUtil.random(1, 4);
+            int serviceAgeRank = GenUtil.random(1, 4);
+            int ageRank = GenUtil.random(1, 5);
+
+            Integer age = getWorkerAge(ageRank);
+            Integer gender = GenUtil.random(1, 3);
+            Integer serviceAge = getWorkerServiceAge(serviceAgeRank);
+            Integer serviceTime = getWorkerServiceTime(serviceTimeRank);
+
+            LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("service_time", serviceTime);
+            mapData.put("service_age", serviceAge);
+            mapData.put("worker_id", workerId);
+            mapData.put("gender", gender);
+            mapData.put("age", age);
+            mapData.put("ds", ds);
+
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println(insertSql);
+            System.out.println("------------------------------------------------------------");
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+    }
+
+    private Integer getWorkerServiceTime(Integer rank) {
+        switch (rank) {
+            case 1:
+                return GenUtil.random(501, 600);
+            case 2:
+                return GenUtil.random(101, 500);
+            case 3:
+                return GenUtil.random(51, 100);
+            case 4:
+                return GenUtil.random(1, 50);
+        }
+        return 0;
+    }
+
+    private Integer getWorkerServiceAge(Integer rank) {
+        switch (rank) {
+            case 1:
+                return GenUtil.random(21, 40);
+            case 2:
+                return GenUtil.random(11, 20);
+            case 3:
+                return GenUtil.random(5, 10);
+            case 4:
+                return GenUtil.random(1, 4);
+        }
+        return 0;
+    }
+
+    private Integer getWorkerAge(Integer rank) {
+        switch (rank) {
+            case 1:
+                return GenUtil.random(61, 75);
+            case 2:
+                return GenUtil.random(51, 60);
+            case 3:
+                return GenUtil.random(41, 50);
+            case 4:
+                return GenUtil.random(31, 40);
+            case 5:
+                return GenUtil.random(18, 30);
+        }
+        return 0;
+    }
+
+    private List<Long> getWorkerIds() {
+        String workerIdsPath = "C:\\Users\\Admin\\Desktop\\worker-ids.json";
+        String workerIdsContent = FileUtil.read(workerIdsPath);
+        List<Map<String, Object>> lstWorkerIdData = GenUtil.fromJsonString(workerIdsContent, List.class);
+        return lstWorkerIdData.stream().map(po -> (Long) po.get("id")).collect(Collectors.toList());
     }
 
     private void statisticsMerchantDwdData() {
