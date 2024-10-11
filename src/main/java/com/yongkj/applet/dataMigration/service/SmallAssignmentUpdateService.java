@@ -6,6 +6,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
+import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 import com.yongkj.util.PoiExcelUtil;
@@ -42,8 +43,26 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        organizationInfoUpdate();
 //        devApplyMenuDataFix();
 //        apiExport();
-        updatePlatformKind();
+//        updatePlatformKind();
 //        updateProdMenuPermissions();
+        exportWorkerIds();
+    }
+
+    private void exportWorkerIds() {
+        Table workerTable = preDatabase.getMapTable().get("worker");
+        Map<String, Map<String, Object>> workerTableData = getMapData(srcDataList(preDatabase,
+                Wrappers.lambdaQuery(workerTable)
+                        .select("id", "name")));
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> map : workerTableData.entrySet()) {
+            lstData.add(map.getValue());
+        }
+
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\worker-ids.json",
+                GenUtil.toJsonString(lstData)
+        );
     }
 
 //    private void apiExport() {
