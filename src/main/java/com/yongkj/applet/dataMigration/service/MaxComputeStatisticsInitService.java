@@ -36,7 +36,49 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsMerchantDwsData();
 //        statisticsMerchantDwdData();
 //        statisticsWorkerInfoDwdData();
-        statisticsWorkerShopDwdData();
+//        statisticsWorkerShopDwdData();
+        statisticsWorkerEvaluateDwdData();
+    }
+
+    private void statisticsWorkerEvaluateDwdData() {
+        List<Long> workerIds = getWorkerIds();
+
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 10, 1),
+                LocalDate.of(2024, 10, 2),
+                LocalDate.of(2024, 10, 3),
+                LocalDate.of(2024, 10, 4),
+                LocalDate.of(2024, 10, 5),
+                LocalDate.of(2024, 10, 6),
+                LocalDate.of(2024, 10, 7),
+                LocalDate.of(2024, 10, 8),
+                LocalDate.of(2024, 10, 9),
+                LocalDate.of(2024, 10, 10),
+                LocalDate.of(2024, 10, 11)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_evaluate_di");
+        for (int i = 0; i < 300; i++) {
+            int workerIdIndex = GenUtil.random(0, workerIds.size() - 1);
+
+            Long workerId = workerIds.get(workerIdIndex);
+            Double rating_star = GenUtil.round(GenUtil.randomDouble(0, 5), 2);
+            Integer workerType = GenUtil.random(1, 2);
+
+            LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("worker_id", workerId);
+            mapData.put("rating_star", rating_star);
+            mapData.put("worker_type", workerType);
+            mapData.put("ds", ds);
+
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println(insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+
     }
 
     private void statisticsWorkerShopDwdData() {
