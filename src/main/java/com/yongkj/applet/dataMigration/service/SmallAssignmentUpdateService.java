@@ -45,7 +45,48 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        apiExport();
 //        updatePlatformKind();
 //        updateProdMenuPermissions();
-        exportWorkerIds();
+//        exportWorkerIds();
+        exportWorkerShopInfo();
+    }
+
+    private void exportWorkerShopInfo() {
+        Table organizationWorker = testDatabase.getMapTable().get("organization_worker");
+        Table shop = testDatabase.getMapTable().get("shop");
+
+        List<Map<String, Object>> organizationWorkerData = srcDataList(testDatabase,
+                Wrappers.lambdaQuery(organizationWorker)
+                        .select("worker_id", "organization_id"));
+
+        List<Map<String, Object>> shopData = srcDataList(testDatabase,
+                Wrappers.lambdaQuery(shop)
+                        .select("id", "organization_id", "name"));
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map<String, Object> mapOrganizationWorker : organizationWorkerData) {
+            Long workerId = (Long) mapOrganizationWorker.get("worker_id");
+            Long organizationId = (Long) mapOrganizationWorker.get("organization_id");
+            if (workerId == 0) {
+                continue;
+            }
+
+            Map<String, Object> mapShop = shopData.stream().filter(po -> Objects.equals(po.get("organization_id"), organizationId)).findFirst().orElse(new HashMap<>());
+            if (mapShop.isEmpty()) {
+                continue;
+            }
+
+            Long shopId = (Long) mapShop.get("id");
+            String shopName = (String) mapShop.get("name");
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("worker_id", workerId);
+            mapData.put("shop_id", shopId);
+            mapData.put("shop_name", shopName);
+            lstData.add(mapData);
+        }
+
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\worker-shop-info.json",
+                GenUtil.toJsonString(lstData)
+        );
     }
 
     private void exportWorkerIds() {

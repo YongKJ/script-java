@@ -35,7 +35,39 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsLoginDwdData();
 //        statisticsMerchantDwsData();
 //        statisticsMerchantDwdData();
-        statisticsWorkerInfoDwdData();
+//        statisticsWorkerInfoDwdData();
+        statisticsWorkerShopDwdData();
+    }
+
+    private void statisticsWorkerShopDwdData() {
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 10, 1),
+                LocalDate.of(2024, 10, 2),
+                LocalDate.of(2024, 10, 3),
+                LocalDate.of(2024, 10, 4),
+                LocalDate.of(2024, 10, 5),
+                LocalDate.of(2024, 10, 6),
+                LocalDate.of(2024, 10, 7),
+                LocalDate.of(2024, 10, 8),
+                LocalDate.of(2024, 10, 9),
+                LocalDate.of(2024, 10, 10),
+                LocalDate.of(2024, 10, 11)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_shop_di");
+        String workerShopInfoPath = "C:\\Users\\Admin\\Desktop\\worker-shop-info.json";
+        String workerShopInfoContent = FileUtil.read(workerShopInfoPath);
+        List<Map<String, Object>> lstWorkerShopInfo = GenUtil.fromJsonString(workerShopInfoContent, List.class);
+        for (Map<String, Object> mapWorkerInfo : lstWorkerShopInfo) {
+            LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+            mapWorkerInfo.put("ds", ds);
+
+            String insertSql = getMaxComputeInsertSQl(mapWorkerInfo, table);
+            System.out.println(insertSql);
+            System.out.println("------------------------------------------------------------");
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
     }
 
     public void statisticsWorkerInfoDwdData() {
