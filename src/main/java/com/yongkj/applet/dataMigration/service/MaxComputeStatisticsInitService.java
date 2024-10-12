@@ -37,7 +37,23 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsMerchantDwdData();
 //        statisticsWorkerInfoDwdData();
 //        statisticsWorkerShopDwdData();
-        statisticsWorkerEvaluateDwdData();
+//        statisticsWorkerEvaluateDwdData();
+        statisticsWorkerBaseInfoDwsData();
+    }
+
+    private void statisticsWorkerBaseInfoDwsData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/worker-base-info-dws.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_worker_base_info_statistics_di");
+        for (Map<String, Object> mapData : lstData) {
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
     }
 
     private void statisticsWorkerEvaluateDwdData() {
