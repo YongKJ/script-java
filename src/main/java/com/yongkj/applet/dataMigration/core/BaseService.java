@@ -1,5 +1,11 @@
 package com.yongkj.applet.dataMigration.core;
 
+import com.aliyun.odps.Instance;
+import com.aliyun.odps.Odps;
+import com.aliyun.odps.account.Account;
+import com.aliyun.odps.account.AliyunAccount;
+import com.aliyun.odps.data.Record;
+import com.aliyun.odps.task.SQLTask;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.dto.SQL;
@@ -45,6 +51,47 @@ public abstract class BaseService {
                 this.devDatabase, this.testDatabase,
                 this.preDatabase, this.prodDatabase
         );
+    }
+
+    protected boolean runMaxComputeTask(Database database, String sqlScript, boolean isScriptMode) {
+        Account account = new AliyunAccount(database.getUsername(), database.getPassword());
+        Odps odps = new Odps(account);
+        odps.setEndpoint(getEndpoint(database));
+        odps.setDefaultProject(getProject(database));
+
+        try {
+            Instance instance = SQLTask.run(odps, getProject(database), sqlScript, getHints(isScriptMode), null);
+            instance.waitForSuccess();
+
+            List<Record> recordList = SQLTask.getResult(instance);
+            for (Record record : recordList) {
+                System.out.println(record.get(0));
+                System.out.println(record.get(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private String getEndpoint(Database database) {
+        String url = database.getUrl().replace("jdbc:odps:", "");
+        return url.split("\\?")[0];
+    }
+
+    private String getProject(Database database) {
+        String[] projectStrArray = database.getUrl().split("project=");
+        return projectStrArray[1].split("&")[0];
+    }
+
+    private Map<String, String> getHints(boolean isScriptMode) {
+        Map<String, String> hints = new HashMap<>();
+        hints.put("odps.sql.submit.mode", "statement");
+        if (isScriptMode) {
+            hints.put("odps.sql.submit.mode", "script");
+        }
+        return hints;
     }
 
     protected boolean srcTableCreate(String createSql) {
