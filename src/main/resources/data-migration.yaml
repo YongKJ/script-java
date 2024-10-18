@@ -88,24 +88,41 @@ max-compute:
     url: "jdbc:postgresql://127.0.0.1:43306/pre_warehouse?charSet=utf-8&reWriteBatchedInserts=true&ApplicationName=service-warehouse"
     username: ""
     password: ""
+  - name: "prod_warehouse"
+    driver: "org.postgresql.Driver"
+    url: "jdbc:postgresql://127.0.0.1:43306/prod_warehouse?charSet=utf-8&reWriteBatchedInserts=true&ApplicationName=service-warehouse"
+    username: ""
+    password: ""
 
 max-compute-config:
   tables:
-    - "ods_test_odps"
-    - "ods_ad_store_tt"
-    - "ods_event_data"
-    - "ods_device_user_info"
-    - "ods_ocean_engine_advertising"
-    - "ods_ocean_engine_advertising_report"
-    - "ods_tencent_advertising"
-    - "ods_tencent_advertising_report"
-    - "ods_little_advertising"
-    - "ods_little_advertising_report"
-    - "dws_customer_registration_statistics_di"
-    - "dws_customer_registration_atomic_di"
+#    - "ods_test_odps"
+#    - "ods_ad_store_tt"
+#    - "ods_event_data"
+#    - "ods_device_user_info"
+#    - "ods_ocean_engine_advertising"
+#    - "ods_ocean_engine_advertising_report"
+#    - "ods_tencent_advertising"
+#    - "ods_tencent_advertising_report"
+#    - "ods_little_advertising"
+#    - "ods_little_advertising_report"
+#    - "dws_customer_registration_statistics_di"
+#    - "dws_customer_registration_atomic_di"
+#    - "dws_customer_login_atomic_di"
+#    - "dws_customer_login_statistics_di"
+#    - "dws_customer_evaluate_statistics_di"
+#    - "ads_overall_customer_data_trends_di"
+#    - "dwd_customer_evaluate_di"
+#    - "dwd_customer_login_di"
+#    - "dws_registered_merchant_statistics_di"
+#    - "dwd_merchant_review_di"
+#    - "dwd_worker_info_di"
+#    - "dwd_worker_shop_di"
+#    - "dwd_worker_evaluate_di"
+    - "dws_worker_base_info_statistics_di"
 
 max-compute-statistics-init:
-  enable: true
+  enable: false
 
 max-compute-assignment:
   enable: false
@@ -117,7 +134,7 @@ category-data-sync:
   enable: false
 
 small-assignment-update:
-  enable: false
+  enable: true
 
 token-management:
   enable: false

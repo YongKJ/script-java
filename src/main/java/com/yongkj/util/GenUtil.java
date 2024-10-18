@@ -48,6 +48,11 @@ public class GenUtil {
         }
     }
 
+    public static String timestampToStr(long timestamp) {
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        return localDateToStr(instant.atZone(ZoneId.systemDefault()).toLocalDate(), "yyyyMMdd");
+    }
+
     public static LocalDateTime toLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }

@@ -16,6 +16,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,34 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        updatePlatformKind();
 //        updateProdMenuPermissions();
 //        exportWorkerIds();
-        exportWorkerShopInfo();
+//        exportWorkerShopInfo();
+        exportUtcCreatedData();
+    }
+
+    private void exportUtcCreatedData() {
+        Table adminUser = preDatabase.getMapTable().get("admin_user");
+        Table organization = preDatabase.getMapTable().get("organization");
+
+        List<Map<String, Object>> adminUserData = srcDataList(preDatabase, adminUser);
+        List<Map<String, Object>> organizationData = srcDataList(preDatabase, organization);
+
+        Map<String, String> mapUtcCreatedData = new ConcurrentSkipListMap<>();
+        for (Map<String, Object> mapData : adminUserData) {
+            Long utcCreated = (Long) mapData.get("utc_created");
+            String utcCreatedStr = GenUtil.timestampToStr(utcCreated);
+            mapUtcCreatedData.put(utcCreatedStr, utcCreatedStr);
+        }
+
+        for (Map<String, Object> mapData : organizationData) {
+            Long utcCreated = (Long) mapData.get("utc_created");
+            String utcCreatedStr = GenUtil.timestampToStr(utcCreated);
+            mapUtcCreatedData.put(utcCreatedStr, utcCreatedStr);
+        }
+
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\utc-created-data.json",
+                GenUtil.toJsonString(mapUtcCreatedData)
+        );
     }
 
     private void exportWorkerShopInfo() {
