@@ -34,6 +34,7 @@ public class DataMigration {
     private final MaxComputeAssignmentService maxComputeAssignmentService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
     private final SmallAssignmentUpdateService smallAssignmentUpdateService;
+    private final MaxComputeHistoryInitService maxComputeHistoryInitService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
     private final DataIncrementMigrationService dataIncrementMigrationService;
     private final FieldIncrementMigrationService fieldIncrementMigrationService;
@@ -46,6 +47,11 @@ public class DataMigration {
         if (!maxCompute) {
             Map<String, Object> mapMaxComputeStatisticsInit = GenUtil.getMap("max-compute-statistics-init");
             maxCompute = GenUtil.objToBoolean(mapMaxComputeStatisticsInit.get("enable"));
+        }
+
+        if (!maxCompute) {
+            Map<String, Object> mapMaxComputeHistoryInit = GenUtil.getMap("max-compute-history-init");
+            maxCompute = GenUtil.objToBoolean(mapMaxComputeHistoryInit.get("enable"));
         }
 
         if (maxCompute) {
@@ -81,6 +87,7 @@ public class DataMigration {
         this.syncMenuPermissionsService = new SyncMenuPermissionsService(this);
         this.maxComputeAssignmentService = new MaxComputeAssignmentService(this);
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
+        this.maxComputeHistoryInitService = new MaxComputeHistoryInitService(this);
         this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
         this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
         this.fieldIncrementMigrationService = new FieldIncrementMigrationService(this);
@@ -118,6 +125,7 @@ public class DataMigration {
         maxComputeAssignmentService.apply();
         shopWorkerDataExportService.apply();
         smallAssignmentUpdateService.apply();
+        maxComputeHistoryInitService.apply();
         adminMenuDataMigrationService.apply();
         dataIncrementMigrationService.apply();
         fieldIncrementMigrationService.apply();

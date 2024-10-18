@@ -121,6 +121,9 @@ max-compute-config:
 #    - "dwd_worker_evaluate_di"
     - "dws_worker_base_info_statistics_di"
 
+max-compute-history-init:
+  enable: false
+
 max-compute-statistics-init:
   enable: false
 
