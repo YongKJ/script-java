@@ -41,44 +41,59 @@ public class DataMigration {
     private final MaxComputeStatisticsInitService maxComputeStatisticsInitService;
 
     private DataMigration() {
-        Map<String, Object> mapMaxCompute = GenUtil.getMap("max-compute-assignment");
-        boolean maxCompute = GenUtil.objToBoolean(mapMaxCompute.get("enable"));
+        Map<String, Object> mapMaxComputeHistoryInit = GenUtil.getMap("max-compute-history-init");
+        boolean historyInit = GenUtil.objToBoolean(mapMaxComputeHistoryInit.get("enable"));
 
-        if (!maxCompute) {
-            Map<String, Object> mapMaxComputeStatisticsInit = GenUtil.getMap("max-compute-statistics-init");
-            maxCompute = GenUtil.objToBoolean(mapMaxComputeStatisticsInit.get("enable"));
-        }
-
-        if (!maxCompute) {
-            Map<String, Object> mapMaxComputeHistoryInit = GenUtil.getMap("max-compute-history-init");
-            maxCompute = GenUtil.objToBoolean(mapMaxComputeHistoryInit.get("enable"));
-        }
-
-        if (maxCompute) {
-            this.devDatabase = null;
-            this.preDatabase = null;
-            this.testDatabase = null;
-            this.prodDatabase = null;
-            this.srcDatabase = null;
-            this.desDatabase = null;
-            this.mapDatabase = Database.initMaxComputeMapDatabase();
-            this.preDatabaseHologres = Database.get("pre_warehouse", mapDatabase);
-            this.prodDatabaseHologres = Database.get("prod_warehouse", mapDatabase);
-            this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
-            this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
-        } else {
+        if (historyInit) {
             this.preDatabaseHologres = null;
             this.prodDatabaseHologres = null;
-            this.preDatabaseMaxCompute = null;
-            this.prodDatabaseMaxCompute = null;
-            this.mapDatabase = Database.initMapDatabase();
-            this.devDatabase = Database.get("dev", mapDatabase);
+            this.mapDatabase = Database.initMaxComputeMapDatabase();
+            this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
+            this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
+
+            this.devDatabase = null;
+            this.testDatabase = null;
+            this.srcDatabase = null;
+            this.desDatabase = null;
+            Map<String, Database> mapDatabase = Database.initMapDatabase();
             this.preDatabase = Database.get("pre", mapDatabase);
-            this.testDatabase = Database.get("test", mapDatabase);
             this.prodDatabase = Database.get("prod", mapDatabase);
-            this.srcDatabase = Database.get("src", this);
-            this.desDatabase = Database.get("des", this);
+        } else {
+            Map<String, Object> mapMaxCompute = GenUtil.getMap("max-compute-assignment");
+            boolean maxCompute = GenUtil.objToBoolean(mapMaxCompute.get("enable"));
+
+            if (!maxCompute) {
+                Map<String, Object> mapMaxComputeStatisticsInit = GenUtil.getMap("max-compute-statistics-init");
+                maxCompute = GenUtil.objToBoolean(mapMaxComputeStatisticsInit.get("enable"));
+            }
+
+            if (maxCompute) {
+                this.devDatabase = null;
+                this.preDatabase = null;
+                this.testDatabase = null;
+                this.prodDatabase = null;
+                this.srcDatabase = null;
+                this.desDatabase = null;
+                this.mapDatabase = Database.initMaxComputeMapDatabase();
+                this.preDatabaseHologres = Database.get("pre_warehouse", mapDatabase);
+                this.prodDatabaseHologres = Database.get("prod_warehouse", mapDatabase);
+                this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
+                this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
+            } else {
+                this.preDatabaseHologres = null;
+                this.prodDatabaseHologres = null;
+                this.preDatabaseMaxCompute = null;
+                this.prodDatabaseMaxCompute = null;
+                this.mapDatabase = Database.initMapDatabase();
+                this.devDatabase = Database.get("dev", mapDatabase);
+                this.preDatabase = Database.get("pre", mapDatabase);
+                this.testDatabase = Database.get("test", mapDatabase);
+                this.prodDatabase = Database.get("prod", mapDatabase);
+                this.srcDatabase = Database.get("src", this);
+                this.desDatabase = Database.get("des", this);
+            }
         }
+
         this.tokenManagementService = new TokenManagementService(this);
         this.adminMenuDataMigrationService = new AdminMenuDataMigrationService(this);
         this.categoryDataSyncService = new CategoryDataSyncService(this);
