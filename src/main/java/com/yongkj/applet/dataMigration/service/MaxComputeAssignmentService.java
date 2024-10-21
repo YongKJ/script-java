@@ -2,6 +2,7 @@ package com.yongkj.applet.dataMigration.service;
 
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
+import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
 import com.yongkj.applet.dataMigration.util.Wrappers;
@@ -18,7 +19,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MaxComputeAssignmentService extends BaseService {
@@ -35,7 +39,8 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.preDatabaseMaxCompute.getMapTable().size()", this.preDatabaseMaxCompute.getMapTable().size()));
 
-        tencentSceneTest();
+        exportBrowsingLink();
+//        tencentSceneTest();
 //        insertData();
 //        getAllData();
 //        createTestData();
@@ -45,6 +50,94 @@ public class MaxComputeAssignmentService extends BaseService {
 //        saveData();
 //        updateData();
 //        syncTableData();
+    }
+
+    private void exportBrowsingLink() {
+        Map<String, Integer> mapPrePageLink = getMapPageLink(preDatabaseHologres);
+        Map<String, Integer> mapProdPageLink = getMapPageLink(prodDatabaseHologres);
+
+        Map<String, Integer> mapPageLink = new ConcurrentSkipListMap<>();
+        mapPageLink.putAll(mapPrePageLink);
+        mapPageLink.putAll(mapProdPageLink);
+
+        for (Map.Entry<String, Integer> map : mapPageLink.entrySet()) {
+            Integer preValue = Optional.ofNullable(mapPrePageLink.get(map.getKey())).orElse(0);
+            Integer prodValue = Optional.ofNullable(mapProdPageLink.get(map.getKey())).orElse(0);
+            mapPageLink.put(map.getKey(), preValue + prodValue);
+        }
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "exportBrowsingLink", "mapPrePageLink.size()", mapPrePageLink.size()));
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "exportBrowsingLink", "mapProdPageLink.size()", mapProdPageLink.size()));
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "exportBrowsingLink", "mapPageLink.size()", mapPageLink.size()));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("小程序");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("页面名称"),
+                Collections.singletonList("页面路径"),
+                Collections.singletonList("访问次数"),
+                Collections.singletonList("分类聚合")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        List<Map.Entry<String, Integer>> lstData = new ArrayList<>(mapPageLink.entrySet());
+        lstData.sort(Collections.reverseOrder(Map.Entry.comparingByValue()));
+
+        int rowIndex = 1;
+        for (Map.Entry<String, Integer> map : lstData) {
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, "");
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 2, map.getKey());
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 3, map.getValue());
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, 4, "");
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private Map<String, Integer> getMapPageLink(Database database) {
+        Table table = database.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstPageLink = srcDataList(database,
+                Wrappers.lambdaQuery(table)
+                        .isNotNUll("page_link")
+                        .select("page_link"));
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getMapPageLink", "lstPageLink.size()", lstPageLink.size()));
+
+        Pattern pattern = Pattern.compile("^[a-zA-Z]");
+        Map<String, Integer> mapPageLink = new ConcurrentSkipListMap<>();
+        for (Map<String, Object> mapData : lstPageLink) {
+            String pageLink = (String) mapData.get("page_link");
+            if (!StringUtils.hasText(pageLink)) {
+                continue;
+            }
+
+            if (pageLink.contains("?")) {
+                pageLink = pageLink.split("\\?")[0];
+            }
+
+            if (!pageLink.contains("/")) {
+                continue;
+            }
+
+            Matcher matcher = pattern.matcher(pageLink);
+            if (!matcher.find()) {
+                continue;
+            }
+
+            if (!mapPageLink.containsKey(pageLink)) {
+                mapPageLink.put(pageLink, 0);
+            }
+
+            Integer value = mapPageLink.get(pageLink) + 1;
+            mapPageLink.put(pageLink, value);
+        }
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "getMapPageLink", "mapPageLink.size()", mapPageLink.size()));
+
+        return mapPageLink;
     }
 
     private void tencentSceneTest() {
