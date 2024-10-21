@@ -3,6 +3,7 @@ package com.yongkj.applet.dataMigration.service;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
+import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.FileUtil;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MaxComputeHistoryInitService extends BaseService {
 
@@ -38,6 +41,7 @@ public class MaxComputeHistoryInitService extends BaseService {
         List<String> organizationUtcCreated = getUtcCreated(preDatabase, "organization");
         LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "organizationUtcCreated.size()", organizationUtcCreated.size()));
 
+        organizationUtcCreated = filterUtcCreated(preDatabaseMaxCompute, "dws_registered_merchant_statistics_di", organizationUtcCreated);
         for (String utcCreated : organizationUtcCreated) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
 
@@ -60,6 +64,7 @@ public class MaxComputeHistoryInitService extends BaseService {
         List<String> organizationLogUtcCreated = getUtcCreated(preDatabase, "organization_log");
         LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_merchant_review_di_history_data", "organizationLogUtcCreated.size()", organizationLogUtcCreated.size()));
 
+        organizationLogUtcCreated = filterUtcCreated(preDatabaseMaxCompute, "dwd_merchant_review_di", organizationLogUtcCreated);
         for (String utcCreated : organizationLogUtcCreated) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
 
@@ -73,6 +78,24 @@ public class MaxComputeHistoryInitService extends BaseService {
                 break;
             }
         }
+    }
+
+    private List<String> filterUtcCreated(Database database, String tableName, List<String> lstUtcCreated) {
+        Table table = database.getMapTable().get(tableName);
+        List<Map<String, Object>> tableData = srcDataList(database, table);
+        Map<String, String> mapUtcCreatedData = tableData.stream().map(po -> (String) po.get("ds"))
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
+
+        List<String> lstUtcCreatedData = new ArrayList<>();
+        for (String utcCreated : lstUtcCreated) {
+            if (mapUtcCreatedData.containsKey(utcCreated)) {
+                continue;
+            }
+
+            lstUtcCreatedData.add(utcCreated);
+        }
+
+        return lstUtcCreatedData;
     }
 
     private List<String> getUtcCreated(Database database, String tableName) {
