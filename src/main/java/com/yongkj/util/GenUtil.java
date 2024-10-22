@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -291,7 +292,14 @@ public class GenUtil {
             return yamlObjectMapper.readValue(new File(path), Map.class);
         } catch (Exception e) {
             e.printStackTrace();
-            return new HashMap<String, Object>();
+
+            try {
+                return yamlObjectMapper.readValue(new ClassPathResource(config).getInputStream(), Map.class);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+
+                return new HashMap<String, Object>();
+            }
         }
     }
 
