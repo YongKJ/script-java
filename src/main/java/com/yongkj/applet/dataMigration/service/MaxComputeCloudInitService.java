@@ -29,8 +29,8 @@ public class MaxComputeCloudInitService extends BaseService {
     }
 
     private String countEventData() {
-        Table testTable = preDatabaseMaxCompute.getMapTable().get("ods_event_data");
-        List<Map<String, Object>> lstData = srcSetDataList(preDatabaseMaxCompute,
+        Table testTable = prodDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstData = srcSetDataList(prodDatabaseHologres,
                 Wrappers.lambdaQuery(testTable)
                         .select("COUNT(*) `count`"));
 

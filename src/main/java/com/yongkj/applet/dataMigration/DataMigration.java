@@ -50,9 +50,9 @@ public class DataMigration {
         boolean cloudInit = GenUtil.objToBoolean(mapMaxComputeCloudInit.get("enable"));
 
         if (historyInit || cloudInit) {
-            this.preDatabaseHologres = null;
-            this.prodDatabaseHologres = null;
             this.mapDatabase = Database.initMaxComputeMapDatabase();
+            this.preDatabaseHologres = Database.get("pre_warehouse", mapDatabase);
+            this.prodDatabaseHologres = Database.get("prod_warehouse", mapDatabase);
             this.preDatabaseMaxCompute = Database.get("pre_warehouse_max_compute", mapDatabase);
             this.prodDatabaseMaxCompute = Database.get("prod_warehouse_max_compute", mapDatabase);
 
