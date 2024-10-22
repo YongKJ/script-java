@@ -98,7 +98,7 @@ max-compute-config:
   tables:
 #    - "ods_test_odps"
 #    - "ods_ad_store_tt"
-#    - "ods_event_data"
+    - "ods_event_data"
 #    - "ods_device_user_info"
 #    - "ods_ocean_engine_advertising"
 #    - "ods_ocean_engine_advertising_report"
@@ -119,7 +119,11 @@ max-compute-config:
 #    - "dwd_worker_info_di"
 #    - "dwd_worker_shop_di"
 #    - "dwd_worker_evaluate_di"
-    - "dws_worker_base_info_statistics_di"
+#    - "dws_worker_base_info_statistics_di"
+#    - "dws_registered_merchant_statistics_di"
+
+max-compute-cloud-init:
+  enable: true
 
 max-compute-history-init:
   enable: false
@@ -137,7 +141,7 @@ category-data-sync:
   enable: false
 
 small-assignment-update:
-  enable: true
+  enable: false
 
 token-management:
   enable: false

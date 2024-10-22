@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 public abstract class BaseService {
 
+    protected String bizDate;
     protected Database srcDatabase;
     protected Database desDatabase;
     protected final Database devDatabase;
@@ -36,6 +37,7 @@ public abstract class BaseService {
     protected final Database prodDatabaseMaxCompute;
 
     protected BaseService(DataMigration dataMigration) {
+        this.bizDate = dataMigration.getBizDate();
         this.mapDatabase = dataMigration.getMapDatabase();
         this.srcDatabase = dataMigration.getSrcDatabase();
         this.desDatabase = dataMigration.getDesDatabase();
@@ -257,7 +259,7 @@ public abstract class BaseService {
             fieldNames.add(fieldName);
         }
         return SQL.getDataSelectSql(
-                fieldNames,
+                fieldNames.isEmpty() ? query.getFields() : fieldNames,
                 Collections.singletonList(query.getTableName()),
                 query.getSqlSegment()
         );

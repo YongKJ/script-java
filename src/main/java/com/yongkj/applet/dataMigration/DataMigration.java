@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 public class DataMigration {
 
+    private String bizDate;
     private final Database srcDatabase;
     private final Database desDatabase;
     private final Database devDatabase;
@@ -30,6 +31,7 @@ public class DataMigration {
     private final CategoryDataSyncService categoryDataSyncService;
     private final AgreementsUpdateService agreementsUpdateService;
     private final ShopCancelLogoutService shopCancelLogoutService;
+    private final MaxComputeCloudInitService maxComputeCloudInitService;
     private final SyncMenuPermissionsService syncMenuPermissionsService;
     private final MaxComputeAssignmentService maxComputeAssignmentService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
@@ -44,7 +46,10 @@ public class DataMigration {
         Map<String, Object> mapMaxComputeHistoryInit = GenUtil.getMap("max-compute-history-init");
         boolean historyInit = GenUtil.objToBoolean(mapMaxComputeHistoryInit.get("enable"));
 
-        if (historyInit) {
+        Map<String, Object> mapMaxComputeCloudInit = GenUtil.getMap("max-compute-cloud-init");
+        boolean cloudInit = GenUtil.objToBoolean(mapMaxComputeCloudInit.get("enable"));
+
+        if (historyInit || cloudInit) {
             this.preDatabaseHologres = null;
             this.prodDatabaseHologres = null;
             this.mapDatabase = Database.initMaxComputeMapDatabase();
@@ -99,6 +104,7 @@ public class DataMigration {
         this.categoryDataSyncService = new CategoryDataSyncService(this);
         this.agreementsUpdateService = new AgreementsUpdateService(this);
         this.shopCancelLogoutService = new ShopCancelLogoutService(this);
+        this.maxComputeCloudInitService = new MaxComputeCloudInitService(this);
         this.syncMenuPermissionsService = new SyncMenuPermissionsService(this);
         this.maxComputeAssignmentService = new MaxComputeAssignmentService(this);
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
@@ -136,6 +142,7 @@ public class DataMigration {
         categoryDataSyncService.apply();
         agreementsUpdateService.apply();
         shopCancelLogoutService.apply();
+        maxComputeCloudInitService.apply();
         syncMenuPermissionsService.apply();
         maxComputeAssignmentService.apply();
         shopWorkerDataExportService.apply();
@@ -148,6 +155,15 @@ public class DataMigration {
         for (Map.Entry<String, Database> map : mapDatabase.entrySet()) {
             JDBCUtil.closeAll(map.getValue().getManager());
         }
+    }
+
+    private String applyCloud(String bizDate) {
+        this.bizDate = bizDate;
+        return maxComputeCloudInitService.apply();
+    }
+
+    public String getBizDate() {
+        return bizDate;
     }
 
     public Map<String, Database> getMapDatabase() {
@@ -250,8 +266,13 @@ public class DataMigration {
         System.out.println("------------------------------------------------------------------------------------------------------------");
     }
 
-    public static void run(String[] args) {
-        new DataMigration().apply();
+    public static String run(String[] args) {
+        if (args.length == 0) {
+            new DataMigration().apply();
+            return null;
+        } else {
+            return new DataMigration().applyCloud(args[0]);
+        }
 //        new DataMigration().test();
 //        new DataMigration().test1();
 //        new DataMigration().test4();
