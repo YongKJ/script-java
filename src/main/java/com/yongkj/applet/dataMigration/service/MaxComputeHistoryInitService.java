@@ -31,7 +31,29 @@ public class MaxComputeHistoryInitService extends BaseService {
         if (!enable) return;
 
 //        init_dwd_merchant_review_di_history_data();
-        init_dws_registered_merchant_statistics_di_history_data();
+//        init_dws_registered_merchant_statistics_di_history_data();
+        init_dwd_customer_browse_path_di_history_data();
+    }
+
+    private void init_dwd_customer_browse_path_di_history_data() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\browse\\insert_dwd_customer_browse_path_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> userSessionUtcCreated = getUtcCreatedByMaxCompute(preDatabaseMaxCompute, "dwd_con_user_session_path_di");
+        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_customer_browse_path_di_history_data", "userSessionUtcCreated.size()", userSessionUtcCreated.size()));
+        for (String utcCreated : userSessionUtcCreated) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_customer_browse_path_di_history_data", "utcCreated", utcCreated));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_customer_browse_path_di_history_data", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
     }
 
     private void init_dws_registered_merchant_statistics_di_history_data() {
@@ -96,6 +118,22 @@ public class MaxComputeHistoryInitService extends BaseService {
         }
 
         return lstUtcCreatedData;
+    }
+
+    private List<String> getUtcCreatedByMaxCompute(Database database, String tableName) {
+        List<Map<String, Object>> tableData = srcDataList(database, Wrappers.lambdaQuery(tableName));
+
+        Map<String, String> mapUtcCreatedData = new ConcurrentSkipListMap<>();
+        for (Map<String, Object> mapData : tableData) {
+            Long utcCreated = (Long) mapData.get("create_time");
+            String utcCreatedStr = GenUtil.timestampToStr(utcCreated / 1000);
+            if (utcCreatedStr.startsWith("1970")) {
+                continue;
+            }
+            mapUtcCreatedData.put(utcCreatedStr, utcCreatedStr);
+        }
+
+        return new ArrayList<>(mapUtcCreatedData.values());
     }
 
     private List<String> getUtcCreated(Database database, String tableName) {
