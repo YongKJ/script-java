@@ -9,6 +9,8 @@ import com.yongkj.util.FileUtil;
 import com.yongkj.util.GenUtil;
 import com.yongkj.util.LogUtil;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +41,64 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsWorkerShopDwdData();
 //        statisticsWorkerEvaluateDwdData();
 //        statisticsWorkerBaseInfoDwsData();
-        statisticsDwdCustomerPageVisitData();
+//        statisticsDwdCustomerPageVisitData();
+        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
+    }
+
+    private void statisticsDwsCustomerBrowsingBehaviorStatisticsData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/customer-page-visit.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        List<Integer> lstUserCnt = lstData.stream()
+                .map(po -> GenUtil.strToInteger(po.get("user_cnt").toString()))
+                .collect(Collectors.toList());
+
+        List<String> lstDs = lstData.stream()
+                .map(po -> GenUtil.objToStr(po.get("ds").toString()))
+                .collect(Collectors.toList());
+
+        int index = 1;
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_browsing_behavior_statistics_di");
+        for (int i = 0; i < lstData.size(); i++) {
+            for (int j = i + 1; j < lstData.size(); j++) {
+                String prePageLink = (String) lstData.get(i).get("page_link");
+                String curPageLink = (String) lstData.get(j).get("page_link");
+
+                String prePageName = (String) lstData.get(i).get("page_name");
+                String curPageName = (String) lstData.get(j).get("page_name");
+
+                int dsIndex = GenUtil.random(0, lstData.size() - 1);
+                int userCntIndex = GenUtil.random(0, lstData.size() - 1);
+
+                String ds = lstDs.get(dsIndex);
+                int userCnt = lstUserCnt.get(userCntIndex);
+                double trafficWeight = GenUtil.randomDouble(0.1000, 0.9999);
+
+                BigDecimal originalValue = new BigDecimal(trafficWeight);
+                BigDecimal trafficWeightRoundedValue = originalValue.setScale(4, RoundingMode.HALF_UP);
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("pre_page_link", prePageLink);
+                mapData.put("cur_page_link", curPageLink);
+                mapData.put("pre_page_link_name", prePageName);
+                mapData.put("cur_page_link_name", curPageName);
+                mapData.put("user_cnt", userCnt);
+                mapData.put("traffic_weight", trafficWeightRoundedValue);
+                mapData.put("ds", ds);
+
+                String insertSql = getMaxComputeInsertSQl(mapData, table);
+                System.out.println("insertSql: " + insertSql);
+                srcDataInsert(preDatabaseMaxCompute, insertSql);
+
+                if (index++ == 300) {
+                    break;
+                }
+            }
+        }
+
     }
 
     private void statisticsDwdCustomerPageVisitData() {
