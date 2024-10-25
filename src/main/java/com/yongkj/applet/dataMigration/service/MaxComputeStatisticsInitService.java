@@ -42,7 +42,33 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsWorkerEvaluateDwdData();
 //        statisticsWorkerBaseInfoDwsData();
 //        statisticsDwdCustomerPageVisitData();
-        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
+//        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
+        statisticsOdsBrowsePathInfoData();
+    }
+
+    private void statisticsOdsBrowsePathInfoData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/customer-page-visit.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("ods_browse_path_info");
+        for (Map<String, Object> mapData : lstData) {
+            String pageLink = (String) mapData.get("page_link");
+            String pageName = (String) mapData.get("page_name");
+
+            Map<String, Object> sqlData = new HashMap<>();
+            sqlData.put("page_link", pageLink);
+            sqlData.put("page_name", pageName);
+            sqlData.put("page_group_link", pageLink);
+            sqlData.put("page_group_name", pageName);
+            sqlData.put("ds", "20241024");
+
+            String insertSql = getMaxComputeInsertSQl(sqlData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
     }
 
     private void statisticsDwsCustomerBrowsingBehaviorStatisticsData() {
