@@ -6,11 +6,10 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.FileUtil;
-import com.yongkj.util.GenUtil;
-import com.yongkj.util.LogUtil;
+import com.yongkj.util.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -32,7 +31,38 @@ public class MaxComputeHistoryInitService extends BaseService {
 
 //        init_dwd_merchant_review_di_history_data();
 //        init_dws_registered_merchant_statistics_di_history_data();
-        init_dwd_customer_browse_path_di_history_data();
+//        init_dwd_customer_browse_path_di_history_data();
+        init_ods_browse_path_info_history_data();
+    }
+
+    private void init_ods_browse_path_info_history_data() {
+        Map<String, Map<String, String>> mapBrowsePathGroup = CsvUtil.toMap("/csv/max-compute/statistics/browse-path-group.csv")
+                .stream().collect(Collectors.toMap(po -> po.get("id"), Function.identity()));
+        List<Map<String, String>> lstBrowsePathInfo = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-1729481289990(1).xlsx");
+        Table table = preDatabaseMaxCompute.getMapTable().get("ods_browse_path_info");
+        for (Map<String, String> mapBrowsePathInfo : lstBrowsePathInfo) {
+            String pageLink = mapBrowsePathInfo.get("页面路径");
+            String pageName = mapBrowsePathInfo.get("页面名称");
+            String groupId = mapBrowsePathInfo.get("分类聚合");
+            if (!mapBrowsePathGroup.containsKey(groupId)) {
+                continue;
+            }
+            String pageGroupName = mapBrowsePathGroup.get(groupId).get("name");
+            String pageGroupLink = mapBrowsePathGroup.get(groupId).get("link");
+            String ds = GenUtil.timestampToStr(System.currentTimeMillis() / 1000);
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("ds", ds);
+            mapData.put("page_link", pageLink);
+            mapData.put("page_name", pageName);
+            mapData.put("page_group_link", pageGroupLink);
+            mapData.put("page_group_name", pageGroupName);
+
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_ods_browse_path_info_history_data", "insertSql", insertSql));
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------");
+        }
     }
 
     private void init_dwd_customer_browse_path_di_history_data() {
