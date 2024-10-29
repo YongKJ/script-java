@@ -30,9 +30,22 @@ public class MaxComputeHistoryInitService extends BaseService {
         if (!enable) return;
 
 //        init_dwd_merchant_review_di_history_data();
+        migrate_dwd_merchant_review_di_history_data();
 //        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
-        init_ods_browse_path_info_history_data();
+//        init_ods_browse_path_info_history_data();
+    }
+
+    private void migrate_dwd_merchant_review_di_history_data() {
+        Table srcTable = preDatabaseMaxCompute.getMapTable().get("dwd_merchant_review_di");
+        Table desTable = prodDatabaseMaxCompute.getMapTable().get("dwd_merchant_review_di");
+        List<Map<String, Object>> tableData = srcDataList(preDatabaseMaxCompute, srcTable);
+        for (Map<String, Object> mapData : tableData) {
+            String insertSql = getMaxComputeInsertSQl(mapData, desTable);
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "migrate_dwd_merchant_review_di_history_data", "insertSql", insertSql));
+            srcDataInsert(prodDatabaseMaxCompute, insertSql);
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------");
+        }
     }
 
     private void init_ods_browse_path_info_history_data() {
@@ -90,14 +103,14 @@ public class MaxComputeHistoryInitService extends BaseService {
         String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\merchant\\registration\\insert_dws_registered_merchant_statistics_di.osql";
         String sqlScriptContent = FileUtil.read(sqlScriptPath);
 
-        List<String> organizationUtcCreated = getUtcCreated(preDatabase, "organization");
+        List<String> organizationUtcCreated = getUtcCreated(prodDatabase, "organization");
         LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "organizationUtcCreated.size()", organizationUtcCreated.size()));
 
-        organizationUtcCreated = filterUtcCreated(preDatabaseMaxCompute, "dws_registered_merchant_statistics_di", organizationUtcCreated);
+        organizationUtcCreated = filterUtcCreated(prodDatabaseMaxCompute, "dws_registered_merchant_statistics_di", organizationUtcCreated);
         for (String utcCreated : organizationUtcCreated) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
 
-            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+            boolean flag = runMaxComputeTask(prodDatabaseMaxCompute, sqlScript, true);
 
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "utcCreated", utcCreated));
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "flag", flag));
@@ -113,14 +126,14 @@ public class MaxComputeHistoryInitService extends BaseService {
         String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\merchant\\registration\\insert_dwd_merchant_review_di.osql";
         String sqlScriptContent = FileUtil.read(sqlScriptPath);
 
-        List<String> organizationLogUtcCreated = getUtcCreated(preDatabase, "organization_log");
+        List<String> organizationLogUtcCreated = getUtcCreated(prodDatabase, "organization_log");
         LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_merchant_review_di_history_data", "organizationLogUtcCreated.size()", organizationLogUtcCreated.size()));
 
-        organizationLogUtcCreated = filterUtcCreated(preDatabaseMaxCompute, "dwd_merchant_review_di", organizationLogUtcCreated);
+        organizationLogUtcCreated = filterUtcCreated(prodDatabaseMaxCompute, "dwd_merchant_review_di", organizationLogUtcCreated);
         for (String utcCreated : organizationLogUtcCreated) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
 
-            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, false);
+            boolean flag = runMaxComputeTask(prodDatabaseMaxCompute, sqlScript, false);
 
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_merchant_review_di_history_data", "utcCreated", utcCreated));
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_merchant_review_di_history_data", "flag", flag));
