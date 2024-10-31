@@ -13,6 +13,7 @@ import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -48,7 +49,61 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        updateProdMenuPermissions();
 //        exportWorkerIds();
 //        exportWorkerShopInfo();
-        exportUtcCreatedData();
+//        exportUtcCreatedData();
+        exportJobRecallContent();
+    }
+
+    private void exportJobRecallContent() {
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("回访内容分词");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("分词列表(逗号分隔)"),
+                Collections.singletonList("工单回访内容")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = 1;
+        List<Map<String, Object>> jobRecallData = getJobRecallContent();
+        for (Map<String, Object> mapData : jobRecallData) {
+            String jobRecallContent = (String) mapData.get("recall_content");
+            if (!StringUtils.hasText(jobRecallContent)) {
+                continue;
+            }
+            if (!(jobRecallContent.contains("探") || jobRecallContent.contains("访"))) {
+                continue;
+            }
+
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, "");
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, 2, jobRecallContent);
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\工单回访内容分词-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private List<Map<String, Object>> getJobRecallContent() {
+//        Table jobRecall = devDatabase.getMapTable().get("job_recall");
+//        List<Map<String, Object>> jobRecallData = srcDataList(devDatabase, jobRecall);
+//
+//        jobRecall = testDatabase.getMapTable().get("job_recall");
+//        jobRecallData.addAll(srcDataList(testDatabase, jobRecall));
+//
+//        jobRecall = preDatabase.getMapTable().get("job_recall");
+//        jobRecallData.addAll(srcDataList(preDatabase, jobRecall));
+//
+//        jobRecall = prodDatabase.getMapTable().get("job_recall");
+//        jobRecallData.addAll(srcDataList(prodDatabase, jobRecall));
+
+        Table jobRecall = preDatabase.getMapTable().get("job_recall");
+        List<Map<String, Object>> jobRecallData = srcDataList(preDatabase, jobRecall);
+
+        jobRecall = prodDatabase.getMapTable().get("job_recall");
+        jobRecallData.addAll(srcDataList(prodDatabase, jobRecall));
+
+        return jobRecallData;
     }
 
     private void exportUtcCreatedData() {

@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import java.awt.Color;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,7 +116,14 @@ public class ExcelHeader {
         if (widthCol < tempWidthCol) {
             widthCol = tempWidthCol;
         }
-        sheet.setColumnWidth(col, widthCol * 256);
+        int cellMaxWidth = 255 * 256;
+        int contentWidth = value.getBytes(StandardCharsets.UTF_8).length * 256;
+        if (contentWidth > cellMaxWidth) {
+            //对于较长字段,设置一行最多展示50个汉字，UTF一个汉字占3个字节
+            sheet.setColumnWidth(col, 50 * 256 * 3);
+        } else {
+            sheet.setColumnWidth(col, widthCol * 256);
+        }
     }
 
     private static int getWidthCol(String value) {
