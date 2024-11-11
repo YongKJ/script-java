@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MaxComputeStatisticsInitService extends BaseService {
@@ -44,7 +45,114 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwdCustomerPageVisitData();
 //        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
 //        statisticsOdsBrowsePathInfoData();
-        statisticsDwdWorkerPortraitInfoData();
+//        statisticsDwdWorkerPortraitInfoData();
+//        statisticsDwdWorkerLoadDistributeOrderData();
+        statisticsDwdWorkerLoadLongOrderDiData();
+    }
+
+    private void statisticsDwdWorkerLoadLongOrderDiData() {
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 11, 4),
+                LocalDate.of(2024, 11, 5),
+                LocalDate.of(2024, 11, 6),
+                LocalDate.of(2024, 11, 7),
+                LocalDate.of(2024, 11, 8),
+                LocalDate.of(2024, 11, 9),
+                LocalDate.of(2024, 11, 11),
+                LocalDate.of(2024, 11, 11)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_load_short_order_di");
+        for (int i = 0; i < 50; i++) {
+            Long utcCreated = System.currentTimeMillis() / 1000;
+            Integer weekNum = GenUtil.random(1, 7);
+            Integer serviceTime = getLoadServiceTime();
+
+            LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("service_time", serviceTime);
+            mapData.put("utc_created", utcCreated);
+            mapData.put("week_num", weekNum);
+            mapData.put("job_id", i);
+            mapData.put("ds", ds);
+
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println(insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+    }
+
+    private int getLoadServiceTime() {
+        int jobId = GenUtil.random(1, 3);
+        switch (jobId) {
+            case 1:
+                return GenUtil.random(1, 3) * 3 *60 * 60;
+            case 2:
+                return GenUtil.random(4, 6) * 3 *60 * 60;
+            case 3:
+                return GenUtil.random(7, 9) * 3 *60 * 60;
+        }
+        return 0;
+    }
+
+    private void statisticsDwdWorkerLoadDistributeOrderData() {
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 11, 4),
+                LocalDate.of(2024, 11, 5),
+                LocalDate.of(2024, 11, 6),
+                LocalDate.of(2024, 11, 7),
+                LocalDate.of(2024, 11, 8),
+                LocalDate.of(2024, 11, 9),
+                LocalDate.of(2024, 11, 11),
+                LocalDate.of(2024, 11, 11)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_load_distribute_order_di");
+        for (int i = 0; i < 100; i++) {
+            try {
+                Integer overallJob = getJobNum();
+                TimeUnit.SECONDS.sleep(1);
+                Integer shortJob = getJobNum();
+                TimeUnit.SECONDS.sleep(1);
+                Integer longJob = getJobNum();
+
+                LocalDate date = lstDate.get(GenUtil.random(0, lstDate.size() - 1));
+                String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("worker_id", i);
+                mapData.put("worker_name", i + "");
+                mapData.put("overall_job_orders_2m", overallJob);
+                mapData.put("short_job_orders_1m", shortJob);
+                mapData.put("long_job_orders_3m", longJob);
+                mapData.put("ds", ds);
+
+                String insertSql = getMaxComputeInsertSQl(mapData, table);
+                System.out.println(insertSql);
+                srcDataInsert(preDatabaseMaxCompute, insertSql);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private int getJobNum() {
+        int jobId = GenUtil.random(1, 5);
+        switch (jobId) {
+            case 1:
+                return GenUtil.random(1, 2);
+            case 2:
+                return GenUtil.random(3, 5);
+            case 3:
+                return GenUtil.random(6, 8);
+            case 4:
+                return GenUtil.random(9, 10);
+            case 5:
+                return GenUtil.random(11, 15);
+        }
+        return 0;
     }
 
     private void statisticsDwdWorkerPortraitInfoData() {

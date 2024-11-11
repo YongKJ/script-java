@@ -30,8 +30,8 @@ public class MaxComputeHistoryInitService extends BaseService {
         if (!enable) return;
 
 //        init_dwd_merchant_review_di_history_data();
-        migrate_dwd_merchant_review_di_history_data();
-//        init_dws_registered_merchant_statistics_di_history_data();
+//        migrate_dwd_merchant_review_di_history_data();
+        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
 //        init_ods_browse_path_info_history_data();
     }
@@ -103,14 +103,14 @@ public class MaxComputeHistoryInitService extends BaseService {
         String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\merchant\\registration\\insert_dws_registered_merchant_statistics_di.osql";
         String sqlScriptContent = FileUtil.read(sqlScriptPath);
 
-        List<String> organizationUtcCreated = getUtcCreated(prodDatabase, "organization");
+        List<String> organizationUtcCreated = getUtcCreated(preDatabase, "organization");
         LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "organizationUtcCreated.size()", organizationUtcCreated.size()));
 
-        organizationUtcCreated = filterUtcCreated(prodDatabaseMaxCompute, "dws_registered_merchant_statistics_di", organizationUtcCreated);
+        organizationUtcCreated = filterUtcCreated(preDatabaseMaxCompute, "dws_registered_merchant_statistics_di", organizationUtcCreated);
         for (String utcCreated : organizationUtcCreated) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", utcCreated);
 
-            boolean flag = runMaxComputeTask(prodDatabaseMaxCompute, sqlScript, true);
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
 
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "utcCreated", utcCreated));
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_registered_merchant_statistics_di_history_data", "flag", flag));
