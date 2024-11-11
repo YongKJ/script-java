@@ -36,7 +36,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsOverallCustomerAdsDwsData();
 //        statisticsEvaluateDwdData();
 //        statisticsLoginDwdData();
-//        statisticsMerchantDwsData();
+        statisticsMerchantDwsData();
 //        statisticsMerchantDwdData();
 //        statisticsWorkerInfoDwdData();
 //        statisticsWorkerShopDwdData();
@@ -47,7 +47,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsOdsBrowsePathInfoData();
 //        statisticsDwdWorkerPortraitInfoData();
 //        statisticsDwdWorkerLoadDistributeOrderData();
-        statisticsDwdWorkerLoadLongOrderDiData();
+//        statisticsDwdWorkerLoadLongOrderDiData();
     }
 
     private void statisticsDwdWorkerLoadLongOrderDiData() {
