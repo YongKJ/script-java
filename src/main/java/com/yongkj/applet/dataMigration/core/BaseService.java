@@ -258,6 +258,9 @@ public abstract class BaseService {
                     !query.getFields().contains(fieldName)) continue;
             fieldNames.add(fieldName);
         }
+        if (fieldNames.isEmpty()) {
+            fieldNames = query.getFields();
+        }
         return SQL.getDataSelectSql(
                 fieldNames.isEmpty() ? query.getFields() : fieldNames,
                 Collections.singletonList(query.getTableName()),

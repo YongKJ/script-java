@@ -36,8 +36,8 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsOverallCustomerAdsDwsData();
 //        statisticsEvaluateDwdData();
 //        statisticsLoginDwdData();
-        statisticsMerchantDwsData();
-//        statisticsMerchantDwdData();
+//        statisticsMerchantDwsData();
+        statisticsMerchantDwdData();
 //        statisticsWorkerInfoDwdData();
 //        statisticsWorkerShopDwdData();
 //        statisticsWorkerEvaluateDwdData();
@@ -455,16 +455,16 @@ public class MaxComputeStatisticsInitService extends BaseService {
     private void statisticsMerchantDwdData() {
         Table table = preDatabaseMaxCompute.getMapTable().get("dwd_merchant_review_di");
         List<LocalDate> lstDate = Arrays.asList(
-                LocalDate.of(2024, 9, 15),
-                LocalDate.of(2024, 9, 16),
-                LocalDate.of(2024, 9, 17),
-                LocalDate.of(2024, 9, 18),
-                LocalDate.of(2024, 9, 19),
-                LocalDate.of(2024, 9, 20),
-                LocalDate.of(2024, 9, 21),
-                LocalDate.of(2024, 9, 22),
-                LocalDate.of(2024, 9, 23),
-                LocalDate.of(2024, 9, 24)
+                LocalDate.of(2024, 11, 2),
+                LocalDate.of(2024, 11, 3),
+                LocalDate.of(2024, 11, 4),
+                LocalDate.of(2024, 11, 5),
+                LocalDate.of(2024, 11, 6),
+                LocalDate.of(2024, 11, 7),
+                LocalDate.of(2024, 11, 8),
+                LocalDate.of(2024, 11, 9),
+                LocalDate.of(2024, 11, 10),
+                LocalDate.of(2024, 11, 11)
         );
         List<Integer> seconds = Arrays.asList(
                 0,

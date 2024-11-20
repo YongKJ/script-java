@@ -31,9 +31,35 @@ public class MaxComputeHistoryInitService extends BaseService {
 
 //        init_dwd_merchant_review_di_history_data();
 //        migrate_dwd_merchant_review_di_history_data();
-        init_dws_registered_merchant_statistics_di_history_data();
+//        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
 //        init_ods_browse_path_info_history_data();
+        init_dws_customer_registration_atomic_di();
+    }
+
+    private void init_dws_customer_registration_atomic_di() {
+        Map<String, Object> mapFilter = new HashMap<>();
+        mapFilter.put("event", 7);
+        List<String> eventDataCreateTime = getUtcCreated(preDatabaseHologres, "ods_event_data", "create_time", mapFilter);
+        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime.size()", eventDataCreateTime.size()));
+        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime", eventDataCreateTime));
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
+
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\registration\\insert_dws_customer_registration_atomic_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+        for (String createTime : eventDataCreateTime) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
     }
 
     private void migrate_dwd_merchant_review_di_history_data() {
@@ -180,13 +206,23 @@ public class MaxComputeHistoryInitService extends BaseService {
     }
 
     private List<String> getUtcCreated(Database database, String tableName) {
-        List<Map<String, Object>> tableData = srcDataList(database,
-                Wrappers.lambdaQuery(tableName)
-                        .eq("utc_deleted", 0));
+        Map<String, Object> mapFilter = new HashMap<>();
+        mapFilter.put("utc_deleted", 0);
+        return getUtcCreated(database, tableName, "utc_created", mapFilter);
+    }
+
+    private List<String> getUtcCreated(Database database, String tableName, String fieldName, Map<String, Object> mapFilter) {
+        Wrappers wrappers = Wrappers.lambdaQuery(tableName);
+        for (Map.Entry<String, Object> map : mapFilter.entrySet()) {
+            wrappers.eq(map.getKey(), map.getValue());
+        }
+        wrappers.select(fieldName);
+        List<Map<String, Object>> tableData = srcDataList(database, wrappers);
 
         Map<String, String> mapUtcCreatedData = new ConcurrentSkipListMap<>();
         for (Map<String, Object> mapData : tableData) {
-            Long utcCreated = (Long) mapData.get("utc_created");
+            String fieldValue = mapData.get(fieldName).toString();
+            Long utcCreated = getUtcCreated(Long.parseLong(fieldValue));
             String utcCreatedStr = GenUtil.timestampToStr(utcCreated);
             if (utcCreatedStr.startsWith("1970")) {
                 continue;
@@ -195,6 +231,15 @@ public class MaxComputeHistoryInitService extends BaseService {
         }
 
         return new ArrayList<>(mapUtcCreatedData.values());
+    }
+
+    private Long getUtcCreated(Long utcCreated) {
+        Long currentTimestamp = System.currentTimeMillis();
+        if (utcCreated.toString().length() != currentTimestamp.toString().length()) {
+            return utcCreated;
+        }
+
+        return utcCreated / 1000;
     }
 
 }
