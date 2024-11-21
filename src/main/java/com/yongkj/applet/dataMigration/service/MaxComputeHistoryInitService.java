@@ -8,6 +8,7 @@ import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,20 +35,81 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
 //        init_ods_browse_path_info_history_data();
-        init_dws_customer_registration_atomic_di();
+//        init_dws_customer_registration_atomic_di();
+//        init_dws_customer_registration_statistics_di();
+//        init_dws_customer_login_atomic_di();
+//        init_dws_customer_login_statistics_di();
+//        init_dwd_customer_evaluate_di();
+//        init_dws_customer_evaluate_statistics_di();
+        init_insert_ads_overall_customer_data_trends_di();
     }
 
-    private void init_dws_customer_registration_atomic_di() {
-        Map<String, Object> mapFilter = new HashMap<>();
-        mapFilter.put("event", 7);
-        List<String> eventDataCreateTime = getUtcCreated(preDatabaseHologres, "ods_event_data", "create_time", mapFilter);
-        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime.size()", eventDataCreateTime.size()));
-        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime", eventDataCreateTime));
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
-
-        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\registration\\insert_dws_customer_registration_atomic_di.osql";
+    private void init_insert_ads_overall_customer_data_trends_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\evaluate\\insert_ads_overall_customer_data_trends_di.osql";
         String sqlScriptContent = FileUtil.read(sqlScriptPath);
-        for (String createTime : eventDataCreateTime) {
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_insert_ads_overall_customer_data_trends_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_insert_ads_overall_customer_data_trends_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dws_customer_evaluate_statistics_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\evaluate\\insert_dws_customer_evaluate_statistics_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_evaluate_statistics_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_evaluate_statistics_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dwd_customer_evaluate_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\evaluate\\insert_dwd_customer_evaluate_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_customer_evaluate_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dwd_customer_evaluate_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dws_customer_login_statistics_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\login\\insert_dws_customer_login_statistics_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
             String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
 
             boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
@@ -60,6 +122,106 @@ public class MaxComputeHistoryInitService extends BaseService {
                 break;
             }
         }
+    }
+
+    private void init_dwd_customer_login_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\login\\insert_dwd_customer_login_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dws_customer_login_atomic_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\login\\insert_dws_customer_login_atomic_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dws_customer_registration_statistics_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\registration\\insert_dws_customer_registration_statistics_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private void init_dws_customer_registration_atomic_di() {
+        String sqlScriptPath = "D:\\Document\\MyCodes\\Worker\\MaxCompute\\service-warehouse\\scripts\\customer\\registration\\insert_dws_customer_registration_atomic_di.osql";
+        String sqlScriptContent = FileUtil.read(sqlScriptPath);
+
+        List<String> createTimes = getCreateTime();
+        for (String createTime : createTimes) {
+            String sqlScript = sqlScriptContent.replaceAll("\\$\\{bizdate\\}", createTime);
+
+            boolean flag = runMaxComputeTask(preDatabaseMaxCompute, sqlScript, true);
+
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "createTime", createTime));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "flag", flag));
+            System.out.println("================================================================================================================================");
+
+            if (!flag) {
+                break;
+            }
+        }
+    }
+
+    private List<String> getCreateTime() {
+        Map<String, Object> mapFilter = new HashMap<>();
+        mapFilter.put("event", 7);
+        List<String> eventDataCreateTime = getUtcCreated(preDatabaseHologres, "ods_event_data", "create_time", mapFilter);
+
+        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime.size()", eventDataCreateTime.size()));
+        LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_dws_customer_registration_atomic_di", "eventDataCreateTime", eventDataCreateTime));
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
+
+        LocalDate endDate = LocalDate.now();
+        List<String> createTimes = new ArrayList<>();
+        LocalDate startDate = GenUtil.strToLocalDate(eventDataCreateTime.get(0), "yyyyMMdd");
+//        LocalDate startDate = GenUtil.strToLocalDate("20241024", "yyyyMMdd");
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            String dateStr = GenUtil.localDateToStr(date, "yyyyMMdd");
+            createTimes.add(dateStr);
+        }
+        return createTimes;
     }
 
     private void migrate_dwd_merchant_review_di_history_data() {
