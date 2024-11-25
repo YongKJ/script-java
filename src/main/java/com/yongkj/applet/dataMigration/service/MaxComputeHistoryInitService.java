@@ -34,14 +34,14 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        migrate_dwd_merchant_review_di_history_data();
 //        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
-//        init_ods_browse_path_info_history_data();
+        init_ods_browse_path_info_history_data();
 //        init_dws_customer_registration_atomic_di();
 //        init_dws_customer_registration_statistics_di();
 //        init_dws_customer_login_atomic_di();
 //        init_dws_customer_login_statistics_di();
 //        init_dwd_customer_evaluate_di();
 //        init_dws_customer_evaluate_statistics_di();
-        init_insert_ads_overall_customer_data_trends_di();
+//        init_insert_ads_overall_customer_data_trends_di();
     }
 
     private void init_insert_ads_overall_customer_data_trends_di() {
@@ -240,7 +240,7 @@ public class MaxComputeHistoryInitService extends BaseService {
         Map<String, Map<String, String>> mapBrowsePathGroup = CsvUtil.toMap("/csv/max-compute/statistics/browse-path-group.csv")
                 .stream().collect(Collectors.toMap(po -> po.get("id"), Function.identity()));
         List<Map<String, String>> lstBrowsePathInfo = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-1729481289990(1).xlsx");
-        Table table = preDatabaseMaxCompute.getMapTable().get("ods_browse_path_info");
+        Table table = prodDatabaseMaxCompute.getMapTable().get("ods_browse_path_info");
         for (Map<String, String> mapBrowsePathInfo : lstBrowsePathInfo) {
             String pageLink = mapBrowsePathInfo.get("页面路径");
             String pageName = mapBrowsePathInfo.get("页面名称");
@@ -261,7 +261,7 @@ public class MaxComputeHistoryInitService extends BaseService {
 
             String insertSql = getMaxComputeInsertSQl(mapData, table);
             LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_ods_browse_path_info_history_data", "insertSql", insertSql));
-            srcDataInsert(preDatabaseMaxCompute, insertSql);
+            srcDataInsert(prodDatabaseMaxCompute, insertSql);
             System.out.println("------------------------------------------------------------------------------------------------------------------------------------");
         }
     }
