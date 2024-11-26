@@ -301,6 +301,23 @@ public abstract class BaseService {
                 new ArrayList<>(mapData.values()));
     }
 
+    protected String getMaxComputeInsertListSQl(List<Map<String, Object>> lstData, Table table) {
+        List<Map<String, Object>> lstObjectData = new ArrayList<>();
+        for (Map<String, Object> mapData : lstData) {
+            Map<String, Object> mapObjectData = new HashMap<>();
+            for (Map.Entry<String, Object> map : mapData.entrySet()) {
+                if (Objects.equals(map.getKey(), "ds")) continue;
+                mapObjectData.put(map.getKey(), map.getValue());
+            }
+            lstObjectData.add(mapObjectData);
+        }
+        return SQL.getMaxComputeDataListInsertSqlByObject(
+                table.getName(),
+                lstData.get(0).get("ds").toString(),
+                new ArrayList<>(lstObjectData.get(0).keySet()),
+                lstObjectData);
+    }
+
     protected String getMaxComputeInsertSQl(Map<String, Object> mapData, Table table) {
         Map<String, Object> mapObjectData = mapData.entrySet().stream()
                 .filter(po -> !Objects.equals(po.getKey(), "ds"))

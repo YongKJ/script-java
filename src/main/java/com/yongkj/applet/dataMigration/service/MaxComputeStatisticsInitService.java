@@ -268,14 +268,25 @@ public class MaxComputeStatisticsInitService extends BaseService {
                 .map(po -> GenUtil.objToStr(po.get("ds").toString()))
                 .collect(Collectors.toList());
 
-        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_activity_conversion_statistics_di");
-        for (int num = 0; num < 8; num++) {
-            int deep = 10;
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_browsing_behavior_statistics_di");
+        for (int num = 0; num < lstData.size(); num++) {
+            int deep = GenUtil.random(10, 30);
             int dsIndex = lstData.size() - 1 - num;
             List<Integer> lstIndex = new ArrayList<>();
+            List<Map<String, Object>> lstLinkData = new ArrayList<>();
             for (int i = 0; i < deep; i++) {
                 int preIndex = lstIndex.isEmpty() ? 0 : lstIndex.get(lstIndex.size() - 1);
                 int curIndex = GenUtil.random(1, lstData.size()) - 1;
+                if (i != deep - 1 && curIndex == preIndex) {
+                    do {
+                        try {
+                            TimeUnit.SECONDS.sleep(1);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        curIndex = GenUtil.random(1, lstData.size()) - 1;
+                    } while (curIndex == preIndex);
+                }
                 lstIndex.add(curIndex);
 
                 Map<String, Object> preData = i == 0 ? datas.get(datas.size() - 2) : lstData.get(preIndex);
@@ -305,10 +316,12 @@ public class MaxComputeStatisticsInitService extends BaseService {
                 mapData.put("traffic_weight", trafficWeightRoundedValue);
                 mapData.put("ds", ds);
 
-                String insertSql = getMaxComputeInsertSQl(mapData, table);
-                System.out.println("insertSql: " + insertSql);
-                srcDataInsert(preDatabaseMaxCompute, insertSql);
+                lstLinkData.add(mapData);
             }
+
+            String insertSql = getMaxComputeInsertListSQl(lstLinkData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
         }
     }
 
