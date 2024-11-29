@@ -15,6 +15,7 @@ import java.security.MessageDigest;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -240,7 +241,7 @@ public class GenUtil {
     }
 
     private static LocalDateTime strToLocalDateTime(String dateStr) {
-       return strToLocalDateTime(dateStr, "yyyy-MM-dd HH:mm:ss");
+        return strToLocalDateTime(dateStr, "yyyy-MM-dd HH:mm:ss");
     }
 
     private static LocalDateTime strToLocalDateTime(String dateStr, String format) {
@@ -382,11 +383,21 @@ public class GenUtil {
         return str.matches(pattern);
     }
 
-    public static int random(int min, int max) {
+    public static Integer random(int min, int max) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new Random(System.currentTimeMillis()).nextInt(max - min + 1) + min;
     }
 
     public static double randomDouble(double min, double max) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return min + new Random(System.currentTimeMillis()).nextDouble() * (max - min);
     }
 }

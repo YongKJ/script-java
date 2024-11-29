@@ -50,7 +50,45 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportWorkerIds();
 //        exportWorkerShopInfo();
 //        exportUtcCreatedData();
-        exportJobRecallContent();
+//        exportJobRecallContent();
+        getMapDistrictTypeId();
+    }
+
+    private void getMapDistrictTypeId() {
+        Table table = testDatabase.getMapTable().get("amap_district");
+        List<Map<String, Object>> provinceData = srcDataList(
+                Wrappers.lambdaQuery(table)
+                        .eq("parent_id", 0));
+        System.out.println("provinceData.size(): " + provinceData.size());
+
+        List<Integer> provinceIds = provinceData.stream().map(po -> (Integer) po.get("id")).collect(Collectors.toList());
+        List<Map<String, Object>> cityData = srcDataList(
+                Wrappers.lambdaQuery(table)
+                        .in("parent_id", provinceIds));
+        System.out.println("cityData.size(): " + cityData.size());
+
+        List<Integer> cityIds = cityData.stream().map(po -> (Integer) po.get("id")).collect(Collectors.toList());
+        List<Map<String, Object>> districtData = srcDataList(
+                Wrappers.lambdaQuery(table)
+                        .in("parent_id", cityIds));
+        System.out.println("districtData.size(): " + districtData.size());
+
+        provinceData.addAll(cityData);
+        provinceData.addAll(districtData);
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map<String, Object> mapData : provinceData) {
+            Integer id = (Integer) mapData.get("id");
+            String name = (String) mapData.get("name");
+            String level = (String) mapData.get("level");
+
+            Map<String, Object> tempMapData = new HashMap<>();
+            tempMapData.put("id", id);
+            tempMapData.put("name", name);
+            tempMapData.put("level", level);
+            lstData.add(tempMapData);
+        }
+
+        FileUtil.write("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json", GenUtil.toJsonString(lstData));
     }
 
     private void exportJobRecallContent() {

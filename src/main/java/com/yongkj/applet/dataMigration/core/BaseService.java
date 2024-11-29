@@ -301,6 +301,13 @@ public abstract class BaseService {
                 new ArrayList<>(mapData.values()));
     }
 
+    protected String getMaxComputeInsertListSQlNonePartition(List<Map<String, Object>> lstData, Table table) {
+        return SQL.getMaxComputeDataListInsertSqlByObjectAndNonePartition(
+                table.getName(),
+                new ArrayList<>(lstData.get(0).keySet()),
+                lstData);
+    }
+
     protected String getMaxComputeInsertListSQl(List<Map<String, Object>> lstData, Table table) {
         List<Map<String, Object>> lstObjectData = new ArrayList<>();
         for (Map<String, Object> mapData : lstData) {

@@ -3,6 +3,7 @@ package com.yongkj.applet.dataMigration.service;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.CsvUtil;
 import com.yongkj.util.FileUtil;
@@ -43,7 +44,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsWorkerEvaluateDwdData();
 //        statisticsWorkerBaseInfoDwsData();
 //        statisticsDwdCustomerPageVisitData();
-        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
+//        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
 //        statisticsOdsBrowsePathInfoData();
 //        statisticsDwdWorkerPortraitInfoData();
 //        statisticsDwdWorkerLoadDistributeOrderData();
@@ -51,6 +52,264 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwdCustomerScanDiData();
 //        statisticsDwdCustomerScanDeepDiData();
 //        statisticsDwsCustomerScanDiData();
+//        statisticsDwsMarketingScreenDiData();
+//        fixStatisticsDwsMarketingScreenDiData();
+//        statisticsDwsCustomerScreenDiData();
+        statisticsDwdActiveCustomerScreenDiData();
+    }
+
+    private void statisticsDwdActiveCustomerScreenDiData() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        List<Map<String, Object>> lstDistrictTypeId = GenUtil.fromJsonString(content, List.class);
+        System.out.println("lstDistrictTypeId.size(): " + lstDistrictTypeId.size());
+
+        List<LocalDate> lstDate = Arrays.asList(
+//                LocalDate.of(2024, 11, 15),
+//                LocalDate.of(2024, 11, 16),
+//                LocalDate.of(2024, 11, 17),
+//                LocalDate.of(2024, 11, 18),
+//                LocalDate.of(2024, 11, 19),
+//                LocalDate.of(2024, 11, 20),
+//                LocalDate.of(2024, 11, 21),
+//                LocalDate.of(2024, 11, 22),
+//                LocalDate.of(2024, 11, 23),
+//                LocalDate.of(2024, 11, 24),
+//                LocalDate.of(2024, 11, 25),
+//                LocalDate.of(2024, 11, 26),
+//                LocalDate.of(2024, 11, 27),
+                LocalDate.of(2024, 11, 28)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_active_customer_screen_di");
+        for (LocalDate date : lstDate) {
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+            List<Map<String, Object>> lstData = new ArrayList<>();
+            for (Map<String, Object> mapDistrictTypeId : lstDistrictTypeId) {
+
+                String name = (String) mapDistrictTypeId.get("name");
+                String level = (String) mapDistrictTypeId.get("level");
+                Integer id = GenUtil.strToInteger(mapDistrictTypeId.get("id").toString());
+
+                for (int i = 0; i < 100; i++) {
+                    Integer customerSex = GenUtil.random(1, 2);
+                    Integer ageIndex = GenUtil.random(1, 5);
+                    Integer customerAge = getCustomerAge(ageIndex);
+
+                    Map<String, Object> mapData = new HashMap<>();
+                    mapData.put("customer_id", i);
+                    mapData.put("customer_name", "青冥" + (i + 1));
+                    mapData.put("customer_sex", customerSex);
+                    mapData.put("customer_age", customerAge);
+                    mapData.put("district_type_name", name);
+                    mapData.put("district_type_id", id);
+                    mapData.put("level", level);
+                    mapData.put("ds", ds);
+                    lstData.add(mapData);
+                }
+
+                if (lstData.size() >= 10000) {
+                    String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+                    srcDataInsert(preDatabaseMaxCompute, insertSql);
+                    lstData = new ArrayList<>();
+                }
+            }
+            if (!lstData.isEmpty()) {
+                String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+                srcDataInsert(preDatabaseMaxCompute, insertSql);
+            }
+        }
+    }
+
+    private Integer getCustomerAge(Integer ageIndex) {
+        switch (ageIndex) {
+            case 1:
+                return GenUtil.random(16, 29);
+            case 2:
+                return GenUtil.random(30, 39);
+            case 3:
+                return GenUtil.random(40, 49);
+            case 4:
+                return GenUtil.random(50, 59);
+            case 5:
+                return GenUtil.random(60, 89);
+            default:
+                return 90;
+        }
+    }
+
+    private void statisticsDwsCustomerScreenDiData() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        List<Map<String, Object>> lstDistrictTypeId = GenUtil.fromJsonString(content, List.class);
+        System.out.println("lstDistrictTypeId.size(): " + lstDistrictTypeId.size());
+
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2024, 11, 15),
+                LocalDate.of(2024, 11, 16),
+                LocalDate.of(2024, 11, 17),
+                LocalDate.of(2024, 11, 18),
+                LocalDate.of(2024, 11, 19),
+                LocalDate.of(2024, 11, 20),
+                LocalDate.of(2024, 11, 21),
+                LocalDate.of(2024, 11, 22),
+                LocalDate.of(2024, 11, 23),
+                LocalDate.of(2024, 11, 24),
+                LocalDate.of(2024, 11, 25),
+                LocalDate.of(2024, 11, 26),
+                LocalDate.of(2024, 11, 27),
+                LocalDate.of(2024, 11, 28)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_customer_screen_di");
+        for (LocalDate date : lstDate) {
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+            List<Map<String, Object>> lstData = new ArrayList<>();
+            for (Map<String, Object> mapDistrictTypeId : lstDistrictTypeId) {
+
+                String name = (String) mapDistrictTypeId.get("name");
+                String level = (String) mapDistrictTypeId.get("level");
+                Integer id = GenUtil.strToInteger(mapDistrictTypeId.get("id").toString());
+
+                Long totalRegisteredUserCnt = GenUtil.random(8888, 19999).longValue();
+                Long activeUserCnt1m = GenUtil.random(2222, 5555).longValue();
+                Long activeUserCnt1d = GenUtil.random(222, 555).longValue();
+                Double registrationConversionRateTencentAdvertising = GenUtil.round(GenUtil.randomDouble(0.2222, 0.5555), 4);
+                Double registrationConversionRateOceanEngine = GenUtil.round(GenUtil.randomDouble(0.2222, 0.5555), 4);
+                Double registrationConversionRateNaturalGrowth = GenUtil.round(GenUtil.randomDouble(0.2222, 0.5555), 4);
+                Double paymentConversionRateTencentAdvertising = GenUtil.round(GenUtil.randomDouble(0.3333, 0.6666), 4);
+                Double paymentConversionRateOceanEngine = GenUtil.round(GenUtil.randomDouble(0.3333, 0.6666), 4);
+                Double paymentConversionRateNaturalGrowth = GenUtil.round(GenUtil.randomDouble(0.3333, 0.6666), 4);
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("total_registered_user_cnt", totalRegisteredUserCnt);
+                mapData.put("active_user_cnt_1m", activeUserCnt1m);
+                mapData.put("active_user_cnt_1d", activeUserCnt1d);
+                mapData.put("registration_conversion_rate_tencent_advertising", registrationConversionRateTencentAdvertising);
+                mapData.put("registration_conversion_rate_ocean_engine", registrationConversionRateOceanEngine);
+                mapData.put("registration_conversion_rate_natural_growth", registrationConversionRateNaturalGrowth);
+                mapData.put("payment_conversion_rate_tencent_advertising", paymentConversionRateTencentAdvertising);
+                mapData.put("payment_conversion_rate_ocean_engine", paymentConversionRateOceanEngine);
+                mapData.put("payment_conversion_rate_natural_growth", paymentConversionRateNaturalGrowth);
+                mapData.put("district_type_name", name);
+                mapData.put("district_type_id", id);
+                mapData.put("level", level);
+                mapData.put("ds", ds);
+                lstData.add(mapData);
+            }
+
+            String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+//            System.out.println(insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+//            break;
+        }
+    }
+
+    private void fixStatisticsDwsMarketingScreenDiData() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        Map<String, String> mapDistrictTypeIds = GenUtil.fromJsonString(content, Map.class);
+        System.out.println("mapDistrictTypeIds.size(): " + mapDistrictTypeIds.size());
+
+        Table table = preDatabaseHologres.getMapTable().get("dws_marketing_screen_di");
+        for (Map.Entry<String, String> map : mapDistrictTypeIds.entrySet()) {
+            Integer districtTypeId = GenUtil.strToInteger(map.getKey());
+            String level = map.getValue();
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("level", level);
+
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("district_type_id", districtTypeId));
+            System.out.println("updateSql: " + updateSql);
+            desDataUpdate(preDatabaseHologres, updateSql);
+        }
+    }
+
+    private void statisticsDwsMarketingScreenDiData() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        List<Map<String, Object>> lstDistrictTypeId = GenUtil.fromJsonString(content, List.class);
+        System.out.println("lstDistrictTypeId.size(): " + lstDistrictTypeId.size());
+
+        List<LocalDate> lstDate = Arrays.asList(
+//                LocalDate.of(2024, 11, 14),
+                LocalDate.of(2024, 11, 15),
+                LocalDate.of(2024, 11, 16),
+                LocalDate.of(2024, 11, 17),
+                LocalDate.of(2024, 11, 18),
+                LocalDate.of(2024, 11, 19),
+                LocalDate.of(2024, 11, 20),
+                LocalDate.of(2024, 11, 21),
+                LocalDate.of(2024, 11, 22),
+                LocalDate.of(2024, 11, 23),
+                LocalDate.of(2024, 11, 24),
+                LocalDate.of(2024, 11, 25),
+                LocalDate.of(2024, 11, 26),
+                LocalDate.of(2024, 11, 27)
+        );
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_marketing_screen_di");
+        for (LocalDate date : lstDate) {
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+            List<Map<String, Object>> lstData = new ArrayList<>();
+            for (Map<String, Object> mapDistrictTypeId : lstDistrictTypeId) {
+
+                Integer id = (Integer) mapDistrictTypeId.get("id");
+                Integer name = (Integer) mapDistrictTypeId.get("name");
+                Integer level = (Integer) mapDistrictTypeId.get("level");
+
+                Long totalSales = GenUtil.random(8888, 88888).longValue();
+                Double totalSalesMonthComparison = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9999), 4);
+                Double totalSalesDayComparison = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9999), 4);
+                Long totalOrderQuantity = GenUtil.random(6666, 9999).longValue();
+                Long customerOrderAvg = GenUtil.random(222, 555).longValue();
+                Double customerRefundRate = GenUtil.round(GenUtil.randomDouble(0.0666, 0.1999), 4);
+                Long registeredUserCnt = GenUtil.random(6666, 19999).longValue();
+                Long orderQuantity1d = GenUtil.random(333, 555).longValue();
+                Long orderQuantityHomeCare = GenUtil.random(66, 199).longValue();
+                Long orderQuantityRehabilitationAssistance = GenUtil.random(66, 199).longValue();
+                Long orderQuantityHospitalization = GenUtil.random(66, 199).longValue();
+                Long orderQuantitySuitableProducts = GenUtil.random(66, 199).longValue();
+                Long orderQuantityAccompanyGeneral = GenUtil.random(66, 199).longValue();
+                Long orderQuantityAccompanyErrand = GenUtil.random(66, 199).longValue();
+                Long orderQuantityHousekeeping = GenUtil.random(66, 199).longValue();
+                Long orderQuantityAdaptiveAge = GenUtil.random(66, 199).longValue();
+                Long orderQuantityHealthCare = GenUtil.random(66, 199).longValue();
+                Double registrationConversionRate = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9999), 4);
+                Double userRetentionRate = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9999), 4);
+                Double shoppingCartConversionRate = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9999), 4);
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("total_sales", totalSales);
+                mapData.put("total_sales_month_comparison", totalSalesMonthComparison);
+                mapData.put("total_sales_day_comparison", totalSalesDayComparison);
+                mapData.put("total_order_quantity", totalOrderQuantity);
+                mapData.put("customer_order_avg", customerOrderAvg);
+                mapData.put("customer_refund_rate", customerRefundRate);
+                mapData.put("registered_user_cnt", registeredUserCnt);
+                mapData.put("order_quantity_1d", orderQuantity1d);
+                mapData.put("order_quantity_home_care", orderQuantityHomeCare);
+                mapData.put("order_quantity_rehabilitation_assistance", orderQuantityRehabilitationAssistance);
+                mapData.put("order_quantity_hospitalization", orderQuantityHospitalization);
+                mapData.put("order_quantity_suitable_products", orderQuantitySuitableProducts);
+                mapData.put("order_quantity_accompany_general", orderQuantityAccompanyGeneral);
+                mapData.put("order_quantity_accompany_errand", orderQuantityAccompanyErrand);
+                mapData.put("order_quantity_housekeeping", orderQuantityHousekeeping);
+                mapData.put("order_quantity_adaptive_age", orderQuantityAdaptiveAge);
+                mapData.put("order_quantity_health_care", orderQuantityHealthCare);
+                mapData.put("registration_conversion_rate", registrationConversionRate);
+                mapData.put("user_retention_rate", userRetentionRate);
+                mapData.put("shopping_cart_conversion_rate", shoppingCartConversionRate);
+                mapData.put("district_type_name", name);
+                mapData.put("district_type_id", id);
+                mapData.put("level", level);
+                mapData.put("ds", ds);
+                lstData.add(mapData);
+            }
+
+            String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+//            System.out.println(insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+//            break;
+        }
     }
 
     private void statisticsDwsCustomerScanDiData() {
