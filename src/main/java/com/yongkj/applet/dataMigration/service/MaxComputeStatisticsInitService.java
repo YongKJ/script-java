@@ -55,7 +55,33 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwsMarketingScreenDiData();
 //        fixStatisticsDwsMarketingScreenDiData();
 //        statisticsDwsCustomerScreenDiData();
-        statisticsDwdActiveCustomerScreenDiData();
+//        statisticsDwdActiveCustomerScreenDiData();
+        fixStatisticsDwsMarketingScreenDiDataLatest();
+    }
+
+    private void fixStatisticsDwsMarketingScreenDiDataLatest() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        List<Map<String, Object>> lstDistrictTypeId = GenUtil.fromJsonString(content, List.class);
+        System.out.println("lstDistrictTypeId.size(): " + lstDistrictTypeId.size());
+
+        Table table = preDatabaseHologres.getMapTable().get("dws_marketing_screen_di");
+        for (Map<String, Object> mapDistrictTypeId : lstDistrictTypeId) {
+            Integer districtTypeId = GenUtil.strToInteger(mapDistrictTypeId.get("id").toString());
+
+            Long orderQuantityAssistedLiving = GenUtil.random(66, 199).longValue();
+            Long orderQuantityCloudClassroom = GenUtil.random(66, 199).longValue();
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("order_quantity_assisted_living", orderQuantityAssistedLiving);
+            mapData.put("order_quantity_cloud_classroom", orderQuantityCloudClassroom);
+
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("district_type_id", districtTypeId));
+
+            System.out.println("updateSql: " + updateSql);
+            desDataUpdate(preDatabaseHologres, updateSql);
+        }
     }
 
     private void statisticsDwdActiveCustomerScreenDiData() {
