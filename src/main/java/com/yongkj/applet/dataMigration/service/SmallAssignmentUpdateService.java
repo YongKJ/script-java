@@ -50,8 +50,9 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportWorkerIds();
 //        exportWorkerShopInfo();
 //        exportUtcCreatedData();
+        exportConsumerUtcCreatedData();
 //        exportJobRecallContent();
-        getMapDistrictTypeId();
+//        getMapDistrictTypeId();
     }
 
     private void getMapDistrictTypeId() {
@@ -142,6 +143,24 @@ public class SmallAssignmentUpdateService extends BaseService {
         jobRecallData.addAll(srcDataList(prodDatabase, jobRecall));
 
         return jobRecallData;
+    }
+
+    private void exportConsumerUtcCreatedData() {
+        Table consumer = prodDatabase.getMapTable().get("consumer");
+
+        List<Map<String, Object>> consumerData = srcDataList(preDatabase, consumer);
+
+        Map<String, String> mapUtcCreatedData = new ConcurrentSkipListMap<>();
+        for (Map<String, Object> mapData : consumerData) {
+            Long utcCreated = (Long) mapData.get("utc_created");
+            String utcCreatedStr = GenUtil.timestampToStr(utcCreated);
+            mapUtcCreatedData.put(utcCreatedStr, utcCreatedStr);
+        }
+
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\utc-created-data.json",
+                GenUtil.toJsonString(mapUtcCreatedData)
+        );
     }
 
     private void exportUtcCreatedData() {
