@@ -148,7 +148,7 @@ public class SmallAssignmentUpdateService extends BaseService {
     private void exportConsumerUtcCreatedData() {
         Table consumer = prodDatabase.getMapTable().get("consumer");
 
-        List<Map<String, Object>> consumerData = srcDataList(preDatabase, consumer);
+        List<Map<String, Object>> consumerData = srcDataList(prodDatabase, consumer);
 
         Map<String, String> mapUtcCreatedData = new ConcurrentSkipListMap<>();
         for (Map<String, Object> mapData : consumerData) {
