@@ -385,7 +385,7 @@ public class GenUtil {
 
     public static Integer random(int min, int max) {
         try {
-            TimeUnit.MILLISECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(3);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -394,7 +394,7 @@ public class GenUtil {
 
     public static double randomDouble(double min, double max) {
         try {
-            TimeUnit.MILLISECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(3);
         } catch (Exception e) {
             e.printStackTrace();
         }

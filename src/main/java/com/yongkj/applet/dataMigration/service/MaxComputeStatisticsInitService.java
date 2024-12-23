@@ -46,7 +46,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwdCustomerPageVisitData();
 //        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
 //        statisticsOdsBrowsePathInfoData();
-        statisticsDwdWorkerPortraitInfoData();
+//        statisticsDwdWorkerPortraitInfoData();
 //        statisticsDwdWorkerLoadDistributeOrderData();
 //        statisticsDwdWorkerLoadLongOrderDiData();
 //        statisticsDwdCustomerScanDiData();
@@ -55,7 +55,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwsMarketingScreenDiData();
 //        fixStatisticsDwsMarketingScreenDiData();
 //        statisticsDwsCustomerScreenDiData();
-//        statisticsDwdActiveCustomerScreenDiData();
+        statisticsDwdActiveCustomerScreenDiData();
 //        fixStatisticsDwsMarketingScreenDiDataLatest();
     }
 
@@ -103,7 +103,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //                LocalDate.of(2024, 11, 25),
 //                LocalDate.of(2024, 11, 26),
 //                LocalDate.of(2024, 11, 27),
-                LocalDate.of(2024, 11, 28)
+                LocalDate.of(2024, 12, 19)
         );
 
         Table table = preDatabaseMaxCompute.getMapTable().get("dwd_active_customer_screen_di");
@@ -116,7 +116,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
                 String level = (String) mapDistrictTypeId.get("level");
                 Integer id = GenUtil.strToInteger(mapDistrictTypeId.get("id").toString());
 
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 20; i++) {
                     Integer customerSex = GenUtil.random(1, 2);
                     Integer ageIndex = GenUtil.random(1, 5);
                     Integer customerAge = getCustomerAge(ageIndex);
