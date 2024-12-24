@@ -50,9 +50,135 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportWorkerIds();
 //        exportWorkerShopInfo();
 //        exportUtcCreatedData();
-        exportConsumerUtcCreatedData();
+//        exportConsumerUtcCreatedData();
 //        exportJobRecallContent();
 //        getMapDistrictTypeId();
+//        exportWorkerNames();
+        exportSonCategories();
+    }
+
+    private void exportSonCategories() {
+        Table categoryTable = prodDatabase.getMapTable().get("category");
+        List<Map<String, Object>> allCategoryData = srcDataList(prodDatabase,
+                Wrappers.lambdaQuery(categoryTable)
+                        .eq("apply_id", 2)
+                        .eq("utc_deleted", 0)
+                        .and(w ->
+                                w.eq("pid", 0)
+                                        .or()
+                                        .eq("pid", 1)
+                                        .or()
+                                        .eq("pid", 2)
+                                        .or()
+                                        .eq("pid", 8)
+                                        .or()
+                                        .eq("pid", 16)));
+        System.out.println("allCategoryData.size(): " + allCategoryData.size());
+
+        Table itemTable = prodDatabase.getMapTable().get("item");
+        List<Map<String, Object>> itemData = srcDataList(prodDatabase,
+                Wrappers.lambdaQuery(itemTable)
+                        .eq("utc_deleted", 0));
+
+        List<Map<String, Object>> lstCategoryData = allCategoryData.stream()
+                .filter(po -> Objects.equals(po.get("pid"), 0L)).collect(Collectors.toList());
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map<String, Object> categoryData : lstCategoryData) {
+            Long categoryId = (Long) categoryData.get("id");
+            String categoryName = (String) categoryData.get("name");
+            List<Map<String, Object>> lstSonCategoryData = allCategoryData.stream()
+                    .filter(po -> Objects.equals(po.get("pid"), categoryId)).collect(Collectors.toList());
+            if (!(categoryId == 1L || categoryId == 2L || categoryId == 8L || categoryId == 16L)) {
+                continue;
+            }
+
+            List<Map<String, Object>> lstPackSonCategoryData = new ArrayList<>();
+            for (Map<String, Object> sonCategoryData : lstSonCategoryData) {
+                Long sonCategoryId = (Long) sonCategoryData.get("id");
+                String sonCategoryName = (String) sonCategoryData.get("name");
+                List<Map<String, Object>> lstSonCategoryItemData = itemData.stream()
+                        .filter(po -> Objects.equals(po.get("category_id"), sonCategoryId)).collect(Collectors.toList());
+
+                List<Map<String, Object>> lstPackItemData = new ArrayList<>();
+                for (Map<String, Object> sonCategoryItemData : lstSonCategoryItemData) {
+                    Long itemId = (Long) sonCategoryItemData.get("id");
+                    String itemName = (String) sonCategoryItemData.get("name");
+
+                    Map<String, Object> mapPackItemData = new HashMap<>();
+                    mapPackItemData.put("name", itemName);
+                    mapPackItemData.put("id", itemId);
+                    lstPackItemData.add(mapPackItemData);
+                }
+
+                Map<String, Object> mapPackSonCategoryData = new HashMap<>();
+                mapPackSonCategoryData.put("item", lstPackItemData);
+                mapPackSonCategoryData.put("name", sonCategoryName);
+                mapPackSonCategoryData.put("id", sonCategoryId);
+                lstPackSonCategoryData.add(mapPackSonCategoryData);
+            }
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("son_category", lstPackSonCategoryData);
+            mapData.put("name", categoryName);
+            mapData.put("id", categoryId);
+            lstData.add(mapData);
+        }
+        System.out.println("lstData.size(): " + lstData.size());
+        System.out.println("lstData: " + GenUtil.toJsonString(lstData));
+    }
+
+    private void exportWorkerNames() {
+        Database prodUser = mapDatabase.get("prod_user");
+        Table workerTable = prodUser.getMapTable().get("worker");
+        List<Map<String, Object>> workerData = srcDataList(prodUser, workerTable);
+        System.out.println("workerData.size(): " + workerData.size());
+
+        Database prodOrder = mapDatabase.get("prod_order");
+        Table jobTable = prodOrder.getMapTable().get("job");
+        List<Map<String, Object>> jobData = srcDataList(prodOrder, jobTable);
+        System.out.println("jobData.size(): " + jobData.size());
+
+        List<Map<String, Object>> lstNames = new ArrayList<>();
+        Map<String, String> mapName = new HashMap<>();
+        for (Map<String, Object> worker : workerData) {
+            Long workerId = (Long) worker.get("id");
+            String workerName = (String) worker.get("name");
+            if (workerName.length() > 3) {
+                continue;
+            }
+            if (mapName.containsKey(workerName)) {
+                continue;
+            }
+            mapName.put(workerName, workerName);
+
+            List<Map<String, Object>> lstJobData = jobData.stream()
+                    .filter(po -> Objects.equals(po.get("worker_id"), workerId)).collect(Collectors.toList());
+            List<Map<String, Object>> lstCoordinate = new ArrayList<>();
+            for (Map<String, Object> workerJobData : lstJobData) {
+                Long jobId = (Long) workerJobData.get("id");
+                Double lng = (Double) workerJobData.get("lng");
+                Double lat = (Double) workerJobData.get("lat");
+                Long time = (Long) workerJobData.get("start_time");
+
+                Map<String, Object> mapCoordinate = new HashMap<>();
+                mapCoordinate.put("time", time);
+                mapCoordinate.put("id", jobId);
+                mapCoordinate.put("lat", lat);
+                mapCoordinate.put("lng", lng);
+                lstCoordinate.add(mapCoordinate);
+            }
+            if (lstCoordinate.isEmpty()) {
+                continue;
+            }
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("job", lstCoordinate);
+            data.put("name", workerName);
+            data.put("id", workerId);
+            lstNames.add(data);
+        }
+        System.out.println("lstNames.size(): " + lstNames.size());
+        System.out.println("lstNames: " + GenUtil.toJsonString(lstNames));
     }
 
     private void getMapDistrictTypeId() {

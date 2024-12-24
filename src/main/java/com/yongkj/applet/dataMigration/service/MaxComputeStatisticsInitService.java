@@ -55,8 +55,169 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwsMarketingScreenDiData();
 //        fixStatisticsDwsMarketingScreenDiData();
 //        statisticsDwsCustomerScreenDiData();
-        statisticsDwdActiveCustomerScreenDiData();
+//        statisticsDwdActiveCustomerScreenDiData();
 //        fixStatisticsDwsMarketingScreenDiDataLatest();
+//        statisticsDwsWorkerOrbitDiData();
+//        statisticsDwdWorkerOrbitDetailDiData();
+        statisticsDwdWorkerOrbitOrderDiData();
+    }
+
+    private void statisticsDwdWorkerOrbitOrderDiData() {
+        String content = FileUtil.read("D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\statistics\\worker-orbit-detail-dwd.json");
+        Map<String, Object> mapData = GenUtil.fromJsonString(content, Map.class);
+        LocalDate nowDate = LocalDate.now();
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, Object>> lstWorker = (List<Map<String, Object>>) mapData.get("worker_names");
+        List<Map<String, Object>> lstCategory = (List<Map<String, Object>>) mapData.get("categories");
+        for (Map<String, Object> worker : lstWorker) {
+            Long workerId = (Long) worker.get("id");
+            String workerName = (String) worker.get("name");
+            List<Map<String, Object>> lstJob = (List<Map<String, Object>>) worker.get("job");
+            for (int i = 0; i < lstJob.size(); i++) {
+                Map<String, Object> job = lstJob.get(i);
+                Double lng = (Double) job.get("lng");
+                Double lat = (Double) job.get("lat");
+                Integer time = (Integer) job.get("time");
+                Long jobId = (Long) job.get("id");
+                LocalDate date = nowDate.minusDays(lstJob.size() - i);
+                String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+                Integer categoryIndex = GenUtil.random(1, lstCategory.size());
+                Map<String, Object> category = lstCategory.get(categoryIndex - 1);
+                Integer categoryId = (Integer) category.get("id");
+                String categoryName = (String) category.get("name");
+                List<Map<String, Object>> lstSonCategory = (List<Map<String, Object>>) category.get("son_category");
+
+                Integer sonCategoryIndex = GenUtil.random(1, lstSonCategory.size());
+                Map<String, Object> sonCategory = lstSonCategory.get(sonCategoryIndex - 1);
+                Long sonCategoryId = (Long) sonCategory.get("id");
+                String sonCategoryName = (String) sonCategory.get("name");
+                List<Map<String, Object>> lstItem = (List<Map<String, Object>>) sonCategory.get("item");
+
+                Integer itemIndex = GenUtil.random(1, lstItem.size());
+                Map<String, Object> item = lstItem.get(itemIndex - 1);
+                Long itemId = (Long) item.get("id");
+                String itemName = (String) item.get("name");
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("job_id", jobId);
+                data.put("worker_id", workerId);
+                data.put("worker_name", workerName);
+                data.put("category_id", categoryId);
+                data.put("category_name", categoryName);
+                data.put("son_category_id", sonCategoryId);
+                data.put("son_category_name", sonCategoryName);
+                data.put("item_id", itemId);
+                data.put("item_name", itemName);
+                data.put("appointment_time", time);
+                data.put("lng", lng);
+                data.put("lat", lat);
+                data.put("ds", ds);
+                lstData.add(data);
+            }
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_orbit_job_di");
+        String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+        srcDataInsert(preDatabaseMaxCompute, insertSql);
+    }
+
+    private void statisticsDwdWorkerOrbitDetailDiData() {
+        String content = FileUtil.read("D:\\Document\\MyCodes\\Github\\script-java\\src\\main\\resources\\csv\\max-compute\\statistics\\worker-orbit-detail-dwd.json");
+        Map<String, Object> mapData = GenUtil.fromJsonString(content, Map.class);
+        LocalDate date = LocalDate.of(2024, 12, 24);
+        String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, Object>> lstStatus = getWorkerStatus();
+        List<String> lstAvatar = (List<String>) mapData.get("worker_avatars");
+        List<Map<String, Object>> lstWorker = (List<Map<String, Object>>) mapData.get("worker_names");
+        for (Map<String, Object> worker : lstWorker) {
+            Long id = (Long) worker.get("id");
+            String name = (String) worker.get("name");
+
+            Integer avatarIndex = GenUtil.random(1, lstAvatar.size());
+            String avatar = lstAvatar.get(avatarIndex - 1);
+
+            Integer orderCompletedCnt = GenUtil.random(576, 1988);
+            Integer workerServiceTime = GenUtil.random(54000, 198000);
+            Integer workerMovingDistance = GenUtil.random(66, 288);
+            Double consumerSatisfactionRate = GenUtil.round(GenUtil.randomDouble(0.6666, 0.9988), 4);
+            Integer orderCompletedCnt1m = GenUtil.random(22, 88);
+
+            Integer statusIndex = GenUtil.random(1, lstStatus.size());
+            Map<String, Object> mapStatus = lstStatus.get(statusIndex - 1);
+            String statusName = (String) mapStatus.get("name");
+            Integer status = (Integer) mapStatus.get("id");
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("worker_id", id);
+            data.put("worker_name", name);
+            data.put("worker_avatar", avatar);
+            data.put("order_completed_cnt", orderCompletedCnt);
+            data.put("worker_service_time", workerServiceTime);
+            data.put("worker_moving_distance", workerMovingDistance);
+            data.put("consumer_satisfaction_rate", consumerSatisfactionRate);
+            data.put("order_completed_cnt_1m", orderCompletedCnt1m);
+            data.put("worker_status", status);
+            data.put("worker_status_name", statusName);
+            data.put("ds", ds);
+            lstData.add(data);
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_worker_orbit_detail_di");
+        String insertSql = getMaxComputeInsertListSQlNonePartition(lstData, table);
+        srcDataInsert(preDatabaseMaxCompute, insertSql);
+    }
+
+    private List<Map<String, Object>> getWorkerStatus() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("id", 1);
+        map1.put("name", "在线");
+        lstData.add(map1);
+
+        Map<String, Object> map2 = new HashMap<>();
+        map2.put("id", 2);
+        map2.put("name", "离线");
+        lstData.add(map2);
+
+        Map<String, Object> map3 = new HashMap<>();
+        map3.put("id", 3);
+        map3.put("name", "工作");
+        lstData.add(map3);
+
+        Map<String, Object> map4 = new HashMap<>();
+        map4.put("id", 4);
+        map4.put("name", "空闲");
+        lstData.add(map4);
+
+        return lstData;
+    }
+
+    private void statisticsDwsWorkerOrbitDiData() {
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/worker-orbit-dws.csv");
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        LocalDate endDate = LocalDate.of(2024, 12, 24);
+        LocalDate startDate = endDate.minusDays(11);
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        LocalDate date = startDate;
+        for (Map<String, Object> mapData : lstData) {
+            date = date.plusDays(1);
+            String ds = GenUtil.localDateToStr(date, "yyyyMMdd");
+            mapData.put("ds", ds);
+            dataList.add(mapData);
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_worker_orbit_di");
+        String insertSql = getMaxComputeInsertListSQlNonePartition(dataList, table);
+        srcDataInsert(preDatabaseMaxCompute, insertSql);
     }
 
     private void fixStatisticsDwsMarketingScreenDiDataLatest() {
