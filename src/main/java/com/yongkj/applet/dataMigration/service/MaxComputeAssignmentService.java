@@ -39,7 +39,9 @@ public class MaxComputeAssignmentService extends BaseService {
         if (!enable) return;
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.preDatabaseMaxCompute.getMapTable().size()", this.preDatabaseMaxCompute.getMapTable().size()));
 
-        exportBrowsingLink();
+//        exportTencentAdUser();
+        exportMiniRedBookAdUser();
+//        exportBrowsingLink();
 //        tencentSceneTest();
 //        insertData();
 //        getAllData();
@@ -50,6 +52,99 @@ public class MaxComputeAssignmentService extends BaseService {
 //        saveData();
 //        updateData();
 //        syncTableData();
+    }
+
+    private void exportMiniRedBookAdUser() {
+        Table table = prodDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstMiniRedBookData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(table)
+                        .eq("type", 1)
+                        .eq("event", 6)
+                        .like("options", "%click%"));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("小红书");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("wx_open_id"),
+                Collections.singletonList("启动事件参数")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = 1;
+        for (Map<String, Object> mapData : lstMiniRedBookData) {
+            String wxOpenId = (String) mapData.get("wx_open_id");
+            String startOptions = (String) mapData.get("options");
+
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, wxOpenId);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, 2, startOptions);
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\小红书小程序推广启动参数-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private void exportTencentAdUser() {
+        Table table = prodDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstTencentData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(table)
+                        .eq("type", 3)
+                        .select("wx_open_id"));
+
+        List<String> lstTencentWxOpenId = lstTencentData.stream()
+                .map(po -> (String) po.get("wx_open_id"))
+                .filter(StringUtils::hasText)
+                .distinct().collect(Collectors.toList());
+
+        List<Map<String, Object>> lstStartData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(table)
+                        .eq("type", 1)
+                        .eq("event", 6)
+                        .in("wx_open_id", lstTencentWxOpenId));
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "exportTencentAdUser", "lstStartData", lstStartData));
+
+        List<Map<String, Object>> lstRegisterData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(table)
+                        .eq("type", 1)
+                        .eq("event", 7)
+                        .in("wx_open_id", lstTencentWxOpenId));
+
+        LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "exportTencentAdUser", "lstRegisterData", lstRegisterData));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("广点通");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("wx_open_id"),
+                Collections.singletonList("启动事件参数")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = 1;
+        for (Map<String, Object> mapData : lstRegisterData) {
+            String wxOpenId = (String) mapData.get("wx_open_id");
+            Map<String, Object> mapStartData = lstStartData.stream()
+                    .filter(po -> Objects.equals(po.get("wx_open_id"), wxOpenId)).findFirst().orElse(null);
+            if (mapStartData == null) {
+                continue;
+            }
+
+            String startOptions = (String) mapStartData.get("options");
+            if (!StringUtils.hasText(startOptions) || startOptions.contains("marketing")) {
+                continue;
+            }
+
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, wxOpenId);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, 2, startOptions);
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\广点通小程序推广启动参数-" + System.currentTimeMillis() + ".xlsx");
     }
 
     private void exportBrowsingLink() {
