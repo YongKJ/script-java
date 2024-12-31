@@ -40,7 +40,7 @@ public class MaxComputeAssignmentService extends BaseService {
         LogUtil.loggerLine(Log.of("MaxComputeAssignmentService", "apply", "this.preDatabaseMaxCompute.getMapTable().size()", this.preDatabaseMaxCompute.getMapTable().size()));
 
 //        exportTencentAdUser();
-        exportMiniRedBookAdUser();
+//        exportMiniRedBookAdUser();
 //        exportBrowsingLink();
 //        tencentSceneTest();
 //        insertData();
@@ -52,6 +52,136 @@ public class MaxComputeAssignmentService extends BaseService {
 //        saveData();
 //        updateData();
 //        syncTableData();
+        exportScene();
+    }
+
+    private void exportScene() {
+        Table table = prodDatabaseHologres.getMapTable().get("ods_event_data");
+        List<Map<String, Object>> lstData = srcDataList(prodDatabaseHologres,
+                Wrappers.lambdaQuery(table)
+                        .isNotNUll("type")
+                        .isNotNUll("wx_open_id")
+                        .isNotNUll("scene_value")
+                        .select("type", "wx_open_id", "scene_value", "options"));
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+        SXSSFSheet localSheet = workbook.createSheet("线下推广场景值");
+        SXSSFSheet tencentSheet = workbook.createSheet("广点通场景值");
+        SXSSFSheet redBookSheet = workbook.createSheet("小红书场景值");
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("微信小程序标识"),
+                Collections.singletonList("场景值"),
+                Collections.singletonList("场景值含义")
+        );
+        PoiExcelUtil.writeHeader(localSheet, lstHeader, lstCellStyle, 1);
+        PoiExcelUtil.writeHeader(tencentSheet, lstHeader, lstCellStyle, 1);
+        PoiExcelUtil.writeHeader(redBookSheet, lstHeader, lstCellStyle, 1);
+
+        packSheetData(localSheet, lstCellStyle, "local", lstData);
+        packSheetData(tencentSheet, lstCellStyle, "tencent", lstData);
+        packSheetData(redBookSheet, lstCellStyle, "redBook", lstData);
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\微信小程序场景值-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private void packSheetData(SXSSFSheet sheet, List<CellStyle> lstCellStyle, String type, List<Map<String, Object>> lstData) {
+        int rowIndex = 1;
+        Map<String, List<Map<String, Object>>> mapSceneValue = getMapSceneValue(type, lstData);
+        List<Map<String, String>> lstScene = CsvUtil.toMap("/csv/小程序场景值.csv");
+        for (Map.Entry<String, List<Map<String, Object>>> map : mapSceneValue.entrySet()) {
+            for (Map<String, Object> mapData : map.getValue()) {
+                String wxOpenId = mapData.get("wx_open_id").toString();
+                String sceneValue = mapData.get("scene_value").toString();
+                Map<String, String> mapScene = lstScene.stream()
+                        .filter(po -> Objects.equals(po.get("scene"), sceneValue)).findFirst().orElse(new HashMap<>());
+                String sceneDesc = mapScene.get("desc");
+                if (!StringUtils.hasText(sceneDesc)) {
+                    continue;
+                }
+
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 0, rowIndex);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 1, wxOpenId);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 2, sceneValue);
+                PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, 3, sceneDesc);
+                rowIndex++;
+                break;
+            }
+        }
+    }
+
+    private Map<String, List<Map<String, Object>>> getMapSceneValue(String type, List<Map<String, Object>> lstData) {
+        Map<String, String> mapWxOpenId = getWxOpenId(type, lstData);
+        List<Map<String, Object>> lstSceneData = getSceneData(mapWxOpenId, lstData);
+        Map<String, List<Map<String, Object>>> mapSceneValue = new HashMap<>();
+        for (Map<String, Object> mapData : lstSceneData) {
+            String sceneValue = (String) mapData.get("scene_value");
+            if (!mapSceneValue.containsKey(sceneValue)) {
+                mapSceneValue.put(sceneValue, new ArrayList<>());
+            }
+            mapSceneValue.get(sceneValue).add(mapData);
+        }
+        return mapSceneValue;
+    }
+
+    private List<Map<String, Object>> getSceneData(Map<String, String> mapWxOpenId, List<Map<String, Object>> lstData) {
+        return lstData.stream().filter(po ->
+                StringUtils.hasText((String) po.get("scene_value")) &&
+                StringUtils.hasText((String) po.get("wx_open_id")) &&
+                mapWxOpenId.containsKey((String) po.get("wx_open_id"))
+        ).collect(Collectors.toList());
+    }
+
+    private Map<String, String> getWxOpenId(String adType, List<Map<String, Object>> lstData) {
+        switch (adType) {
+            case "tencent":
+                return getTencentWxOpenId(lstData);
+            case "redBook":
+                return getRedBookWxOpenId(lstData);
+            case "local":
+                return getLocalWxOpenId(lstData);
+        }
+        return new HashMap<>();
+    }
+
+    private Map<String, String> getLocalWxOpenId(List<Map<String, Object>> lstData) {
+        Map<String, String> mapTencentWxOpenId = getTencentWxOpenId(lstData);
+        Map<String, String> mapRedBookWxOpenId = getRedBookWxOpenId(lstData);
+        Map<String, String> mapExcludeWxOpenId = mapTencentWxOpenId.values().stream()
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
+        mapExcludeWxOpenId.putAll(mapRedBookWxOpenId.values().stream()
+                .collect(Collectors.toMap(Function.identity(), Function.identity())));
+
+        List<Map<String, Object>> lstLocalData = lstData.stream().filter(po -> Objects.equals(po.get("type"), "1") &&
+                !mapExcludeWxOpenId.containsKey((String) po.get("wx_open_id"))).collect(Collectors.toList());
+        return lstLocalData.stream()
+                .map(po -> (String) po.get("wx_open_id"))
+                .filter(StringUtils::hasText)
+                .distinct()
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
+    }
+
+    private Map<String, String> getTencentWxOpenId(List<Map<String, Object>> lstData) {
+        List<Map<String, Object>> lstTencentData = lstData.stream()
+                .filter(po -> Objects.equals(po.get("type"), "3")).collect(Collectors.toList());
+        return lstTencentData.stream()
+                .map(po -> (String) po.get("wx_open_id"))
+                .filter(StringUtils::hasText)
+                .distinct()
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
+    }
+
+    private Map<String, String> getRedBookWxOpenId(List<Map<String, Object>> lstData) {
+        List<Map<String, Object>> lstRedBookData = lstData.stream()
+                .filter(po -> Objects.equals(po.get("type"), "1") &&
+                        po.get("options") != null && ((String) po.get("options")).contains("click")).collect(Collectors.toList());
+        return lstRedBookData.stream()
+                .map(po -> (String) po.get("wx_open_id"))
+                .filter(StringUtils::hasText)
+                .distinct()
+                .collect(Collectors.toMap(Function.identity(), Function.identity()));
     }
 
     private void exportMiniRedBookAdUser() {
