@@ -52,9 +52,9 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportUtcCreatedData();
 //        exportConsumerUtcCreatedData();
 //        exportJobRecallContent();
-//        getMapDistrictTypeId();
+        getMapDistrictTypeId();
 //        exportWorkerNames();
-        exportSonCategories();
+//        exportSonCategories();
     }
 
     private void exportSonCategories() {

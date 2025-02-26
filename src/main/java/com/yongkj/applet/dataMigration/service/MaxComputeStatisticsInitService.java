@@ -63,7 +63,56 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwsLifeCustomerOverviewStatisticsData();
 //        statisticsDwsLifeCustomerWatchContentData();
 //        statisticsDwsLifeCustomerLoginFrequencyData();
-        statisticsDwsLifeCustomerLoginDistributedData();
+        statisticsDwsLifeCustomerAreaDistributedData();
+    }
+
+    private void statisticsDwsLifeCustomerAreaDistributedData() {
+        String content = FileUtil.read("C:\\Users\\Admin\\Desktop\\marketing-screen-district-type-id.json");
+        List<Map<String, Object>> lstDistrictTypeId = GenUtil.fromJsonString(content, List.class);
+
+        List<Map<String, Object>> lstProvince = lstDistrictTypeId.stream().filter(po -> Objects.equals(po.get("level"), "province")).collect(Collectors.toList());
+        List<Map<String, Object>> lstCity = lstDistrictTypeId.stream().filter(po -> Objects.equals(po.get("level"), "city")).collect(Collectors.toList());
+        List<Map<String, Object>> lstDistrict = lstDistrictTypeId.stream().filter(po -> Objects.equals(po.get("level"), "district")).collect(Collectors.toList());
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (int i = 0; i < 300; i++) {
+            Integer provinceIndex = GenUtil.random(0, lstProvince.size() - 1);
+            Integer cityIndex = GenUtil.random(0, lstCity.size() - 1);
+            Integer districtIndex = GenUtil.random(0, lstDistrict.size() - 1);
+
+            Map<String, Object> provinceData = lstProvince.get(provinceIndex);
+            Integer provinceId = (Integer) provinceData.get("id");
+            String provinceName = (String) provinceData.get("name");
+
+            Map<String, Object> cityData = lstCity.get(cityIndex);
+            Integer cityId = (Integer) cityData.get("id");
+            String cityName = (String) cityData.get("name");
+
+            Map<String, Object> districtData = lstDistrict.get(districtIndex);
+            Integer districtId = (Integer) districtData.get("id");
+            String districtName = (String) districtData.get("name");
+
+            int consumerId = i + 1;
+            String consumerName = "顾客" + consumerId;
+
+            String ipLocation = provinceName + cityName + districtName;
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("customer_id", consumerId);
+            mapData.put("customer_name", consumerName);
+            mapData.put("ip_location", ipLocation);
+            mapData.put("province_id", provinceId);
+            mapData.put("province_name", provinceName);
+            mapData.put("city_id", cityId);
+            mapData.put("city_name", cityName);
+            mapData.put("district_id", districtId);
+            mapData.put("district_name", districtName);
+            mapData.put("ds", "20250225");
+            lstData.add(mapData);
+        }
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_life_customer_area_distributed_di");
+        String insertSql = getMaxComputeInsertListSQl(lstData, table);
+        srcDataInsert(preDatabaseMaxCompute, insertSql);
     }
 
     private void statisticsDwsLifeCustomerLoginDistributedData() {
