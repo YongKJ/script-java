@@ -46,7 +46,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwdCustomerPageVisitData();
 //        statisticsDwsCustomerBrowsingBehaviorStatisticsData();
 //        statisticsOdsBrowsePathInfoData();
-        statisticsDwdWorkerPortraitInfoData();
+//        statisticsDwdWorkerPortraitInfoData();
 //        statisticsDwdWorkerLoadDistributeOrderData();
 //        statisticsDwdWorkerLoadLongOrderDiData();
 //        statisticsDwdCustomerScanDiData();
@@ -60,6 +60,106 @@ public class MaxComputeStatisticsInitService extends BaseService {
 //        statisticsDwsWorkerOrbitDiData();
 //        statisticsDwdWorkerOrbitDetailDiData();
 //        statisticsDwdWorkerOrbitOrderDiData();
+//        statisticsDwsLifeCustomerOverviewStatisticsData();
+//        statisticsDwsLifeCustomerWatchContentData();
+//        statisticsDwsLifeCustomerLoginFrequencyData();
+        statisticsDwsLifeCustomerLoginDistributedData();
+    }
+
+    private void statisticsDwsLifeCustomerLoginDistributedData() {
+        List<LocalDate> lstDate = Arrays.asList(
+                LocalDate.of(2025, 2, 16),
+                LocalDate.of(2025, 2, 17),
+                LocalDate.of(2025, 2, 18),
+                LocalDate.of(2025, 2, 19),
+                LocalDate.of(2025, 2, 20),
+                LocalDate.of(2025, 2, 21),
+                LocalDate.of(2025, 2, 22),
+                LocalDate.of(2025, 2,23),
+                LocalDate.of(2025, 2, 24),
+                LocalDate.of(2025, 2, 25)
+        );
+
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (LocalDate date : lstDate) {
+            int number = GenUtil.random(25, 50);
+            for (int i = 0; i < number; i++) {
+                int hour = GenUtil.random(0, 23);
+                int minute = GenUtil.random(0, 59);
+                String hourStr = hour < 10 ? "0" + hour : "" + hour;
+                String minuteStr = minute < 10 ? "0" + minute : "" + minute;
+
+                String dateStr = GenUtil.localDateToStr(date);
+                String loginTimeStr = String.format("%s %s:%s:%s", dateStr, hourStr, minuteStr, "00");
+                Long loginTime = GenUtil.strToTimestamp(loginTimeStr);
+
+                Integer consumerId = i + 1;
+                String consumerName = "顾客" + consumerId;
+                Integer osType = GenUtil.random(1, 2);
+                String dsStr = GenUtil.localDateToStr(date, "yyyyMMdd");
+
+                Map<String, Object> mapData = new HashMap<>();
+                mapData.put("ds", dsStr);
+                mapData.put("os_type", osType);
+                mapData.put("login_time", loginTime);
+                mapData.put("customer_id", consumerId);
+                mapData.put("customer_name", consumerName);
+                lstData.add(mapData);
+            }
+            Table table = preDatabaseMaxCompute.getMapTable().get("dwd_life_customer_login_distributed_di");
+            String insertSql = getMaxComputeInsertListSQl(lstData, table);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+            lstData = new ArrayList<>();
+        }
+    }
+
+    private void statisticsDwsLifeCustomerLoginFrequencyData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            Integer consumerId = i + 1;
+            String consumerName = "顾客" + consumerId;
+            Integer loginFrequency1w = GenUtil.random(1, 25);
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("ds", "20250225");
+            mapData.put("customer_id", consumerId);
+            mapData.put("customer_name", consumerName);
+            mapData.put("login_frequency_1w", loginFrequency1w);
+            lstData.add(mapData);
+        }
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_life_customer_login_frequency_di");
+        String insertSql = getMaxComputeInsertListSQl(lstData, table);
+        srcDataInsert(preDatabaseMaxCompute, insertSql);
+    }
+
+    private void statisticsDwsLifeCustomerWatchContentData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/life-customer-watch-content.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dwd_life_customer_watch_content_di");
+        for (Map<String, Object> mapData : lstData) {
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
+    }
+
+    private void statisticsDwsLifeCustomerOverviewStatisticsData() {
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/max-compute/statistics/life-customer-overview-dws.csv");
+        for (Map<String, String> data : csvData) {
+            lstData.add(getMapData(data));
+        }
+
+        Table table = preDatabaseMaxCompute.getMapTable().get("dws_life_customer_overview_statistics_di");
+        for (Map<String, Object> mapData : lstData) {
+            String insertSql = getMaxComputeInsertSQl(mapData, table);
+            System.out.println("insertSql: " + insertSql);
+            srcDataInsert(preDatabaseMaxCompute, insertSql);
+        }
     }
 
     private void statisticsDwdWorkerOrbitOrderDiData() {
