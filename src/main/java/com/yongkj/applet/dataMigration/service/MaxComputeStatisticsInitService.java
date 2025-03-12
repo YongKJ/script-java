@@ -75,7 +75,7 @@ public class MaxComputeStatisticsInitService extends BaseService {
         List<Map<String, Object>> lstDistrict = lstDistrictTypeId.stream().filter(po -> Objects.equals(po.get("level"), "district")).collect(Collectors.toList());
 
         List<Map<String, Object>> lstData = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 4198; i++) {
             Integer provinceIndex = GenUtil.random(0, lstProvince.size() - 1);
             Integer cityIndex = GenUtil.random(0, lstCity.size() - 1);
             Integer districtIndex = GenUtil.random(0, lstDistrict.size() - 1);
@@ -95,14 +95,14 @@ public class MaxComputeStatisticsInitService extends BaseService {
             int consumerId = i + 1;
             String consumerName = "顾客" + consumerId;
 
-            String ipLocation = provinceName + cityName + districtName;
+            String ipLocation = "广东省" + cityName + districtName;
 
             Map<String, Object> mapData = new HashMap<>();
             mapData.put("customer_id", consumerId);
             mapData.put("customer_name", consumerName);
             mapData.put("ip_location", ipLocation);
-            mapData.put("province_id", provinceId);
-            mapData.put("province_name", provinceName);
+            mapData.put("province_id", 440000);
+            mapData.put("province_name", "广东省");
             mapData.put("city_id", cityId);
             mapData.put("city_name", cityName);
             mapData.put("district_id", districtId);
