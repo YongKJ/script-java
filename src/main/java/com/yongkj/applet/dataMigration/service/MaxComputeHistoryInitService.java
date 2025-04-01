@@ -9,10 +9,7 @@ import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,11 +31,11 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        migrate_dwd_merchant_review_di_history_data();
 //        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
-//        init_ods_browse_path_info_history_data();
+        init_ods_browse_path_info_history_data();
 //        init_dws_customer_registration_atomic_di();
 //        init_dws_customer_registration_atomic_di_prod();
 //        init_dws_customer_registration_statistics_di();
-        init_dws_customer_registration_statistics_di_prod();
+//        init_dws_customer_registration_statistics_di_prod();
 //        init_dws_customer_login_atomic_di();
 //        init_dws_customer_login_statistics_di();
 //        init_dwd_customer_evaluate_di();
@@ -285,7 +282,9 @@ public class MaxComputeHistoryInitService extends BaseService {
     private void init_ods_browse_path_info_history_data() {
         Map<String, Map<String, String>> mapBrowsePathGroup = CsvUtil.toMap("/csv/max-compute/statistics/browse-path-group.csv")
                 .stream().collect(Collectors.toMap(po -> po.get("id"), Function.identity()));
-        List<Map<String, String>> lstBrowsePathInfo = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-1729481289990(1).xlsx");
+//        List<Map<String, String>> lstBrowsePathInfo = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-1729481289990(1).xlsx");
+        List<Map<String, String>> lstBrowsePathInfo = PoiExcelUtil.toMap("C:\\Users\\Admin\\Desktop\\顾客浏览路径聚合-1729481289990(1)-latest.xlsx");
+        List<Map<String, Object>> tableData = srcDataList(prodDatabaseMaxCompute, Wrappers.lambdaQuery("ods_browse_path_info"));
         Table table = prodDatabaseMaxCompute.getMapTable().get("ods_browse_path_info");
         for (Map<String, String> mapBrowsePathInfo : lstBrowsePathInfo) {
             String pageLink = mapBrowsePathInfo.get("页面路径");
@@ -294,6 +293,11 @@ public class MaxComputeHistoryInitService extends BaseService {
             if (!mapBrowsePathGroup.containsKey(groupId)) {
                 continue;
             }
+            List<Map<String, Object>> tempTableData = tableData.stream().filter(po -> Objects.equals(po.get("page_link"), pageLink)).collect(Collectors.toList());
+            if (!tempTableData.isEmpty()) {
+                continue;
+            }
+
             String pageGroupName = mapBrowsePathGroup.get(groupId).get("name");
             String pageGroupLink = mapBrowsePathGroup.get(groupId).get("link");
             String ds = GenUtil.timestampToStr(System.currentTimeMillis() / 1000);
