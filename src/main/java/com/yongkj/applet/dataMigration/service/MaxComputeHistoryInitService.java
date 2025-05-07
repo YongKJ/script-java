@@ -31,7 +31,7 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        migrate_dwd_merchant_review_di_history_data();
 //        init_dws_registered_merchant_statistics_di_history_data();
 //        init_dwd_customer_browse_path_di_history_data();
-        init_ods_browse_path_info_history_data();
+//        init_ods_browse_path_info_history_data();
 //        init_dws_customer_registration_atomic_di();
 //        init_dws_customer_registration_atomic_di_prod();
 //        init_dws_customer_registration_statistics_di();
@@ -41,6 +41,94 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        init_dwd_customer_evaluate_di();
 //        init_dws_customer_evaluate_statistics_di();
 //        init_insert_ads_overall_customer_data_trends_di();
+//        init_hologres_data_to_max_compute_data();
+        count_hologres_data_to_max_compute_data();
+    }
+
+    private void count_hologres_data_to_max_compute_data() {
+        List<String> tableNames = Arrays.asList(
+                "dws_business_home_sales_category_di",
+                "dwd_active_customer_screen_di",
+                "dwd_worker_orbit_detail_di",
+                "dwd_worker_orbit_job_di",
+                "dws_account_creator_statistics_screen_di",
+                "dws_business_home_dashboard_di",
+                "dws_content_content_summary_screen_di",
+                "dws_content_visit_summary_screen_di",
+                "dws_customer_screen_di",
+                "dws_marketing_screen_di",
+                "dws_worker_orbit_di",
+                "ods_little_advertising",
+                "ods_little_advertising_report",
+                "ods_merchant_device_user_info",
+                "ods_merchant_event_data",
+                "ods_ocean_engine_advertising",
+                "ods_ocean_engine_advertising_report",
+                "ods_tencent_advertising",
+                "ods_tencent_advertising_report",
+                "ods_worker_device_user_info",
+                "ods_worker_event_data"
+        );
+
+        for (String tableName : tableNames) {
+            Table table = prodDatabaseHologres.getMapTable().get(tableName);
+            List<Map<String, Object>> lstHologresData = srcDataList(prodDatabaseHologres, table);
+
+            String tableNameLatest = tableName + "_latest";
+            Table tableLatest = preDatabaseMaxCompute.getMapTable().get(tableNameLatest);
+            List<Map<String, Object>> lstMaxComputeData = srcDataList(preDatabaseMaxCompute, tableLatest);
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_hologres_data_to_max_compute_data", "lstMaxComputeData.size()", lstMaxComputeData.size()));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_hologres_data_to_max_compute_data", "lstHologresData.size()", lstHologresData.size()));
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_hologres_data_to_max_compute_data", "tableName", tableName));
+            System.out.println("================================================================================================================================");
+        }
+    }
+
+    private void init_hologres_data_to_max_compute_data() {
+        List<String> tableNames = Arrays.asList(
+//                "dws_business_home_sales_category_di",
+//                "dwd_active_customer_screen_di",
+//                "dwd_worker_orbit_detail_di",
+//                "dwd_worker_orbit_job_di",
+//                "dws_account_creator_statistics_screen_di",
+//                "dws_business_home_dashboard_di",
+//                "dws_content_content_summary_screen_di",
+//                "dws_content_visit_summary_screen_di",
+//                "dws_customer_screen_di",
+//                "dws_marketing_screen_di",
+//                "dws_worker_orbit_di",
+//                "ods_little_advertising",
+//                "ods_little_advertising_report",
+//                "ods_merchant_device_user_info",
+                "ods_merchant_event_data",
+//                "ods_ocean_engine_advertising",
+//                "ods_ocean_engine_advertising_report",
+//                "ods_tencent_advertising",
+//                "ods_tencent_advertising_report",
+//                "ods_worker_device_user_info",
+                "ods_worker_event_data"
+        );
+
+        for (String tableName : tableNames) {
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_hologres_data_to_max_compute_data", "tableName", tableName));
+            Table table = prodDatabaseHologres.getMapTable().get(tableName);
+            List<Map<String, Object>> lstData = srcDataList(prodDatabaseHologres, table);
+            LogUtil.loggerLine(Log.of("MaxComputeHistoryInitService", "init_hologres_data_to_max_compute_data", "lstData.size()", lstData.size()));
+            System.out.println("================================================================================================================================");
+
+            String tableNameLatest = tableName + "_latest";
+            Table tableLatest = preDatabaseMaxCompute.getMapTable().get(tableNameLatest);
+            init_hologres_data_to_max_compute_data(lstData, preDatabaseMaxCompute, tableLatest);
+        }
+    }
+
+    private void init_hologres_data_to_max_compute_data(List<Map<String, Object>> lstData, Database database, Table table) {
+        for (int i = 0; i < lstData.size(); i += 1000) {
+            int size = Math.min(i + 1000, lstData.size());
+            List<Map<String, Object>> tempLstData = lstData.subList(i, size);
+            String insertSql = getMaxComputeInsertListSQlNonePartition(tempLstData, table);
+            srcDataInsert(database, insertSql);
+        }
     }
 
     private void init_insert_ads_overall_customer_data_trends_di() {

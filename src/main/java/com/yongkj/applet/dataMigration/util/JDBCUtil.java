@@ -89,11 +89,13 @@ public class JDBCUtil {
     private static Object getValue(String fieldType, String fieldName, ResultSet resultSet) {
         Object data = null;
         try {
-            switch (fieldType) {
+            switch (fieldType.toUpperCase()) {
                 case "INT":
+                case "INT4":
                 case "TINYINT":
                     data = Integer.valueOf(resultSet.getInt(fieldName));
                     break;
+                case "INT8":
                 case "BIGINT":
                     data = Long.valueOf(resultSet.getLong(fieldName));
                     break;
@@ -105,7 +107,10 @@ public class JDBCUtil {
                     data = getJsonData(resultSet.getString(fieldName));
                     break;
                 default:
-                    data = fieldType.contains("DECIMAL") ? Double.valueOf(resultSet.getDouble(fieldName)) : resultSet.getString(fieldName);
+                    data = fieldType.contains("DECIMAL") ||
+                            fieldType.contains("NUMERIC") ?
+                            Double.valueOf(resultSet.getDouble(fieldName)) :
+                            resultSet.getString(fieldName);
             }
         } catch (Exception e) {
             e.printStackTrace();
