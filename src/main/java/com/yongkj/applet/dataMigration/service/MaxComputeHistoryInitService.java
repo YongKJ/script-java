@@ -41,8 +41,8 @@ public class MaxComputeHistoryInitService extends BaseService {
 //        init_dwd_customer_evaluate_di();
 //        init_dws_customer_evaluate_statistics_di();
 //        init_insert_ads_overall_customer_data_trends_di();
-//        init_hologres_data_to_max_compute_data();
-        count_hologres_data_to_max_compute_data();
+        init_hologres_data_to_max_compute_data();
+//        count_hologres_data_to_max_compute_data();
     }
 
     private void count_hologres_data_to_max_compute_data() {
@@ -86,26 +86,26 @@ public class MaxComputeHistoryInitService extends BaseService {
 
     private void init_hologres_data_to_max_compute_data() {
         List<String> tableNames = Arrays.asList(
-//                "dws_business_home_sales_category_di",
-//                "dwd_active_customer_screen_di",
-//                "dwd_worker_orbit_detail_di",
-//                "dwd_worker_orbit_job_di",
-//                "dws_account_creator_statistics_screen_di",
-//                "dws_business_home_dashboard_di",
-//                "dws_content_content_summary_screen_di",
-//                "dws_content_visit_summary_screen_di",
-//                "dws_customer_screen_di",
-//                "dws_marketing_screen_di",
-//                "dws_worker_orbit_di",
-//                "ods_little_advertising",
-//                "ods_little_advertising_report",
-//                "ods_merchant_device_user_info",
+                "dws_business_home_sales_category_di",
+                "dwd_active_customer_screen_di",
+                "dwd_worker_orbit_detail_di",
+                "dwd_worker_orbit_job_di",
+                "dws_account_creator_statistics_screen_di",
+                "dws_business_home_dashboard_di",
+                "dws_content_content_summary_screen_di",
+                "dws_content_visit_summary_screen_di",
+                "dws_customer_screen_di",
+                "dws_marketing_screen_di",
+                "dws_worker_orbit_di",
+                "ods_little_advertising",
+                "ods_little_advertising_report",
+                "ods_merchant_device_user_info",
                 "ods_merchant_event_data",
-//                "ods_ocean_engine_advertising",
-//                "ods_ocean_engine_advertising_report",
-//                "ods_tencent_advertising",
-//                "ods_tencent_advertising_report",
-//                "ods_worker_device_user_info",
+                "ods_ocean_engine_advertising",
+                "ods_ocean_engine_advertising_report",
+                "ods_tencent_advertising",
+                "ods_tencent_advertising_report",
+                "ods_worker_device_user_info",
                 "ods_worker_event_data"
         );
 
