@@ -5,10 +5,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Random;
 
 public class AesUtil {
 
@@ -27,13 +25,11 @@ public class AesUtil {
      * @return
      */
     public static String generateIV() {
-        Random random = new SecureRandom();
-        StringBuilder password = new StringBuilder();
-        final char[] allAllowed = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789".toCharArray();
-        for (int i = 0; i < 16; i++) {
-            password.append(allAllowed[random.nextInt(allAllowed.length)]);
-        }
-        return Base64.getEncoder().encodeToString(password.toString().getBytes(StandardCharsets.UTF_8));
+        int ivSize = 16;
+        byte[] iv = new byte[ivSize];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(iv);
+        return Base64.getEncoder().encodeToString(iv);
     }
 
     /**

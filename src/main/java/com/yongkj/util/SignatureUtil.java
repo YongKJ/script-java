@@ -57,7 +57,7 @@ public class SignatureUtil {
             return Base64.getEncoder().encodeToString(signature.sign());
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return "";
         }
     }
 

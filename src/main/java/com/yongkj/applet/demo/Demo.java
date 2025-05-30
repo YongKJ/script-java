@@ -784,12 +784,33 @@ public class Demo {
         }
     }
 
+    private void test42() {
+        String iv = AesUtil.generateIV();
+        String key = AesUtil.generateKey();
+        LogUtil.loggerLine(Log.of("Demo", "test42", "iv", iv));
+        LogUtil.loggerLine(Log.of("Demo", "test42", "key", key));
+
+//        String msg = "Hello world!";
+//        String iv = "6eXHaoDEFfrRXDa/gbKm8Q==";
+//        String key = "gitQIwZE7c8AkkHv+hel9K0OWRdNd6pbt7yUkYNQEOQ=";
+//
+//        LogUtil.loggerLine(Log.of("Demo", "test42", "iv", iv));
+//        LogUtil.loggerLine(Log.of("Demo", "test42", "key", key));
+//
+//        String msg1 = AesUtil.aesEncrypt(key, iv, msg);
+//        String msg2 = AesUtil.aesDecrypt(key, iv, msg1);
+//
+//        LogUtil.loggerLine(Log.of("Demo", "test42", "msg1", msg1));
+//        LogUtil.loggerLine(Log.of("Demo", "test42", "msg2", msg2));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
+        demo.test42();
 //        demo.test41();
 //        demo.test40();
 //        demo.test39();
-        demo.test38();
+//        demo.test38();
 //        demo.test37();
 //        demo.test36();
 //        demo.test35();

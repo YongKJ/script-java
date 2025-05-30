@@ -81,7 +81,7 @@ public class RsaUtil {
             return mode == Cipher.DECRYPT_MODE ? new String(bytes) : Base64.getEncoder().encodeToString(bytes);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return "";
         }
     }
 
