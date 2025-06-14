@@ -142,6 +142,16 @@ public class FileUtil {
         return Objects.requireNonNull((new File(fileName)).listFiles()).length == 0;
     }
 
+    public static void create(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) return;
+        try {
+            file.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void mkdir(String fileName) {
         File file = new File(fileName);
         if (file.exists()) return;

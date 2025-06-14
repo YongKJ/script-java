@@ -874,9 +874,53 @@ public class Demo {
         System.out.println(inNumRange(-3.956, "(-3.9555, ]"));
     }
 
+    private void test44() {
+        String folder = "C:\\Users\\Admin\\Desktop\\java-class";
+
+        List<String> tableNames = Arrays.asList(
+                "questionnaire_classification",
+                "questionnaire_sheet",
+                "questionnaire_question",
+                "questionnaire_question_option",
+                "questionnaire_score_criteria",
+                "questionnaire_score_criteria_option",
+                "rel_questionnaire_question_score_criteria",
+                "questionnaire_question_option_rel_criteria",
+                "rel_questionnaire_sheet_consumer",
+                "rel_questionnaire_sheet_consumer_score_criteria"
+        );
+
+        List<String> classTypes = Arrays.asList(
+                "Controller",
+                "Service",
+                "serviceImpl",
+                "Mapper",
+                "PO",
+                "DTO",
+                "Params"
+        );
+
+        for (String classType : classTypes) {
+            String dir = folder + "\\" + classType;
+            if (!FileUtil.exist(dir)) {
+                FileUtil.mkdir(dir);
+            }
+
+            for (String tableName : tableNames) {
+                String name = GenUtil.toHump(tableName.replace("_", "-"));
+                String fileName = name + classType + ".java";
+                String filePath = dir + "\\" + fileName;
+                if (!FileUtil.exist(filePath)) {
+                    FileUtil.create(filePath);
+                }
+            }
+        }
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test43();
+        demo.test44();
+//        demo.test43();
 //        demo.test42();
 //        demo.test41();
 //        demo.test40();
