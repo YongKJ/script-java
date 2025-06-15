@@ -1,4 +1,5 @@
 package com.bc.user.service.entity.params.questionnaire;
 
 public interface ParamsClass {
+
 }
