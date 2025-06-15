@@ -165,6 +165,7 @@ public class ClassTemplateGenerateService extends BaseService {
             }
 
             String fieldHumpName = GenUtil.toHump(map.getKey().replace("_", "-"));
+            fieldHumpName = fieldHumpName.substring(0, 1).toLowerCase() + fieldHumpName.substring(1);
             String fieldNote = map.getValue().getComment();
             if (!StringUtils.hasText(fieldNote)) {
                 fieldNote = fieldHumpName;

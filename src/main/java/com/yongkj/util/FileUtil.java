@@ -1,10 +1,13 @@
 package com.yongkj.util;
 
 import com.yongkj.App;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -91,7 +94,9 @@ public class FileUtil {
         String lineBreak = System.getProperty("os.name").contains("dows") ? "\r\n" : "\n";
         try {
 //            FileReader reader = new FileReader(path);
-            FileInputStream inputStream = new FileInputStream(path);
+            InputStream inputStream = path.startsWith("/") || path.startsWith("\\") ?
+                    new ClassPathResource(path).getInputStream() :
+                    Files.newInputStream(Paths.get(path));
             InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             BufferedReader bReader = new BufferedReader(reader);
             StringBuilder sb = new StringBuilder();
