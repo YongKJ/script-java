@@ -1,0 +1,4 @@
+package com.bc.user.service.entity.dto.questionnaire;
+
+public interface DTOClass {
+}

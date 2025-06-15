@@ -121,9 +121,57 @@ max-compute-config:
 #    - "dwd_worker_evaluate_di"
 #    - "dws_worker_base_info_statistics_di"
 #    - "dws_registered_merchant_statistics_di"
+#    - "dwd_customer_page_visit_di"
+#    - "dwd_con_user_session_path_di"
+#    - "dws_customer_browsing_behavior_statistics_di"
+#    - "dws_customer_browsing_conversion_statistics_di"
+#    - "dws_customer_activity_conversion_statistics_di"
+#    - "ods_browse_path_info"
+#    - "dwd_worker_portrait_info_di"
+#    - "dwd_worker_load_distribute_order_di"
+#    - "dwd_worker_load_long_order_di"
+#    - "dwd_worker_load_short_order_di"
+#    - "dwd_customer_scan_di"
+#    - "dwd_customer_scan_deep_di"
+#    - "dws_marketing_screen_di"
+#    - "dws_customer_screen_di"
+#    - "dwd_active_customer_screen_di"
+#    - "dws_worker_orbit_di"
+#    - "dwd_worker_orbit_detail_di"
+#    - "dwd_worker_orbit_job_di"
+#    - "dws_life_customer_overview_statistics_di"
+#    - "dwd_life_customer_watch_content_di"
+#    - "dwd_life_customer_login_frequency_di"
+#    - "dwd_life_customer_login_distributed_di"
+#    - "dwd_life_customer_area_distributed_di"
+
+#    - "dws_business_home_sales_category_di_latest"
+#    - "dwd_active_customer_screen_di_latest"
+#    - "dwd_worker_orbit_detail_di_latest"
+#    - "dwd_worker_orbit_job_di_latest"
+#    - "dws_account_creator_statistics_screen_di_latest"
+#    - "dws_business_home_dashboard_di_latest"
+#    - "dws_content_content_summary_screen_di_latest"
+#    - "dws_content_visit_summary_screen_di_latest"
+#    - "dws_customer_screen_di_latest"
+#    - "dws_marketing_screen_di_latest"
+#    - "dws_worker_orbit_di_latest"
+#    - "ods_little_advertising_latest"
+#    - "ods_little_advertising_report_latest"
+#    - "ods_merchant_device_user_info_latest"
+#    - "ods_merchant_event_data_latest"
+#    - "ods_ocean_engine_advertising_latest"
+#    - "ods_ocean_engine_advertising_report_latest"
+#    - "ods_tencent_advertising_latest"
+#    - "ods_tencent_advertising_report_latest"
+#    - "ods_worker_device_user_info_latest"
+#    - "ods_worker_event_data_latest"
+
+class-template-generate:
+  enable: true
 
 max-compute-cloud-init:
-  enable: true
+  enable: false
 
 max-compute-history-init:
   enable: false

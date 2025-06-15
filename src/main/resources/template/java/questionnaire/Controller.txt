@@ -1,0 +1,21 @@
+package com.bc.user.interaction.v1.bc.app.questionnaire;
+
+import com.bc.user.service.service.v1.questionnaire.ServiceClass;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/v1/bc/app/questionnaire")
+@Slf4j
+@Validated
+@Tag(name = "TableHumpName", description = "TableHumpName")
+public class ControllerClass {
+
+    @Autowired
+    private ServiceClass ServiceName;
+
+}

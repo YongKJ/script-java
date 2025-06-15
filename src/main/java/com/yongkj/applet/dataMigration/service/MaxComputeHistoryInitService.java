@@ -117,8 +117,8 @@ public class MaxComputeHistoryInitService extends BaseService {
             System.out.println("================================================================================================================================");
 
             String tableNameLatest = tableName + "_latest";
-            Table tableLatest = preDatabaseMaxCompute.getMapTable().get(tableNameLatest);
-            init_hologres_data_to_max_compute_data(lstData, preDatabaseMaxCompute, tableLatest);
+            Table tableLatest = prodDatabaseMaxCompute.getMapTable().get(tableNameLatest);
+            init_hologres_data_to_max_compute_data(lstData, prodDatabaseMaxCompute, tableLatest);
         }
     }
 

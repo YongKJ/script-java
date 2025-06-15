@@ -893,7 +893,7 @@ public class Demo {
         List<String> classTypes = Arrays.asList(
                 "Controller",
                 "Service",
-                "serviceImpl",
+                "ServiceImpl",
                 "Mapper",
                 "PO",
                 "DTO",

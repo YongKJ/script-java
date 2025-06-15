@@ -35,6 +35,7 @@ public class DataMigration {
     private final SyncMenuPermissionsService syncMenuPermissionsService;
     private final MaxComputeAssignmentService maxComputeAssignmentService;
     private final ShopWorkerDataExportService shopWorkerDataExportService;
+    private final ClassTemplateGenerateService classTemplateGenerateService;
     private final SmallAssignmentUpdateService smallAssignmentUpdateService;
     private final MaxComputeHistoryInitService maxComputeHistoryInitService;
     private final AdminMenuDataMigrationService adminMenuDataMigrationService;
@@ -108,6 +109,7 @@ public class DataMigration {
         this.syncMenuPermissionsService = new SyncMenuPermissionsService(this);
         this.maxComputeAssignmentService = new MaxComputeAssignmentService(this);
         this.shopWorkerDataExportService = new ShopWorkerDataExportService(this);
+        this.classTemplateGenerateService = new ClassTemplateGenerateService(this);
         this.maxComputeHistoryInitService = new MaxComputeHistoryInitService(this);
         this.smallAssignmentUpdateService = new SmallAssignmentUpdateService(this);
         this.dataIncrementMigrationService = new DataIncrementMigrationService(this);
@@ -146,6 +148,7 @@ public class DataMigration {
         syncMenuPermissionsService.apply();
         maxComputeAssignmentService.apply();
         shopWorkerDataExportService.apply();
+        classTemplateGenerateService.apply();
         smallAssignmentUpdateService.apply();
         maxComputeHistoryInitService.apply();
         adminMenuDataMigrationService.apply();
