@@ -49,7 +49,8 @@ public class ClassTemplateGenerateService extends BaseService {
                 "Mapper",
                 "PO",
                 "DTO",
-                "Params"
+                "Params",
+                "Dict"
         );
 
         for (String tableName : tableNames) {
@@ -95,6 +96,7 @@ public class ClassTemplateGenerateService extends BaseService {
         String poClass = tableHumpName + "PO";
         String dtoClass = tableHumpName + "DTO";
         String paramsClass = tableHumpName + "Params";
+        String dictClass = tableHumpName + "Dict";
 
         Map<String, String> mapType = new HashMap<>();
         mapType.put("TableOriginalName", tableName);
@@ -107,6 +109,7 @@ public class ClassTemplateGenerateService extends BaseService {
         mapType.put("POClass", poClass);
         mapType.put("DTOClass", dtoClass);
         mapType.put("ParamsClass", paramsClass);
+        mapType.put("DictClass", dictClass);
 
         for (Map.Entry<String, String> map : mapType.entrySet()) {
             if (classContent.contains(map.getKey())) {
