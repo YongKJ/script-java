@@ -89,7 +89,7 @@ public class ClassTemplateGenerateService extends BaseService {
         String tableHumpName = GenUtil.toHump(tableName.replace("_", "-"));
         String controllerClass = tableHumpName + "Controller";
         String serviceClass = tableHumpName + "Service";
-        String serviceName = serviceClass.substring(0, 1).toUpperCase() + serviceClass.substring(1);
+        String serviceName = serviceClass.substring(0, 1).toLowerCase() + serviceClass.substring(1);
         String serviceImplClass = tableHumpName + "ServiceImpl";
         String mapperClass = tableHumpName + "Mapper";
         String poClass = tableHumpName + "PO";
