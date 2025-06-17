@@ -107,6 +107,7 @@ public class ClassTemplateGenerateService extends BaseService {
 
     private String getClassContent(String tableName, String classContent, String packageName) {
         String tableHumpName = GenUtil.toHump(tableName.replace("_", "-"));
+        String tableHumpNameMini = tableHumpName.substring(0, 1).toLowerCase() + tableHumpName.substring(1);
         String controllerClass = tableHumpName + "Controller";
         String serviceClass = tableHumpName + "Service";
         String serviceName = serviceClass.substring(0, 1).toLowerCase() + serviceClass.substring(1);
@@ -120,6 +121,7 @@ public class ClassTemplateGenerateService extends BaseService {
         Map<String, String> mapType = new HashMap<>();
         mapType.put("TableOriginalName", tableName);
         mapType.put("TableHumpName", tableHumpName);
+        mapType.put("TableHumpNameMini", tableHumpNameMini);
         mapType.put("ControllerClass", controllerClass);
         mapType.put("ServiceClass", serviceClass);
         mapType.put("ServiceName", serviceName);
