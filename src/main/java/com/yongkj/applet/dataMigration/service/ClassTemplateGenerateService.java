@@ -23,7 +23,21 @@ public class ClassTemplateGenerateService extends BaseService {
     public void apply() {
         if (!enable) return;
 
-        generateQuestionnaireTemplate();
+//        generateQuestionnaireTemplate();
+        generateFoodTemplate();
+    }
+
+    private void generateFoodTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\food-class";
+
+        List<String> tableNames = Arrays.asList(
+                "food_nutrition",
+                "rel_food_details_nutrition",
+                "food_details",
+                "food_category"
+        );
+
+        generateTemplate(tableNames, folder, "food");
     }
 
     private void generateQuestionnaireTemplate() {
@@ -42,6 +56,11 @@ public class ClassTemplateGenerateService extends BaseService {
                 "rel_questionnaire_sheet_consumer_score_criteria"
         );
 
+        generateTemplate(tableNames, folder, "questionnaire");
+    }
+
+
+    private void generateTemplate(List<String> tableNames, String folder, String packageName) {
         List<String> classTypes = Arrays.asList(
                 "Controller",
                 "Service",
@@ -66,7 +85,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 }
 
                 String classPath = getClassPath(dir, tableName, classType);
-                String classContent = getClassContent(table, tableName, classType);
+                String classContent = getClassContent(table, tableName, classType, packageName);
                 if (!FileUtil.exist(classPath)) {
                     FileUtil.create(classPath);
                 }
@@ -75,18 +94,18 @@ public class ClassTemplateGenerateService extends BaseService {
         }
     }
 
-    private String getClassContent(Table table, String tableName, String classType) {
-        String templatePath = "/template/java/questionnaire/" + classType + ".txt";
+    private String getClassContent(Table table, String tableName, String classType, String packageName) {
+        String templatePath = "/template/java/" + packageName + "/" + classType + ".txt";
         String classContent = FileUtil.read(templatePath);
 
-        classContent = getClassContent(tableName, classContent);
+        classContent = getClassContent(tableName, classContent, packageName);
         if (Objects.equals(classType, "PO")) {
-            classContent = getPOClassContent(table, classContent);
+            classContent = getPOClassContent(table, classContent, packageName);
         }
         return classContent;
     }
 
-    private String getClassContent(String tableName, String classContent) {
+    private String getClassContent(String tableName, String classContent, String packageName) {
         String tableHumpName = GenUtil.toHump(tableName.replace("_", "-"));
         String controllerClass = tableHumpName + "Controller";
         String serviceClass = tableHumpName + "Service";
@@ -110,6 +129,7 @@ public class ClassTemplateGenerateService extends BaseService {
         mapType.put("DTOClass", dtoClass);
         mapType.put("ParamsClass", paramsClass);
         mapType.put("DictClass", dictClass);
+        mapType.put("PackageName", packageName);
 
         for (Map.Entry<String, String> map : mapType.entrySet()) {
             if (classContent.contains(map.getKey())) {
@@ -120,14 +140,14 @@ public class ClassTemplateGenerateService extends BaseService {
         return classContent;
     }
 
-    private String getPOClassContent(Table table, String classContent) {
-        String fieldPath = "/template/java/questionnaire/Field.txt";
+    private String getPOClassContent(Table table, String classContent, String packageName) {
+        String fieldPath = "/template/java/" + packageName + "/Field.txt";
         String fieldContent = FileUtil.read(fieldPath);
 
-        String fieldDeletedPath = "/template/java/questionnaire/FieldDeleted.txt";
+        String fieldDeletedPath = "/template/java/" + packageName + "/FieldDeleted.txt";
         String fieldDeletedContent = FileUtil.read(fieldDeletedPath);
 
-        String fieldJsonPath = "/template/java/questionnaire/FieldJson.txt";
+        String fieldJsonPath = "/template/java/" + packageName + "/FieldJson.txt";
         String fieldJsonContent = FileUtil.read(fieldJsonPath);
 
         String fieldListStr = "";
