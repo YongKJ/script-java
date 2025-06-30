@@ -24,7 +24,19 @@ public class ClassTemplateGenerateService extends BaseService {
         if (!enable) return;
 
 //        generateQuestionnaireTemplate();
-        generateFoodTemplate();
+//        generateFoodTemplate();
+        generateDeviceContactTemplate();
+    }
+
+    private void generateDeviceContactTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\device-contact";
+
+        List<String> tableNames = Arrays.asList(
+                "device_contact",
+                "device_contact_recycle_bin"
+        );
+
+        generateTemplate(tableNames, folder, "contact");
     }
 
     private void generateFoodTemplate() {

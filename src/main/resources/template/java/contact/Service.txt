@@ -1,0 +1,8 @@
+package com.bc.smart.service.service.v2;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bc.smart.service.model.POClass;
+
+public interface ServiceClass extends IService<POClass> {
+
+}

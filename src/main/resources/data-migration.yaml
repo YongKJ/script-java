@@ -14,6 +14,11 @@ dev:
     url: "jdbc:mysql://127.0.0.1:13306/dev_content?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "dev_smart_care"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_smart_care?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 test:
   - name: "test_user"
@@ -29,6 +34,11 @@ test:
   - name: "test_content"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/test_content?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "test_smart_care"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_smart_care?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
 
@@ -48,6 +58,11 @@ pre:
     url: "jdbc:mysql://127.0.0.1:13306/pre_content?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "pre_smart_care"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_smart_care?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 prod:
   - name: "prod_user"
@@ -65,12 +80,17 @@ prod:
     url: "jdbc:mysql://127.0.0.1:33306/prod_content?characterEncoding=utf-8"
     username: "prod"
     password: "vsHHhda@%DSAs996"
+  - name: "prod_smart_care"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_smart_care?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
 
 database-config:
   src: "dev"
   des: "test"
   databases:
-    - "user"
+    - "smart_care"
 
 max-compute:
   - name: "pre_warehouse_max_compute"
@@ -98,7 +118,7 @@ max-compute-config:
   tables:
 #    - "ods_test_odps"
 #    - "ods_ad_store_tt"
-    - "ods_event_data"
+#    - "ods_event_data"
 #    - "ods_device_user_info"
 #    - "ods_ocean_engine_advertising"
 #    - "ods_ocean_engine_advertising_report"
