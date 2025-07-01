@@ -25,7 +25,22 @@ public class ClassTemplateGenerateService extends BaseService {
 
 //        generateQuestionnaireTemplate();
 //        generateFoodTemplate();
-        generateDeviceContactTemplate();
+//        generateDeviceContactTemplate();
+        generateFoodTemplateLatest();
+    }
+
+    private void generateFoodTemplateLatest() {
+        String folder = "C:\\Users\\Admin\\Desktop\\food-class-latest";
+
+        List<String> tableNames = Arrays.asList(
+                "food_tag",
+                "rel_food_recipes_tag",
+                "food_recipes",
+                "food_recipes_step",
+                "rel_food_recipes_details"
+        );
+
+        generateTemplate(tableNames, folder, "food");
     }
 
     private void generateDeviceContactTemplate() {
