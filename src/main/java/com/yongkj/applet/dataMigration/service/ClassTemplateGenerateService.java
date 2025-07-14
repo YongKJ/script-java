@@ -26,7 +26,34 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateQuestionnaireTemplate();
 //        generateFoodTemplate();
 //        generateDeviceContactTemplate();
-        generateFoodTemplateLatest();
+//        generateFoodTemplateLatest();
+        generateDeviceIotCardTemplateLatest();
+    }
+
+    private void generateDeviceIotCardTemplateLatest() {
+        String folder = "C:\\Users\\Admin\\Desktop\\device-iot-card-latest";
+        if (!FileUtil.exist(folder)) {
+            FileUtil.mkdir(folder);
+        }
+
+        List<String> tableNames = Arrays.asList(
+                "rel_iot_card_device"
+        );
+
+        generateTemplate(tableNames, folder, "contact");
+    }
+
+    private void generateDeviceIotCardTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\device-iot-card";
+        if (!FileUtil.exist(folder)) {
+            FileUtil.mkdir(folder);
+        }
+
+        List<String> tableNames = Arrays.asList(
+                "device_iot_card"
+        );
+
+        generateTemplate(tableNames, folder, "contact");
     }
 
     private void generateFoodTemplateLatest() {
