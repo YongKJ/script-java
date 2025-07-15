@@ -27,7 +27,25 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateFoodTemplate();
 //        generateDeviceContactTemplate();
 //        generateFoodTemplateLatest();
-        generateDeviceIotCardTemplateLatest();
+//        generateDeviceIotCardTemplateLatest();
+        generateQuestionnaireTemplateLatest();
+    }
+
+    private void generateQuestionnaireTemplateLatest() {
+        String folder = "C:\\Users\\Admin\\Desktop\\questionnaire-risk-class";
+        if (!FileUtil.exist(folder)) {
+            FileUtil.mkdir(folder);
+        }
+
+        List<String> tableNames = Arrays.asList(
+                "rel_property_questionnaire_sheet",
+                "questionnaire_sheet_property",
+                "rel_risk_questionnaire_sheet",
+                "questionnaire_risk",
+                "questionnaire_risk_suggestion"
+        );
+
+        generateTemplate(tableNames, folder, "questionnaire");
     }
 
     private void generateDeviceIotCardTemplateLatest() {
