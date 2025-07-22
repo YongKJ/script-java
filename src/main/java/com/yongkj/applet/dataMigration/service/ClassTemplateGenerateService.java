@@ -32,17 +32,18 @@ public class ClassTemplateGenerateService extends BaseService {
     }
 
     private void generateQuestionnaireTemplateLatest() {
-        String folder = "C:\\Users\\Admin\\Desktop\\questionnaire-risk-class";
+        String folder = "C:\\Users\\Admin\\Desktop\\questionnaire-risk-class-latest";
         if (!FileUtil.exist(folder)) {
             FileUtil.mkdir(folder);
         }
 
         List<String> tableNames = Arrays.asList(
-                "rel_property_questionnaire_sheet",
-                "questionnaire_sheet_property",
-                "rel_risk_questionnaire_sheet",
-                "questionnaire_risk",
-                "questionnaire_risk_suggestion"
+//                "rel_property_questionnaire_sheet",
+//                "questionnaire_sheet_property",
+//                "rel_risk_questionnaire_sheet",
+//                "questionnaire_risk",
+//                "questionnaire_risk_suggestion",
+                "rel_risk_questionnaire_score_criteria"
         );
 
         generateTemplate(tableNames, folder, "questionnaire");
