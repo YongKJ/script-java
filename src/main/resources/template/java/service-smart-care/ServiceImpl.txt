@@ -1,0 +1,13 @@
+package com.bc.smart.service.service.v2.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bc.smart.service.mapper.MapperClass;
+import com.bc.smart.service.model.POClass;
+import com.bc.smart.service.service.v2.ServiceClass;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+public class ServiceImplClass extends ServiceImpl<MapperClass, POClass> implements ServiceClass {
+}

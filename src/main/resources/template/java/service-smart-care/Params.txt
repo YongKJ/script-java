@@ -1,0 +1,5 @@
+package com.bc.smart.service.entity.params;
+
+public interface ParamsClass {
+
+}

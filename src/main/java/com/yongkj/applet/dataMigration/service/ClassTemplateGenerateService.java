@@ -28,7 +28,56 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateDeviceContactTemplate();
 //        generateFoodTemplateLatest();
 //        generateDeviceIotCardTemplateLatest();
-        generateQuestionnaireTemplateLatest();
+//        generateQuestionnaireTemplateLatest();
+//        generateFoodTemplatePlus();
+//        generateFoodTemplatePlusLatest();
+//        generateFoodTemplateMax();
+        generateEcgRecordReportTemplate();
+    }
+
+    private void generateEcgRecordReportTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\ecg-record-report";
+
+        List<String> tableNames = Collections.singletonList(
+                "ecg_record_report"
+        );
+
+        generateTemplate("service-smart-care", tableNames, folder, "ecg");
+    }
+
+    private void generateFoodTemplateMax() {
+        String folder = "C:\\Users\\Admin\\Desktop\\food-class-max";
+
+        List<String> tableNames = Collections.singletonList(
+                "food_cookbook_details_search"
+        );
+
+        generateTemplate("food", tableNames, folder, "food");
+    }
+
+    private void generateFoodTemplatePlusLatest() {
+        String folder = "C:\\Users\\Admin\\Desktop\\food-class-plus-latest";
+
+        List<String> tableNames = Collections.singletonList(
+                "food_cookbook_class_history"
+        );
+
+        generateTemplate("food", tableNames, folder, "food");
+    }
+
+    private void generateFoodTemplatePlus() {
+        String folder = "C:\\Users\\Admin\\Desktop\\food-class-plus";
+
+        List<String> tableNames = Arrays.asList(
+                "food_cookbook_tag",
+                "rel_food_cookbook_tag",
+                "food_cookbook",
+                "food_cookbook_process",
+                "food_cookbook_class",
+                "rel_food_cookbook_details"
+        );
+
+        generateTemplate("food", tableNames, folder, "food");
     }
 
     private void generateQuestionnaireTemplateLatest() {
@@ -46,7 +95,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "rel_risk_questionnaire_score_criteria"
         );
 
-        generateTemplate(tableNames, folder, "questionnaire");
+        generateTemplate("questionnaire", tableNames, folder, "questionnaire");
     }
 
     private void generateDeviceIotCardTemplateLatest() {
@@ -59,7 +108,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "rel_iot_card_device"
         );
 
-        generateTemplate(tableNames, folder, "contact");
+        generateTemplate("contact", tableNames, folder, "contact");
     }
 
     private void generateDeviceIotCardTemplate() {
@@ -72,7 +121,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "device_iot_card"
         );
 
-        generateTemplate(tableNames, folder, "contact");
+        generateTemplate("contact", tableNames, folder, "contact");
     }
 
     private void generateFoodTemplateLatest() {
@@ -86,7 +135,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "rel_food_recipes_details"
         );
 
-        generateTemplate(tableNames, folder, "food");
+        generateTemplate("food", tableNames, folder, "food");
     }
 
     private void generateDeviceContactTemplate() {
@@ -97,7 +146,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "device_contact_recycle_bin"
         );
 
-        generateTemplate(tableNames, folder, "contact");
+        generateTemplate("contact", tableNames, folder, "contact");
     }
 
     private void generateFoodTemplate() {
@@ -110,7 +159,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 "food_category"
         );
 
-        generateTemplate(tableNames, folder, "food");
+        generateTemplate("food", tableNames, folder, "food");
     }
 
     private void generateQuestionnaireTemplate() {
@@ -129,11 +178,11 @@ public class ClassTemplateGenerateService extends BaseService {
                 "rel_questionnaire_sheet_consumer_score_criteria"
         );
 
-        generateTemplate(tableNames, folder, "questionnaire");
+        generateTemplate("questionnaire", tableNames, folder, "questionnaire");
     }
 
 
-    private void generateTemplate(List<String> tableNames, String folder, String packageName) {
+    private void generateTemplate(String projectName, List<String> tableNames, String folder, String packageName) {
         List<String> classTypes = Arrays.asList(
                 "Controller",
                 "Service",
@@ -158,7 +207,7 @@ public class ClassTemplateGenerateService extends BaseService {
                 }
 
                 String classPath = getClassPath(dir, tableName, classType);
-                String classContent = getClassContent(table, tableName, classType, packageName);
+                String classContent = getClassContent(projectName, table, tableName, classType, packageName);
                 if (!FileUtil.exist(classPath)) {
                     FileUtil.create(classPath);
                 }
@@ -167,13 +216,13 @@ public class ClassTemplateGenerateService extends BaseService {
         }
     }
 
-    private String getClassContent(Table table, String tableName, String classType, String packageName) {
-        String templatePath = "/template/java/" + packageName + "/" + classType + ".txt";
+    private String getClassContent(String projectName, Table table, String tableName, String classType, String packageName) {
+        String templatePath = "/template/java/" + projectName + "/" + classType + ".txt";
         String classContent = FileUtil.read(templatePath);
 
         classContent = getClassContent(tableName, classContent, packageName);
         if (Objects.equals(classType, "PO")) {
-            classContent = getPOClassContent(table, classContent, packageName);
+            classContent = getPOClassContent(table, classContent, projectName);
         }
         return classContent;
     }
@@ -215,16 +264,20 @@ public class ClassTemplateGenerateService extends BaseService {
         return classContent;
     }
 
-    private String getPOClassContent(Table table, String classContent, String packageName) {
-        String fieldPath = "/template/java/" + packageName + "/Field.txt";
+    private String getPOClassContent(Table table, String classContent, String projectName) {
+        String fieldPath = "/template/java/" + projectName + "/Field.txt";
         String fieldContent = FileUtil.read(fieldPath);
 
-        String fieldDeletedPath = "/template/java/" + packageName + "/FieldDeleted.txt";
+        String fieldDeletedPath = "/template/java/" + projectName + "/FieldDeleted.txt";
         String fieldDeletedContent = FileUtil.read(fieldDeletedPath);
 
-        String fieldJsonPath = "/template/java/" + packageName + "/FieldJson.txt";
+        String fieldJsonPath = "/template/java/" + projectName + "/FieldJson.txt";
         String fieldJsonContent = FileUtil.read(fieldJsonPath);
 
+        return getPOClassContent(table, classContent, fieldContent, fieldDeletedContent, fieldJsonContent);
+    }
+
+    private String getPOClassContent(Table table, String classContent, String fieldContent, String fieldDeletedContent, String fieldJsonContent) {
         String fieldListStr = "";
         List<String> fieldNames = Arrays.asList("id", "utc_created", "utc_modified");
         for (Map.Entry<String, Field> map : table.getMapField().entrySet()) {
