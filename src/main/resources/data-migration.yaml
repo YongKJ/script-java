@@ -19,6 +19,16 @@ dev:
     url: "jdbc:mysql://127.0.0.1:13306/dev_smart_care?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "dev_im"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_im?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "dev_settlement"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/dev_settlement?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 test:
   - name: "test_user"
@@ -39,6 +49,16 @@ test:
   - name: "test_smart_care"
     driver: "com.mysql.cj.jdbc.Driver"
     url: "jdbc:mysql://127.0.0.1:13306/test_smart_care?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "test_im"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_im?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "test_settlement"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/test_settlement?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
 
@@ -63,6 +83,16 @@ pre:
     url: "jdbc:mysql://127.0.0.1:13306/pre_smart_care?characterEncoding=utf-8"
     username: "dev"
     password: "HHhda@%DSAs996"
+  - name: "pre_im"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_im?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
+  - name: "pre_settlement"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:13306/pre_settlement?characterEncoding=utf-8"
+    username: "dev"
+    password: "HHhda@%DSAs996"
 
 prod:
   - name: "prod_user"
@@ -85,12 +115,27 @@ prod:
     url: "jdbc:mysql://127.0.0.1:33306/prod_smart_care?characterEncoding=utf-8"
     username: "prod"
     password: "vsHHhda@%DSAs996"
+  - name: "prod_im"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_im?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
+  - name: "prod_settlement"
+    driver: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:33306/prod_settlement?characterEncoding=utf-8"
+    username: "prod"
+    password: "vsHHhda@%DSAs996"
 
 database-config:
-  src: "dev"
+  src: "prod"
   des: "test"
   databases:
+    - "content"
+    - "im"
+    - "order"
+    - "settlement"
     - "smart_care"
+    - "user"
 
 max-compute:
   - name: "pre_warehouse_max_compute"
@@ -188,7 +233,7 @@ max-compute-config:
 #    - "ods_worker_event_data_latest"
 
 class-template-generate:
-  enable: true
+  enable: false
 
 max-compute-cloud-init:
   enable: false
@@ -209,7 +254,7 @@ category-data-sync:
   enable: false
 
 small-assignment-update:
-  enable: false
+  enable: true
 
 token-management:
   enable: false

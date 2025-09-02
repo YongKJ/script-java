@@ -3,7 +3,9 @@ package com.yongkj.applet.dataMigration.pojo.dto;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.JDBCUtil;
+import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.GenUtil;
+import com.yongkj.util.LogUtil;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -119,6 +121,8 @@ public class Database {
 
     private static Database get(Map<String, Object> mapDatabase) {
         String name = GenUtil.objToStr(mapDatabase.get("name"));
+        LogUtil.loggerLine(Log.of("Database", "get", "name", name));
+
         String driver = GenUtil.objToStr(mapDatabase.get("driver"));
         String url = GenUtil.objToStr(mapDatabase.get("url"));
         String username = GenUtil.objToStr(mapDatabase.get("username"));

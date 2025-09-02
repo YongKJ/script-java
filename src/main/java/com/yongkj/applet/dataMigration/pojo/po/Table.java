@@ -44,8 +44,8 @@ public class Table {
     public static Map<String, Table> getTables(Manager manager) {
         Map<String, Table> mapTable = new HashMap<>();
         List<String> lstTableName = getTableNamesBySql(manager);
-        LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName", lstTableName));
-        LogUtil.loggerLine(Log.of("DataMigration", "getTables", "lstTableName.size()", lstTableName.size()));
+        LogUtil.loggerLine(Log.of("Table", "getTables", "lstTableName", lstTableName));
+        LogUtil.loggerLine(Log.of("Table", "getTables", "lstTableName.size()", lstTableName.size()));
         System.out.println("------------------------------------------------------------------------------------------------------------");
 
         List<String> filterTableName = new ArrayList<>();

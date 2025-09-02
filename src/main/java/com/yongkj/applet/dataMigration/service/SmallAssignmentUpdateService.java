@@ -52,9 +52,77 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportUtcCreatedData();
 //        exportConsumerUtcCreatedData();
 //        exportJobRecallContent();
-        getMapDistrictTypeId();
+//        getMapDistrictTypeId();
 //        exportWorkerNames();
 //        exportSonCategories();
+        databaseStatistics();
+    }
+
+    private void databaseStatistics() {
+        Map<String, Database> mapDataBase = this.mapDatabase;
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "mapDataBase.size()", mapDataBase.size()));
+
+        long dataCount = 0;
+        long fieldCount = 0L;
+        long tableCount = 0L;
+        Map<String, Map<String, Long>> mapCountData = new HashMap<>();
+        for (Map.Entry<String, Database> map : this.mapDatabase.entrySet()) {
+            if (!map.getKey().startsWith("prod")) {
+                continue;
+            }
+
+            Map<String, Long> countData = new HashMap<>();
+            countData.put("tableCount", (long) map.getValue().getMapTable().size());
+            countData.put("dataCount", 0L);
+            countData.put("fieldCount", 0L);
+
+            tableCount += map.getValue().getMapTable().size();
+            for (Map.Entry<String, Table> tempMap : map.getValue().getMapTable().entrySet()) {
+                Long tempFieldCount = countData.get("fieldCount");
+                Long tempDataCount = countData.get("dataCount");
+
+                fieldCount += tempMap.getValue().getMapField().size();
+                tempFieldCount += tempMap.getValue().getMapField().size();
+
+                String tableName = tempMap.getValue().getName();
+                if (tableName.contains("_") ||
+                    tableName.contains("-")) {
+                    tableName = "`" + tableName + "`";
+                    tempMap.getValue().setName(tableName);
+                }
+                List<Map<String, Object>> lstData = srcSetDataList(
+                        map.getValue(),
+                        Wrappers.lambdaQuery(tempMap.getValue())
+                                .select("COUNT(*) `count`"));
+
+                Map<String, Object> mapData = lstData.get(0);
+                long dataSum = Long.parseLong(mapData.get("count").toString());
+                tempDataCount += dataSum;
+                dataCount += dataSum;
+
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "tableName", tempMap.getKey()));
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "fieldSum", tempMap.getValue().getMapField().size()));
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "dataSum", dataSum));
+                GenUtil.println("==============================================================================================================================");
+
+                countData.put("dataCount", tempDataCount);
+                countData.put("fieldCount", tempFieldCount);
+            }
+
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "databaseName", map.getKey()));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "tableNum", map.getValue().getMapTable().size()));
+            GenUtil.println("==============================================================================================================================");
+
+            mapCountData.put(map.getKey(), countData);
+        }
+
+        GenUtil.println();
+        GenUtil.println();
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "tableCount", tableCount));
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "fieldCount", fieldCount));
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "dataCount", dataCount));
+        GenUtil.println("==============================================================================================================================");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "databaseStatistics", "GenUtil.toJsonString(mapCountData)", GenUtil.toJsonString(mapCountData)));
     }
 
     private void exportSonCategories() {
