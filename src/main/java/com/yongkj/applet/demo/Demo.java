@@ -917,9 +917,20 @@ public class Demo {
         }
     }
 
+    private void test45() {
+        String str1 = "她做的牛奶糖好吃";
+        String str2 = "黄牛奶根本无法处理";
+
+        String matchStr1 = GenUtil.getMaxSubString(str1, str2);
+        String matchStr2 = GenUtil.getMaxSubString(str1, str2);
+        LogUtil.loggerLine(Log.of("Demo", "test45", "matchStr1", matchStr1));
+        LogUtil.loggerLine(Log.of("Demo", "test45", "matchStr2", matchStr2));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test44();
+        demo.test45();
+//        demo.test44();
 //        demo.test43();
 //        demo.test42();
 //        demo.test41();
