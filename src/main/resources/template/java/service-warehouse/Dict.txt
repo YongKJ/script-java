@@ -1,0 +1,5 @@
+package com.bc.warehouse.service.dict;
+
+public interface DictClass {
+
+}

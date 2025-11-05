@@ -1,0 +1,19 @@
+package com.bc.warehouse.service.model;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName(value = "TableOriginalName", autoResultMap = true)
+public class POClass {
+FieldList
+}

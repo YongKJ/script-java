@@ -1,0 +1,8 @@
+package com.bc.order.service.v1.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bc.order.service.model.POClass;
+
+public interface ServiceClass extends IService<POClass> {
+
+}

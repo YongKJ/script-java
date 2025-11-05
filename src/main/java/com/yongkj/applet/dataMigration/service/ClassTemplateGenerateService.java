@@ -32,7 +32,44 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateFoodTemplatePlus();
 //        generateFoodTemplatePlusLatest();
 //        generateFoodTemplateMax();
-        generateEcgRecordReportTemplate();
+//        generateEcgRecordReportTemplate();
+//        generateMedicineTemplate();
+//        generateOrderEntityExtTemplate();
+        generateMaxComputeTemplate();
+    }
+
+    private void generateMaxComputeTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\max-compute";
+
+        List<String> tableNames = Arrays.asList(
+                "dws_device_usage_statistics",
+                "dwd_device_usage_tracking"
+        );
+
+        this.desDatabase = this.preDatabaseMaxCompute;
+        generateTemplate("service-warehouse", tableNames, folder, "deviceUsage");
+    }
+
+    private void generateOrderEntityExtTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\order-entity-ext";
+
+        List<String> tableNames = Arrays.asList(
+                "order_entity_ext"
+        );
+
+        generateTemplate("service-order", tableNames, folder, "order");
+    }
+
+    private void generateMedicineTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\medicine";
+
+        List<String> tableNames = Arrays.asList(
+                "medicine_disease",
+                "medicine_national_drug",
+                "medicine_surgical_procedure"
+        );
+
+        generateTemplate("medicine", tableNames, folder, "medicine");
     }
 
     private void generateEcgRecordReportTemplate() {

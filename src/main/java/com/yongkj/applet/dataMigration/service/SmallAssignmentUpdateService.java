@@ -6,10 +6,7 @@ import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
-import com.yongkj.util.FileUtil;
-import com.yongkj.util.GenUtil;
-import com.yongkj.util.LogUtil;
-import com.yongkj.util.PoiExcelUtil;
+import com.yongkj.util.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -55,7 +52,45 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        getMapDistrictTypeId();
 //        exportWorkerNames();
 //        exportSonCategories();
-        databaseStatistics();
+//        databaseStatistics();
+        importMedicineNationalDrugData();
+    }
+
+    private void importMedicineNationalDrugData() {
+        String excelPath = "C:\\Users\\Admin\\Desktop\\药品\\国家药品编码本位码信息（国产药品）.xlsx";
+        String sheetName = "1_国家药品编码本位码信息（国产药品）";
+
+        Table table = desDatabase.getMapTable().get("medicine_national_drug");
+
+        List<Map<String, String>> excelData = PoiExcelUtil.toMap(excelPath, sheetName, 2);
+        ThreadUtil.executeWithListDataByThreadPool(120, excelData, mapData -> {
+            String name = Optional.ofNullable(mapData.get("产品名称")).orElse("");
+            Integer serialNumber = Integer.parseInt(mapData.get("序号"));
+            String approvalNumber = Optional.ofNullable(mapData.get("批准文号")).orElse("");
+            String dosageForm = Optional.ofNullable(mapData.get("剂型")).orElse("");
+            String specification = Optional.ofNullable(mapData.get("规格")).orElse("");
+            String marketingAuthorizationHolderChinese = Optional.ofNullable(mapData.get("上市许可持有人")).orElse("");
+            String productionUnitChinese = Optional.ofNullable(mapData.get("生产单位")).orElse("");
+            String drugCode = Optional.ofNullable(mapData.get("药品编码")).orElse("");
+            String drugCodeNotes = Optional.ofNullable(mapData.get("药品编码备注")).orElse("");
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", serialNumber);
+            data.put("name", name);
+            data.put("type", 1);
+            data.put("serial_number", serialNumber);
+            data.put("approval_number", approvalNumber);
+            data.put("dosage_form", dosageForm);
+            data.put("specification", specification);
+            data.put("marketing_authorization_holder_chinese", marketingAuthorizationHolderChinese);
+            data.put("production_unit_chinese", productionUnitChinese);
+            data.put("drug_code", drugCode);
+            data.put("drug_code_notes", drugCodeNotes);
+
+            String insertSql = getInsertSQl(data, table);
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importMedicineNationalDrugData", "insertSql", insertSql));
+            desDataInsert(insertSql);
+        });
     }
 
     private void databaseStatistics() {

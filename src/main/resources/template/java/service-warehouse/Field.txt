@@ -1,0 +1,4 @@
+    /**
+     * FieldNote
+     */
+    private FieldType FieldName;

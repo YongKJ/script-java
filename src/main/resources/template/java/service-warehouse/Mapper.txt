@@ -1,0 +1,10 @@
+package com.bc.warehouse.service.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bc.warehouse.service.model.POClass;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface MapperClass extends BaseMapper<POClass> {
+
+}

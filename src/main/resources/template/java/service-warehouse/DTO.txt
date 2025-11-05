@@ -1,0 +1,5 @@
+package com.bc.warehouse.service.entity.dto;
+
+public interface DTOClass {
+
+}

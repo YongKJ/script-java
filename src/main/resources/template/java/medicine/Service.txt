@@ -1,0 +1,8 @@
+package com.bc.user.service.service.v1.PackageName;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bc.user.service.model.PackageName.POClass;
+
+public interface ServiceClass extends IService<POClass> {
+
+}

@@ -1,0 +1,5 @@
+package com.bc.order.service.dict;
+
+public interface DictClass {
+
+}

@@ -927,9 +927,18 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test45", "matchStr2", matchStr2));
     }
 
+    private void test46() {
+        String excelPath = "C:\\Users\\Admin\\Desktop\\药品\\国家药品编码本位码信息（国产药品）.xlsx";
+        String sheetName = "1_国家药品编码本位码信息（国产药品）";
+
+        List<Map<String, String>> excelData = PoiExcelUtil.toMap(excelPath, sheetName, 2);
+        LogUtil.loggerLine(Log.of("Demo", "test46", "excelData.size()", excelData.size()));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test45();
+        demo.test46();
+//        demo.test45();
 //        demo.test44();
 //        demo.test43();
 //        demo.test42();

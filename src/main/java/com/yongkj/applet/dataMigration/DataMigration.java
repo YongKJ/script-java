@@ -50,7 +50,10 @@ public class DataMigration {
         Map<String, Object> mapMaxComputeCloudInit = GenUtil.getMap("max-compute-cloud-init");
         boolean cloudInit = GenUtil.objToBoolean(mapMaxComputeCloudInit.get("enable"));
 
-        if (historyInit || cloudInit) {
+        Map<String, Object> classTemplateGenerate = GenUtil.getMap("class-template-generate");
+        boolean maxComputeEnable = GenUtil.objToBoolean(classTemplateGenerate.get("max-compute-enable"));
+
+        if (historyInit || cloudInit || maxComputeEnable) {
             this.mapDatabase = Database.initMaxComputeMapDatabase();
             this.preDatabaseHologres = Database.get("pre_warehouse", mapDatabase);
             this.prodDatabaseHologres = Database.get("prod_warehouse", mapDatabase);
