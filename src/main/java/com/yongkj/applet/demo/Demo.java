@@ -935,9 +935,16 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test46", "excelData.size()", excelData.size()));
     }
 
+    private void test47() {
+        TuYaService tuYaService = new TuYaService();
+        List<String> commands = tuYaService.getCommands();
+        LogUtil.loggerLine(Log.of("Demo", "test47", "commands", commands));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test46();
+        demo.test47();
+//        demo.test46();
 //        demo.test45();
 //        demo.test44();
 //        demo.test43();
