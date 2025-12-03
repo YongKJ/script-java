@@ -53,7 +53,38 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportWorkerNames();
 //        exportSonCategories();
 //        databaseStatistics();
-        importMedicineNationalDrugData();
+//        importMedicineNationalDrugData();
+        importFoodCookbookData();
+    }
+
+    private void importFoodCookbookData() {
+        String csvPath = "C:\\Users\\Admin\\Desktop\\食材数据匹配\\output_food_cookbook_data_new-1762246557.csv";
+        List<Map<String, String>> csvData = CsvUtil.toMap(csvPath);
+        Table table = desDatabase.getMapTable().get("rel_food_cookbook_details");
+        String sqlContent = "";
+        for (Map<String, String> mapData : csvData) {
+            String foodCookbookName = mapData.get("﻿food_cookbook_name");
+            String foodDetailsName = mapData.get("food_details_name");
+            Long foodDetailsId = Long.parseLong(mapData.get("food_details_id"));
+
+            Map<String, Object> tempMapData = new HashMap<>();
+            tempMapData.put("food_details_name", foodDetailsName);
+            tempMapData.put("food_details_id", foodDetailsId);
+
+            String updateSql = getUpdateSQl(
+                    tempMapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("name", foodCookbookName));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importFoodCookbookData", "updateSql", updateSql));
+
+//            desDataUpdate(updateSql);
+
+            sqlContent += updateSql + ";\n";
+        }
+        FileUtil.write(
+                "C:\\Users\\Admin\\Desktop\\食材数据匹配\\update.sql",
+                sqlContent
+        );
     }
 
     private void importMedicineNationalDrugData() {

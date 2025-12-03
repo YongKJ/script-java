@@ -127,14 +127,9 @@ prod:
     password: "vsHHhda@%DSAs996"
 
 database-config:
-  src: "prod"
+  src: "dev"
   des: "test"
   databases:
-    - "content"
-    - "im"
-    - "order"
-    - "settlement"
-    - "smart_care"
     - "user"
 
 max-compute:
@@ -231,9 +226,12 @@ max-compute-config:
 #    - "ods_tencent_advertising_report_latest"
 #    - "ods_worker_device_user_info_latest"
 #    - "ods_worker_event_data_latest"
+#    - "dws_device_usage_statistics"
+#    - "dwd_device_usage_tracking"
 
 class-template-generate:
   enable: false
+  max-compute-enable: false
 
 max-compute-cloud-init:
   enable: false
