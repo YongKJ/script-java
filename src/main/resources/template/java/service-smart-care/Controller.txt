@@ -1,6 +1,6 @@
 package com.bc.smart.interaction.v1.bc.app;
 
-import com.bc.smart.service.service.v2.ServiceClass;
+import com.bc.smart.service.service.v1.ServiceClass;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

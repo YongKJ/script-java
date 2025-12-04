@@ -37,12 +37,12 @@ public class Table {
         this.insertDataSql = "";
         this.updateDataSql = "";
         this.removeDataSql = "";
-        this.mapField = new HashMap<>();
         this.fieldNames = new ArrayList<>();
+        this.mapField = new LinkedHashMap<>();
     }
 
     public static Map<String, Table> getTables(Manager manager) {
-        Map<String, Table> mapTable = new HashMap<>();
+        Map<String, Table> mapTable = new LinkedHashMap<>();
         List<String> lstTableName = getTableNamesBySql(manager);
         LogUtil.loggerLine(Log.of("Table", "getTables", "lstTableName", lstTableName));
         LogUtil.loggerLine(Log.of("Table", "getTables", "lstTableName.size()", lstTableName.size()));

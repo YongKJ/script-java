@@ -156,7 +156,7 @@ public class Field {
         String tempRegStr = "\\s+`(\\S+)`[\\s\\S]+DEFAULT\\s(NULL)[\\s\\S]+";
         Pattern pattern = Pattern.compile(regStr);
         Pattern tempPattern = Pattern.compile(tempRegStr);
-        Map<String, String> mapDefault = new HashMap<>();
+        Map<String, String> mapDefault = new LinkedHashMap<>();
         for (String line : lstLine) {
             Matcher matcher = pattern.matcher(line);
             if (matcher.find()) {
@@ -175,7 +175,7 @@ public class Field {
     }
 
     private static Map<String, Field> packKeyOrIndex(Map<String, Field> mapField, String tableSql, String tableName) {
-        if (tableSql == null || tableSql.length() == 0) return mapField;
+        if (tableSql == null || tableSql.isEmpty()) return mapField;
         List<String> lstLine = GenUtil.getStrLines(tableSql);
         for (String line : lstLine) {
             if (!line.contains("KEY") && !line.contains("INDEX")) continue;
@@ -215,7 +215,7 @@ public class Field {
     }
 
     private static Map<String, Field> getMapField(List<Field> lstField) {
-        Map<String, Field> mapField = new HashMap<>();
+        Map<String, Field> mapField = new LinkedHashMap<>();
         for (int i = 0; i < lstField.size(); i++) {
             String beforeField = i == 0 ? "" : lstField.get(i - 1).name;
             String afterField = i == lstField.size() - 1 ? "" : lstField.get(i + 1).name;

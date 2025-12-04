@@ -35,7 +35,19 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateEcgRecordReportTemplate();
 //        generateMedicineTemplate();
 //        generateOrderEntityExtTemplate();
-        generateMaxComputeTemplate();
+//        generateMaxComputeTemplate();
+        generateSportsTemplate();
+    }
+
+    private void generateSportsTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\sports";
+
+        List<String> tableNames = Arrays.asList(
+                "sports_classification",
+                "sports_records"
+        );
+
+        generateTemplate("service-smart-care", tableNames, folder, "sports");
     }
 
     private void generateMaxComputeTemplate() {
