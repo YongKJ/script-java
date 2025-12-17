@@ -1,6 +1,6 @@
-package com.bc.order.interaction.v1.bc.company;
+package com.bc.user.interaction.v1.bc.company;
 
-import com.bc.order.service.service.v1.ServiceClass;
+import com.bc.user.service.service.v1.ServiceClass;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

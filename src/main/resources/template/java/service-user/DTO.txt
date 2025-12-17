@@ -1,0 +1,5 @@
+package com.bc.user.service.entity.dto;
+
+public interface DTOClass {
+
+}
