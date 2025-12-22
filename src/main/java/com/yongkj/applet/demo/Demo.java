@@ -941,9 +941,18 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test47", "commands", commands));
     }
 
+    private void test48() {
+        String excelPath = "C:\\Users\\Admin\\Desktop\\药食同源.xlsx";
+        String sheetName = "Sheet1";
+
+        List<Map<String, String>> excelData = PoiExcelUtil.toMap(excelPath, sheetName, 0);
+        LogUtil.loggerLine(Log.of("Demo", "test48", "excelData.size()", excelData.size()));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test47();
+        demo.test48();
+//        demo.test47();
 //        demo.test46();
 //        demo.test45();
 //        demo.test44();
