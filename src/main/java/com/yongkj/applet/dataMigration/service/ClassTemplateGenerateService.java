@@ -37,7 +37,18 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateOrderEntityExtTemplate();
 //        generateMaxComputeTemplate();
 //        generateSportsTemplate();
-        generateAuthorizeTemplate();
+//        generateAuthorizeTemplate();
+        generateMedicinePlusTemplate();
+    }
+
+    private void generateMedicinePlusTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\medicine";
+
+        List<String> tableNames = Arrays.asList(
+                "medicine_food_share"
+        );
+
+        generateTemplate("medicine", tableNames, folder, "medicine");
     }
 
     private void generateAuthorizeTemplate() {
