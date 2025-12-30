@@ -54,7 +54,104 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        exportSonCategories();
 //        databaseStatistics();
 //        importMedicineNationalDrugData();
-        importFoodCookbookData();
+//        importFoodCookbookData();
+        statisticsMedicineFoodShare();
+    }
+
+    private void statisticsMedicineFoodShare() {
+        Table table = desDatabase.getMapTable().get("medicine_food_share");
+        List<Map<String, Object>> lstFoodShare = desDataList(table);
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "statisticsMedicineFoodShare", "lstFoodShare.size()", lstFoodShare.size()));
+
+        Map<String, String> mapCache = new HashMap<>();
+        List<Map<String, Object>> lstFoodShareData = new ArrayList<>();
+        for (Map<String, Object> mapFoodShare : lstFoodShare) {
+            String name = mapFoodShare.get("name").toString();
+            if (mapCache.containsKey(name)) {
+                continue;
+            }
+            mapCache.put(name, name);
+
+            Long statistics = getFoodShareStatistics(name);
+            if (statistics > 0) {
+                continue;
+            }
+
+            lstFoodShareData.add(mapFoodShare);
+        }
+
+        if (lstFoodShareData.isEmpty()) {
+            return;
+        }
+
+        mapCache = new HashMap<>();
+        List<Map<String, Object>> lstData = new ArrayList<>();
+        for (Map<String, Object> mapFoodShare : lstFoodShareData) {
+            String aliasName = mapFoodShare.get("alias_name").toString();
+            if (mapCache.containsKey(aliasName)) {
+                continue;
+            }
+            mapCache.put(aliasName, aliasName);
+
+            Long statistics = getFoodShareStatistics(aliasName);
+            if (statistics > 0) {
+                continue;
+            }
+
+            lstData.add(mapFoodShare);
+        }
+
+        if (lstData.isEmpty()) {
+            return;
+        }
+
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        SXSSFSheet sheet = workbook.createSheet("药食同源");
+        List<CellStyle> lstCellStyle = PoiExcelUtil.getCellStyles(workbook);
+
+        List<List<String>> lstHeader = Arrays.asList(
+                Collections.singletonList("序号"),
+                Collections.singletonList("名称"),
+                Collections.singletonList("别名"),
+                Collections.singletonList("拉丁学名"),
+                Collections.singletonList("所属科名"),
+                Collections.singletonList("使用部分")
+        );
+        PoiExcelUtil.writeHeader(sheet, lstHeader, lstCellStyle, 1);
+
+        int rowIndex = 1;
+        for (Map<String, Object> mapData : lstData) {
+            String name = (String) mapData.get("name");
+            String aliasName = (String) mapData.get("alias_name");
+            String latinScientificName = (String) mapData.get("latin_scientific_name");
+            String familyName = (String) mapData.get("family_name");
+            String usageSection = (String) mapData.get("usage_section");
+
+            int colIndex = 0;
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, rowIndex);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, name);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, aliasName);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, latinScientificName);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex, colIndex++, familyName);
+            PoiExcelUtil.writeCellData(sheet, lstCellStyle, rowIndex++, colIndex, usageSection);
+        }
+
+        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\药食同源统计-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private Long getFoodShareStatistics(String name) {
+        List<Map<String, Object>> lstRelData = desSetDataList(
+                Wrappers.lambdaQuery("rel_food_cookbook_details")
+                        .like("name", name)
+                        .select("COUNT(*) statistics")
+        );
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "statisticsMedicineFoodShare", "lstRelData.size()", lstRelData.size()));
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "statisticsMedicineFoodShare", "lstRelData", lstRelData));
+        if (lstRelData.isEmpty()) {
+            return 0L;
+        }
+
+        return (Long) lstRelData.get(0).get("statistics");
     }
 
     private void importFoodCookbookData() {
