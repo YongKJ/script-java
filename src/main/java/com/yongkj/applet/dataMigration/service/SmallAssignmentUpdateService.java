@@ -55,7 +55,47 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        databaseStatistics();
 //        importMedicineNationalDrugData();
 //        importFoodCookbookData();
-        statisticsMedicineFoodShare();
+//        statisticsMedicineFoodShare();
+        updateMedicineFoodShare();
+    }
+
+    private void updateMedicineFoodShare() {
+        Table table = desDatabase.getMapTable().get("medicine_food_share");
+        List<Map<String, Object>> lstFoodShare = desDataList(table);
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updateMedicineFoodShare", "lstFoodShare.size()", lstFoodShare.size()));
+
+        for (Map<String, Object> mapFoodShare : lstFoodShare) {
+            String name = mapFoodShare.get("name").toString();
+            List<Map<String, Object>> lstRelData = getFoodShareRelData(name);
+            if (lstRelData.isEmpty()) {
+                String aliasName = mapFoodShare.get("alias_name").toString();
+                lstRelData = getFoodShareRelData(aliasName);
+            }
+
+            if (lstRelData.isEmpty()) {
+                continue;
+            }
+
+            for (Map<String, Object> mapRelData : lstRelData) {
+                Long foodDetailsId = (Long) mapRelData.get("food_details_id");
+                String foodDetailsName = (String) mapRelData.get("food_details_name");
+                if (foodDetailsId == 0) {
+                    continue;
+                }
+
+                Long foodShareId = (Long) mapFoodShare.get("id");
+                mapFoodShare.put("food_details_id", foodDetailsId);
+                mapFoodShare.put("food_details_name", foodDetailsName);
+                String updateSql = getUpdateSQl(mapFoodShare,
+                        Wrappers.lambdaQuery(table)
+                                .eq("id", foodShareId));
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updateMedicineFoodShare", "updateSql", updateSql));
+
+                desDataUpdate(updateSql);
+
+                break;
+            }
+        }
     }
 
     private void statisticsMedicineFoodShare() {
@@ -137,6 +177,14 @@ public class SmallAssignmentUpdateService extends BaseService {
         }
 
         PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\药食同源统计-" + System.currentTimeMillis() + ".xlsx");
+    }
+
+    private List<Map<String, Object>> getFoodShareRelData(String name) {
+        return desSetDataList(
+                Wrappers.lambdaQuery("rel_food_cookbook_details")
+                        .like("name", name)
+                        .select("*")
+        );
     }
 
     private Long getFoodShareStatistics(String name) {
