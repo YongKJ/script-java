@@ -56,7 +56,33 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importMedicineNationalDrugData();
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
-        updateMedicineFoodShare();
+//        updateMedicineFoodShare();
+        importKnowledgeBaseData();
+    }
+
+    private void importKnowledgeBaseData() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/knowledge-base/茶饮配方/中药茶饮配方库.csv");
+        List<Map<String, String>> fieldData = CsvUtil.toMap("/csv/knowledge-base/茶饮配方/表字段转换.csv");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "csvData.size()", csvData.size()));
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "fieldData.size()", fieldData.size()));
+
+        for (Map<String, String> mapCsv : csvData) {
+            Map<String, Object> mapData = new HashMap<>();
+            for (Map<String, String> mapField : fieldData) {
+                String csvField = mapField.get("csv-field");
+                String tableField = mapField.get("table-field");
+                if (Objects.equals(tableField, "id")) {
+                    String id = mapCsv.get(csvField);
+                    mapData.put(tableField, Long.parseLong(id));
+                } else {
+                    mapData.put(tableField, mapCsv.get(csvField));
+                }
+            }
+            String insertSql = getInsertSQl(mapData, table);
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "insertSql", insertSql));
+            desDataInsert(insertSql);
+        }
     }
 
     private void updateMedicineFoodShare() {

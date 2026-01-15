@@ -1,0 +1,11 @@
+csv-field,table-field
+﻿ID,id
+名称,name
+分类,classification
+组成药材及剂量,composition
+冲泡方法,brewing_method
+核心功效,core_functions
+适应体质/证型,indications
+适用人群,target_audience
+饮用疗程,drinking_regimen
+禁忌说明,contraindications

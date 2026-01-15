@@ -38,7 +38,30 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateMaxComputeTemplate();
 //        generateSportsTemplate();
 //        generateAuthorizeTemplate();
-        generateMedicinePlusTemplate();
+//        generateMedicinePlusTemplate();
+//        generateMaxComputeSLSEventDataTemplate();
+        generateKnowledgeBaseDataTemplate();
+    }
+
+    private void generateKnowledgeBaseDataTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\knowledge-base";
+
+        List<String> tableNames = Collections.singletonList(
+                "knowledge_base_tea_drink_recipes"
+        );
+
+        generateTemplate("service-user", tableNames, folder, "knowledgeBase");
+    }
+
+    private void generateMaxComputeSLSEventDataTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\max-compute";
+
+        List<String> tableNames = Collections.singletonList(
+                "ods_sls_event_data"
+        );
+
+        this.desDatabase = this.preDatabaseMaxCompute;
+        generateTemplate("service-warehouse", tableNames, folder, "sls");
     }
 
     private void generateMedicinePlusTemplate() {
