@@ -57,7 +57,30 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
-        importKnowledgeBaseData();
+//        importKnowledgeBaseData();
+        updateKnowledgeBaseData();
+    }
+
+    private void updateKnowledgeBaseData() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
+        List<Map<String, String>> csvData = CsvUtil.toMap("C:\\Users\\Admin\\Desktop\\中药茶饮配方库_含体质证型.csv");
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "csvData.size()", csvData.size()));
+
+        for (Map<String, String> mapCsv : csvData) {
+            String name = mapCsv.get("名称");
+            String constitution = mapCsv.get("体质");
+            String syndromeType = mapCsv.get("证型");
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("constitution", constitution);
+            mapData.put("syndrome_type", syndromeType);
+
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("name", name));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "updateSql", updateSql));
+            desDataInsert(updateSql);
+        }
     }
 
     private void importKnowledgeBaseData() {
