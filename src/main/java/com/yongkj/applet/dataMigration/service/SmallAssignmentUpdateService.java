@@ -4,6 +4,7 @@ import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
+import com.yongkj.applet.dataMigration.util.SnowFlakeGenerateIdWorker;
 import com.yongkj.applet.dataMigration.util.Wrappers;
 import com.yongkj.pojo.dto.Log;
 import com.yongkj.util.*;
@@ -57,8 +58,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
-//        importKnowledgeBaseData();
-        updateKnowledgeBaseData();
+        importKnowledgeBaseData();
+//        updateKnowledgeBaseData();
     }
 
     private void updateKnowledgeBaseData() {
@@ -84,23 +85,44 @@ public class SmallAssignmentUpdateService extends BaseService {
     }
 
     private void importKnowledgeBaseData() {
-        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
-        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/knowledge-base/茶饮配方/中药茶饮配方库.csv");
-        List<Map<String, String>> fieldData = CsvUtil.toMap("/csv/knowledge-base/茶饮配方/表字段转换.csv");
+//        importKnowledgeBaseData(
+//                "knowledge_base_tea_drink_recipes",
+//                "/csv/knowledge-base/茶饮配方/中药茶饮配方库.csv",
+//                "/csv/knowledge-base/茶饮配方/表字段转换.csv"
+//        );
+
+        importKnowledgeBaseData(
+                "knowledge_base_breathing_exercises",
+                "/csv/knowledge-base/呼吸训练/呼吸训练法.csv",
+                "/csv/knowledge-base/呼吸训练/表字段转换.csv"
+        );
+    }
+
+
+    private void importKnowledgeBaseData(String tableName, String csvPath, String fieldPath) {
+        Table table = desDatabase.getMapTable().get(tableName);
+        List<Map<String, String>> csvData = CsvUtil.toMap(csvPath);
+        List<Map<String, String>> fieldData = CsvUtil.toMap(fieldPath);
         LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "csvData.size()", csvData.size()));
         LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "fieldData.size()", fieldData.size()));
 
         for (Map<String, String> mapCsv : csvData) {
             Map<String, Object> mapData = new HashMap<>();
+
+            SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                    new SnowFlakeGenerateIdWorker(0L,0L);
+            String id = snowFlakeGenerateIdWorker.generateNextId();
+            mapData.put("id", Long.parseLong(id));
+
             for (Map<String, String> mapField : fieldData) {
                 String csvField = mapField.get("csv-field");
                 String tableField = mapField.get("table-field");
+
+                Object tableValue = mapCsv.get(csvField);
                 if (Objects.equals(tableField, "id")) {
-                    String id = mapCsv.get(csvField);
-                    mapData.put(tableField, Long.parseLong(id));
-                } else {
-                    mapData.put(tableField, mapCsv.get(csvField));
+                    tableValue = Long.parseLong(tableValue.toString());
                 }
+                mapData.put(tableField, tableValue);
             }
             String insertSql = getInsertSQl(mapData, table);
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "insertSql", insertSql));

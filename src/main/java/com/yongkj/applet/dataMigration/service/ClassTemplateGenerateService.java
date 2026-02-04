@@ -41,13 +41,30 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateMedicinePlusTemplate();
 //        generateMaxComputeSLSEventDataTemplate();
         generateKnowledgeBaseDataTemplate();
+//        generateQuestionnaireSheetDimensionTemplate();
+    }
+
+    private void generateQuestionnaireSheetDimensionTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\questionnaire-dimension";
+        if (!FileUtil.exist(folder)) {
+            FileUtil.mkdir(folder);
+        }
+
+        List<String> tableNames = Arrays.asList(
+//                "questionnaire_sheet_dimension",
+//                "rel_dimension_questionnaire_sheet"
+                "rel_questionnaire_sheet_dimension_consumer"
+        );
+
+        generateTemplate("questionnaire", tableNames, folder, "questionnaire");
     }
 
     private void generateKnowledgeBaseDataTemplate() {
         String folder = "C:\\Users\\Admin\\Desktop\\knowledge-base";
 
-        List<String> tableNames = Collections.singletonList(
-                "knowledge_base_tea_drink_recipes"
+        List<String> tableNames = Arrays.asList(
+                "knowledge_base_tea_drink_recipes",
+                "knowledge_base_breathing_exercises"
         );
 
         generateTemplate("service-user", tableNames, folder, "knowledgeBase");
