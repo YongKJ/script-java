@@ -949,9 +949,43 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test48", "excelData.size()", excelData.size()));
     }
 
+    private void test49() {
+        List<String> lstLineHeader = Arrays.asList(
+                "### 草本茶方",
+                "- **名称**：",
+                "- **分类**：",
+                "- **组成药材及剂量**：",
+                "- **冲泡方法**：",
+                "- **核心功效**：",
+                "- **适应体质/证型**：",
+                "- **适用人群**：",
+                "- **饮用疗程**：",
+                "- **禁忌说明**：",
+                "- **参考来源**："
+        );
+        String mdContent = "### 草本茶方（返回md格式数据）查询结果\n- **名称**：莱菔子消食茶  \n- **分类**：消食化积类  \n- **组成药材及剂量**：莱菔子10克（非国家医保目录药品）、神曲6克（非国家医保目录药品）  \n- **冲泡方法**：将莱菔子捣碎，与神曲一同放入杯中，用沸水300ml冲泡，加盖焖10-15分钟后饮用。每日1剂，分2-3次服用。  \n- **核心功效**：消食化积，降气除胀。适用于饮食积滞引起的脘腹胀满、嗳腐吞酸、食欲不振等症状，能促进胃肠蠕动，缓解消化不良。  \n- **适应体质/证型**：食积证（常见于暴饮暴食后），表现为腹部胀痛、大便酸臭、舌苔厚腻等；多见于平和质或湿热质人群。  \n- **适用人群**：成人消化不良、食积不化者；尤其适合过食油腻、面食或肉类后出现不适的人群。  \n- **饮用疗程**：建议连续饮用3-5天，症状缓解后停用。不宜长期服用（超过7天），以免耗伤脾胃正气。  \n- **禁忌说明**：脾胃虚寒者（表现为畏寒、腹泻、四肢不温）慎用；孕妇忌用；过敏体质者慎用。服药期间忌食生冷、油腻及难消化食物。如出现腹痛加重或过敏反应，应立即停用并就医。  \n- **参考来源**：互联网  \n\n### 草本茶方（返回json格式数据）查询结果\n{\n\t\"name\": \"莱菔子消食茶\",\n\t\"classification\": \"消食化积类\",\n\t\"composition\": \"莱菔子10克（非国家医保目录药品）、神曲6克（非国家医保目录药品)\",\n\t\"brewing_method\": \"将莱菔子捣碎，与神曲一同放入杯中，用沸水300ml冲泡，加盖焖10-15分钟后饮用。每日1剂，分2-3次服用。\",\n\t\"core_functions\": \"消食化积，降气除胀。适用于饮食积滞引起的脘腹胀满、嗳腐吞酸、食欲不振等症状，能促进胃肠蠕动，缓解消化不良。\",\n\t\"indications\": \"食积证（常见于暴饮暴食后），表现为腹部胀痛、大便酸臭、舌苔厚腻等；多见于平和质或湿热质人群。\",\n\t\"target_audience\": \"成人消化不良、食积不化者；尤其适合过食油腻、面食或肉类后出现不适的人群。\",\n\t\"drinking_regimen\": \"建议连续饮用3-5天，症状缓解后停用。不宜长期服用（超过7天），以免耗伤脾胃正气。\",\n\t\"contraindications\": \"脾胃虚寒者（表现为畏寒、腹泻、四肢不温）慎用；孕妇忌用；过敏体质者慎用。服药期间忌食生冷、油腻及难消化食物。如出现腹痛加重或过敏反应，应立即停用并就医。\",\n\t\"source\": \"互联网\"\n}";
+        String lineBreak = mdContent.contains("\r\n") ? "\r\n" : "\n";
+        String[] contentArrays = mdContent.split(lineBreak);
+        List<String> lstLine = new ArrayList<>();
+        for (String lineHeader : lstLineHeader) {
+            for (String content : contentArrays) {
+                if (!content.startsWith(lineHeader)) {
+                    continue;
+                }
+                if (lineHeader.contains("草本茶方")) {
+                    content = "### 草本茶方查询结果";
+                }
+                lstLine.add(content);
+                break;
+            }
+        }
+        LogUtil.loggerLine(Log.of("Demo", "test48", "GenUtil.toJsonString(lstLine)", GenUtil.toJsonString(lstLine)));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test48();
+        demo.test49();
+//        demo.test48();
 //        demo.test47();
 //        demo.test46();
 //        demo.test45();
