@@ -982,9 +982,46 @@ public class Demo {
         LogUtil.loggerLine(Log.of("Demo", "test48", "GenUtil.toJsonString(lstLine)", GenUtil.toJsonString(lstLine)));
     }
 
+    private void test50() {
+        Map<String, String> mapHeader = new LinkedHashMap<>();
+        mapHeader.put("- \\*\\*名称\\*\\*：", "name");
+        mapHeader.put("- \\*\\*典籍溯源\\*\\*：", "classical_texts_md");
+        mapHeader.put("- \\*\\*组成药材及剂量\\*\\*：", "composition");
+        mapHeader.put("- \\*\\*核心功效\\*\\*：", "core_functions");
+        mapHeader.put("- \\*\\*适应体质\\*\\*：", "constitution");
+        mapHeader.put("- \\*\\*证型\\*\\*：", "syndrome_type");
+        mapHeader.put("- \\*\\*饮用频率\\*\\*：", "drinking_frequency");
+        mapHeader.put("- \\*\\*饮用疗程\\*\\*：", "drinking_regimen");
+        mapHeader.put("- \\*\\*核心解析\\*\\*：", "core_analysis_md");
+        mapHeader.put("- \\*\\*科学饮用指南\\*\\*：", "scientific_drinking_guide_md");
+        mapHeader.put("- \\*\\*禁忌\\*\\*：", "contraindications_md");
+
+        String regMainStr = "%s([\\s\\S]*?)-";
+        String regOtherStr = "%s([\\s\\S]*?)#";
+        Map<String, Object> mapData = new LinkedHashMap<>();
+        String mdContent = FileUtil.read("C:\\Users\\Admin\\Desktop\\mdContent.txt");
+        for (Map.Entry<String, String> map : mapHeader.entrySet()) {
+            String regStr = String.format(regMainStr, map.getKey());
+            if (map.getKey().contains("禁忌")) {
+                regStr = String.format(regOtherStr, map.getKey());
+            }
+
+            Pattern pattern = Pattern.compile(regStr);
+            Matcher matcher = pattern.matcher(mdContent);
+            if (!matcher.find()) {
+                continue;
+            }
+
+            String matchValue = matcher.group(1).trim();
+            mapData.put(map.getValue(), matchValue);
+        }
+        LogUtil.loggerLine(Log.of("Demo", "test48", "GenUtil.toJsonString(mapData)", GenUtil.toJsonString(mapData)));
+    }
+
     public static void run(String[] args) {
         Demo demo = new Demo();
-        demo.test49();
+        demo.test50();
+//        demo.test49();
 //        demo.test48();
 //        demo.test47();
 //        demo.test46();

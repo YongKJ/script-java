@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SmallAssignmentUpdateService extends BaseService {
@@ -58,8 +60,156 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
-        importKnowledgeBaseData();
-//        updateKnowledgeBaseData();
+//        importKnowledgeBaseData();
+        updateKnowledgeBaseData();
+//        importKnowledgeBaseDataByBigModel();
+//        exportKnowledgeBaseData();
+    }
+
+    private void exportKnowledgeBaseData() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
+        List<Map<String, Object>> lstTeaData = desDataList(table);
+        List<Map<String, String>> lstData = new ArrayList<>();
+        List<String> filterFields = Arrays.asList(
+                "id",
+                "md_content",
+                "sort",
+                "note",
+                "utc_created",
+                "utc_modified",
+                "utc_deleted"
+        );
+        Map<String, String> mapHeader = new LinkedHashMap<>();
+        mapHeader.put("name", "名称");
+        mapHeader.put("classical_texts_md", "典籍溯源");
+        mapHeader.put("composition", "组成药材及剂量");
+        mapHeader.put("core_functions", "核心功效");
+        mapHeader.put("constitution", "适应体质");
+        mapHeader.put("syndrome_type", "证型");
+        mapHeader.put("drinking_frequency", "饮用频率");
+        mapHeader.put("drinking_regimen", "饮用疗程");
+        mapHeader.put("core_analysis_md", "核心解析");
+        mapHeader.put("scientific_drinking_guide_md", "科学饮用指南");
+        mapHeader.put("contraindications_md", "禁忌");
+        for (int i = 0; i < 8; i++) {
+            Map<String, Object> teaData = lstTeaData.get(i);
+            Map<String, String> mapData = new LinkedHashMap<>();
+            for (Map.Entry<String, Object> map : teaData.entrySet()) {
+                if (filterFields.contains(map.getKey())) {
+                    continue;
+                }
+                mapData.put(mapHeader.get(map.getKey()), map.getValue().toString());
+            }
+            lstData.add(mapData);
+        }
+        CsvUtil.printRecords(
+                "C:\\Users\\Admin\\Desktop\\草本茶方.csv",
+                lstData,
+                "名称",
+                "组成药材及剂量",
+                "核心功效",
+                "适应体质",
+                "证型",
+                "饮用频率",
+                "饮用疗程",
+                "典籍溯源",
+                "核心解析",
+                "科学饮用指南",
+                "禁忌"
+        );
+    }
+
+    private void importKnowledgeBaseDataByBigModel() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
+        List<Map<String, Object>> lstData = desDataList(table);
+        for (Map<String, Object> mapData : lstData) {
+            Long id = (Long) mapData.get("id");
+            String name = (String) mapData.get("name");
+            String composition = (String) mapData.get("composition");
+
+            String mdContent = ModelUtil.mdContent(String.format("草本茶方： 名称：%s 配方： %s", name, composition));
+            Map<String, String> mapBaseData = getKnowledgeBaseData(mdContent);
+            mapBaseData.put("md_content", getKnowledgeMdContent(mapBaseData));
+            mapData.putAll(mapBaseData);
+
+//            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "mdContent", mdContent));
+//            FileUtil.write(
+//                    "C:\\Users\\Admin\\Desktop\\mdContent.txt",
+//                    mdContent
+//            );
+
+
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("id", id));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "updateSql", updateSql));
+
+            desDataUpdate(updateSql);
+//            break;
+        }
+    }
+
+    private String getKnowledgeMdContent(Map<String, String> mapData) {
+        Map<String, String> mapHeader = new LinkedHashMap<>();
+        mapHeader.put("- **名称**：", "name");
+        mapHeader.put("- **典籍溯源**：", "classical_texts_md");
+        mapHeader.put("- **组成药材及剂量**：", "composition");
+        mapHeader.put("- **核心功效**：", "core_functions");
+        mapHeader.put("- **适应体质**：", "constitution");
+        mapHeader.put("- **证型**：", "syndrome_type");
+        mapHeader.put("- **饮用频率**：", "drinking_frequency");
+        mapHeader.put("- **饮用疗程**：", "drinking_regimen");
+        mapHeader.put("- **核心解析**：", "core_analysis_md");
+        mapHeader.put("- **科学饮用指南**：", "scientific_drinking_guide_md");
+        mapHeader.put("- **禁忌**：", "contraindications_md");
+
+        List<String> lstMdLine = new ArrayList<>();
+        lstMdLine.add("### 草本茶方查询结果");
+        for (Map.Entry<String, String> map : mapHeader.entrySet()) {
+            String data = mapData.get(map.getValue());
+            if (data == null) {
+                continue;
+            }
+
+            String mdLine = map.getKey() + data;
+            lstMdLine.add(mdLine);
+        }
+        return String.join("\r\n", lstMdLine);
+    }
+
+    private Map<String, String> getKnowledgeBaseData(String mdContent) {
+        Map<String, String> mapHeader = new LinkedHashMap<>();
+        mapHeader.put("- \\*\\*名称\\*\\*：", "name");
+        mapHeader.put("- \\*\\*典籍溯源\\*\\*：", "classical_texts_md");
+        mapHeader.put("- \\*\\*组成药材及剂量\\*\\*：", "composition");
+        mapHeader.put("- \\*\\*核心功效\\*\\*：", "core_functions");
+        mapHeader.put("- \\*\\*适应体质\\*\\*：", "constitution");
+        mapHeader.put("- \\*\\*证型\\*\\*：", "syndrome_type");
+        mapHeader.put("- \\*\\*饮用频率\\*\\*：", "drinking_frequency");
+        mapHeader.put("- \\*\\*饮用疗程\\*\\*：", "drinking_regimen");
+        mapHeader.put("- \\*\\*核心解析\\*\\*：", "core_analysis_md");
+        mapHeader.put("- \\*\\*科学饮用指南\\*\\*：", "scientific_drinking_guide_md");
+        mapHeader.put("- \\*\\*禁忌\\*\\*：", "contraindications_md");
+
+        String regMainStr = "%s([\\s\\S]*?)-";
+        String regOtherStr = "%s([\\s\\S]*?)#";
+        Map<String, String> mapData = new LinkedHashMap<>();
+        for (Map.Entry<String, String> map : mapHeader.entrySet()) {
+            String regStr = String.format(regMainStr, map.getKey());
+            if (map.getKey().contains("禁忌")) {
+                regStr = String.format(regOtherStr, map.getKey());
+            }
+
+            Pattern pattern = Pattern.compile(regStr);
+            Matcher matcher = pattern.matcher(mdContent);
+            if (!matcher.find()) {
+                continue;
+            }
+
+            String matchValue = matcher.group(1).trim();
+            mapData.put(map.getValue(), matchValue);
+        }
+        return mapData;
     }
 
     private void updateKnowledgeBaseData() {
@@ -69,12 +219,14 @@ public class SmallAssignmentUpdateService extends BaseService {
 
         for (Map<String, String> mapCsv : csvData) {
             String name = mapCsv.get("名称");
-            String constitution = mapCsv.get("体质");
-            String syndromeType = mapCsv.get("证型");
+//            String constitution = mapCsv.get("体质");
+//            String syndromeType = mapCsv.get("证型");
+            String composition = mapCsv.get("组成药材及剂量");
 
             Map<String, Object> mapData = new HashMap<>();
-            mapData.put("constitution", constitution);
-            mapData.put("syndrome_type", syndromeType);
+//            mapData.put("constitution", constitution);
+//            mapData.put("syndrome_type", syndromeType);
+            mapData.put("composition", composition);
 
             String updateSql = getUpdateSQl(mapData,
                     Wrappers.lambdaQuery(table)
