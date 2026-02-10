@@ -61,8 +61,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
 //        importKnowledgeBaseData();
-        updateKnowledgeBaseData();
-//        importKnowledgeBaseDataByBigModel();
+//        updateKnowledgeBaseData();
+        importKnowledgeBaseDataByBigModel();
 //        exportKnowledgeBaseData();
     }
 
@@ -122,22 +122,43 @@ public class SmallAssignmentUpdateService extends BaseService {
     private void importKnowledgeBaseDataByBigModel() {
         Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
         List<Map<String, Object>> lstData = desDataList(table);
-        for (Map<String, Object> mapData : lstData) {
-            Long id = (Long) mapData.get("id");
-            String name = (String) mapData.get("name");
-            String composition = (String) mapData.get("composition");
-
-            String mdContent = ModelUtil.mdContent(String.format("草本茶方： 名称：%s 配方： %s", name, composition));
-            Map<String, String> mapBaseData = getKnowledgeBaseData(mdContent);
-            mapBaseData.put("md_content", getKnowledgeMdContent(mapBaseData));
-            mapData.putAll(mapBaseData);
-
-//            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "mdContent", mdContent));
+//        for (Map<String, Object> mapData : lstData) {
+//            Long id = (Long) mapData.get("id");
+//            String name = (String) mapData.get("name");
+//
+//            String mdContent = ModelUtil.mdContent(name);
 //            FileUtil.write(
 //                    "C:\\Users\\Admin\\Desktop\\mdContent.txt",
 //                    mdContent
 //            );
+//
+//            Map<String, Object> mapBaseData = getKnowledgeBaseDataLatest(mdContent);
+//            mapData.putAll(mapBaseData);
 
+//            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "mdContent", mdContent));
+
+
+//            String updateSql = getUpdateSQl(mapData,
+//                    Wrappers.lambdaQuery(table)
+//                            .eq("id", id));
+//            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "updateSql", updateSql));
+//
+//            desDataUpdate(updateSql);
+//            break;
+//        }
+
+        ThreadUtil.executeWithListDataByThreadPool(60, lstData, mapData -> {
+            String original_text = (String) mapData.get("original_text");
+            if (StringUtils.hasText(original_text)) {
+                return;
+            }
+
+            Long id = (Long) mapData.get("id");
+            String name = (String) mapData.get("name");
+
+            String mdContent = ModelUtil.mdContent(name);
+            Map<String, Object> mapBaseData = getKnowledgeBaseDataLatest(mdContent);
+            mapData.putAll(mapBaseData);
 
             String updateSql = getUpdateSQl(mapData,
                     Wrappers.lambdaQuery(table)
@@ -145,8 +166,7 @@ public class SmallAssignmentUpdateService extends BaseService {
             LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "updateSql", updateSql));
 
             desDataUpdate(updateSql);
-//            break;
-        }
+        });
     }
 
     private String getKnowledgeMdContent(Map<String, String> mapData) {
@@ -210,6 +230,88 @@ public class SmallAssignmentUpdateService extends BaseService {
             mapData.put(map.getValue(), matchValue);
         }
         return mapData;
+    }
+
+    private Map<String, Object> getKnowledgeBaseDataLatest(String mdContent) {
+        Map<String, Object> mapData = GenUtil.fromJsonString(mdContent, Map.class);
+
+        String name = (String) mapData.get("名称");
+
+        Map<String, Object> mapText = (Map<String, Object>) mapData.get("典籍溯源");
+        String original_text = (String) mapText.get("原文");
+        String source = (String) mapText.get("出处");
+
+        String composition = (String) mapData.get("组成药材及剂量");
+        List<String> core_functions = (List<String>) mapData.get("核心功效");
+        String constitution = (String) mapData.get("适应体质");
+        String syndrome_type = (String) mapData.get("证型");
+        String drinking_frequency = (String) mapData.get("饮用频率");
+        String drinking_regimen = (String) mapData.get("饮用疗程");
+
+        Map<String, Object> mapAnalysis = (Map<String, Object>) mapData.get("核心解析");
+        String compatibility_analysis = (String) mapAnalysis.get("配伍解析");
+        String dietary_analysis = (String) mapAnalysis.get("食性解析");
+        Map<String, Object> mapMethod = (Map<String, Object>) mapAnalysis.get("科学饮用指南");
+        String brewing_method = (String) mapMethod.get("冲泡方法");
+        String serving_suggestions = (String) mapMethod.get("饮用建议");
+        String expected_feelings = (String) mapMethod.get("预期感受");
+
+        Map<String, Object> mapContraindication = (Map<String, Object>) mapData.get("禁忌");
+        List<String> absolute_contraindication = (List<String>) mapContraindication.get("绝对禁忌");
+        List<String> relative_contraindications = (List<String>) mapContraindication.get("相对禁忌");
+
+        String classical_texts_md = String.format("- **典籍溯源**：\n原文: %s\n出处: %s", original_text, source);
+        String core_analysis_md = String.format("- **核心解析**：\n配伍解析: %s\n食性: %s", compatibility_analysis, dietary_analysis);
+        String scientific_drinking_guide_md = String.format("- **科学饮用指南**：\n冲泡方法: %s\n饮用建议: %s\n预期感受: %s", brewing_method, serving_suggestions, expected_feelings);
+        String contraindications_md = String.format("- **禁忌**：\n绝对禁忌: %s\n相对禁忌: %s", String.join("; ", absolute_contraindication), String.join("; ", relative_contraindications));
+        String md_content = String.format(
+                "### 草本茶方查询结果" +
+                "\n- **名称**：%s" +
+                "\n- **典籍溯源**：%s" +
+                "\n- **组成药材及剂量**：%s" +
+                "\n- **核心功效**：%s" +
+                "\n- **适应体质**：%s" +
+                "\n- **证型**：%s" +
+                "\n- **饮用频率**：%s" +
+                "\n- **饮用疗程**：%s" +
+                "\n- **核心解析**：%s" +
+                "\n- **科学饮用指南**：%s" +
+                "\n- **禁忌**：%s",
+                name,
+                classical_texts_md.replace("- **典籍溯源**：\n", ""),
+                composition,
+                String.join("; ", core_functions),
+                constitution,
+                syndrome_type,
+                drinking_frequency,
+                drinking_regimen,
+                core_analysis_md.replace("- **核心解析**：\n", ""),
+                scientific_drinking_guide_md.replace("- **科学饮用指南**：\n", ""),
+                contraindications_md.replace("- **禁忌**：\n", ""));
+
+        Map<String, Object> mapContent = new LinkedHashMap<>();
+        mapContent.put("name", name);
+        mapContent.put("original_text", original_text);
+        mapContent.put("source", source);
+        mapContent.put("composition", composition);
+        mapContent.put("core_functions", core_functions);
+        mapContent.put("constitution", constitution);
+        mapContent.put("syndrome_type", syndrome_type);
+        mapContent.put("drinking_frequency", drinking_frequency);
+        mapContent.put("drinking_regimen", drinking_regimen);
+        mapContent.put("compatibility_analysis", compatibility_analysis);
+        mapContent.put("dietary_analysis", dietary_analysis);
+        mapContent.put("brewing_method", brewing_method);
+        mapContent.put("serving_suggestions", serving_suggestions);
+        mapContent.put("expected_feelings", expected_feelings);
+        mapContent.put("absolute_contraindication", absolute_contraindication);
+        mapContent.put("relative_contraindications", relative_contraindications);
+        mapContent.put("classical_texts_md", classical_texts_md);
+        mapContent.put("core_analysis_md", core_analysis_md);
+        mapContent.put("scientific_drinking_guide_md", scientific_drinking_guide_md);
+        mapContent.put("contraindications_md", contraindications_md);
+        mapContent.put("md_content", md_content);
+        return mapContent;
     }
 
     private void updateKnowledgeBaseData() {
