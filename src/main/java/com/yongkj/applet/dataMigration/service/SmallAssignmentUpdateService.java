@@ -60,9 +60,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
-//        importKnowledgeBaseData();
+        importKnowledgeBaseData();
+//        importKnowledgeBaseDataLatest();
 //        updateKnowledgeBaseData();
-        importKnowledgeBaseDataByBigModel();
+//        importKnowledgeBaseDataByBigModel();
 //        exportKnowledgeBaseData();
     }
 
@@ -72,6 +73,10 @@ public class SmallAssignmentUpdateService extends BaseService {
         List<Map<String, String>> lstData = new ArrayList<>();
         List<String> filterFields = Arrays.asList(
                 "id",
+                "classical_texts_md",
+                "core_analysis_md",
+                "scientific_drinking_guide_md",
+                "contraindications_md",
                 "md_content",
                 "sort",
                 "note",
@@ -81,16 +86,25 @@ public class SmallAssignmentUpdateService extends BaseService {
         );
         Map<String, String> mapHeader = new LinkedHashMap<>();
         mapHeader.put("name", "名称");
-        mapHeader.put("classical_texts_md", "典籍溯源");
+        mapHeader.put("original_text", "原文");
+        mapHeader.put("source", "出处");
         mapHeader.put("composition", "组成药材及剂量");
         mapHeader.put("core_functions", "核心功效");
         mapHeader.put("constitution", "适应体质");
         mapHeader.put("syndrome_type", "证型");
         mapHeader.put("drinking_frequency", "饮用频率");
         mapHeader.put("drinking_regimen", "饮用疗程");
-        mapHeader.put("core_analysis_md", "核心解析");
-        mapHeader.put("scientific_drinking_guide_md", "科学饮用指南");
-        mapHeader.put("contraindications_md", "禁忌");
+        mapHeader.put("compatibility_analysis", "配伍解析");
+        mapHeader.put("dietary_analysis", "食性解析");
+        mapHeader.put("brewing_method", "冲泡方法");
+        mapHeader.put("serving_suggestions", "饮用建议");
+        mapHeader.put("expected_feelings", "预期感受");
+        mapHeader.put("absolute_contraindication", "绝对禁忌");
+        mapHeader.put("relative_contraindications", "相对禁忌");
+//        mapHeader.put("classical_texts_md", "典籍溯源");
+//        mapHeader.put("core_analysis_md", "核心解析");
+//        mapHeader.put("scientific_drinking_guide_md", "科学饮用指南");
+//        mapHeader.put("contraindications_md", "禁忌");
         for (int i = 0; i < 8; i++) {
             Map<String, Object> teaData = lstTeaData.get(i);
             Map<String, String> mapData = new LinkedHashMap<>();
@@ -106,16 +120,25 @@ public class SmallAssignmentUpdateService extends BaseService {
                 "C:\\Users\\Admin\\Desktop\\草本茶方.csv",
                 lstData,
                 "名称",
+                "原文",
+                "出处",
                 "组成药材及剂量",
                 "核心功效",
                 "适应体质",
                 "证型",
                 "饮用频率",
                 "饮用疗程",
-                "典籍溯源",
-                "核心解析",
-                "科学饮用指南",
-                "禁忌"
+                "配伍解析",
+                "食性解析",
+                "冲泡方法",
+                "饮用建议",
+                "预期感受",
+                "绝对禁忌",
+                "相对禁忌"
+//                "典籍溯源",
+//                "核心解析",
+//                "科学饮用指南",
+//                "禁忌"
         );
     }
 
@@ -134,10 +157,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 //
 //            Map<String, Object> mapBaseData = getKnowledgeBaseDataLatest(mdContent);
 //            mapData.putAll(mapBaseData);
-
+//
 //            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "mdContent", mdContent));
-
-
+//
+//
 //            String updateSql = getUpdateSQl(mapData,
 //                    Wrappers.lambdaQuery(table)
 //                            .eq("id", id));
@@ -148,8 +171,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        }
 
         ThreadUtil.executeWithListDataByThreadPool(60, lstData, mapData -> {
-            String original_text = (String) mapData.get("original_text");
-            if (StringUtils.hasText(original_text)) {
+            String compatibility_analysis = (String) mapData.get("compatibility_analysis");
+            if (compatibility_analysis.startsWith("**")) {
                 return;
             }
 
@@ -338,6 +361,52 @@ public class SmallAssignmentUpdateService extends BaseService {
         }
     }
 
+    private void importKnowledgeBaseDataLatest() {
+        importKnowledgeBaseDataLatest(
+                "knowledge_base_tea_drink_recipes",
+                "/csv/knowledge-base/草本茶方/草本茶方-ultra.csv",
+                "/csv/knowledge-base/草本茶方/表字段转换.csv"
+        );
+    }
+
+
+    private void importKnowledgeBaseDataLatest(String tableName, String csvPath, String fieldPath) {
+        Table table = desDatabase.getMapTable().get(tableName);
+        List<Map<String, String>> csvData = CsvUtil.toMap(csvPath);
+        List<Map<String, String>> fieldData = CsvUtil.toMap(fieldPath);
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "csvData.size()", csvData.size()));
+        LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "fieldData.size()", fieldData.size()));
+
+        Map<String, String> mapName = new HashMap<>();
+        for (Map<String, String> mapCsv : csvData) {
+            Map<String, Object> mapData = new HashMap<>();
+            String name = mapCsv.get("名称");
+            if (mapName.containsKey(name)) {
+                continue;
+            }
+            mapName.put(name, name);
+
+            SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                    new SnowFlakeGenerateIdWorker(0L,0L);
+            String id = snowFlakeGenerateIdWorker.generateNextId();
+            mapData.put("id", Long.parseLong(id));
+
+            for (Map<String, String> mapField : fieldData) {
+                String csvField = mapField.get("csv-field");
+                String tableField = mapField.get("table-field");
+
+                Object tableValue = mapCsv.get(csvField);
+                if (Objects.equals(tableField, "id")) {
+                    tableValue = Long.parseLong(tableValue.toString());
+                }
+                mapData.put(tableField, tableValue);
+            }
+            String insertSql = getInsertSQl(mapData, table);
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseData", "insertSql", insertSql));
+            desDataInsert(insertSql);
+        }
+    }
+
     private void importKnowledgeBaseData() {
 //        importKnowledgeBaseData(
 //                "knowledge_base_tea_drink_recipes",
@@ -345,10 +414,21 @@ public class SmallAssignmentUpdateService extends BaseService {
 //                "/csv/knowledge-base/茶饮配方/表字段转换.csv"
 //        );
 
+//        importKnowledgeBaseData(
+//                "knowledge_base_breathing_exercises",
+//                "/csv/knowledge-base/呼吸训练/呼吸训练法.csv",
+//                "/csv/knowledge-base/呼吸训练/表字段转换.csv"
+//        );
+
         importKnowledgeBaseData(
-                "knowledge_base_breathing_exercises",
-                "/csv/knowledge-base/呼吸训练/呼吸训练法.csv",
-                "/csv/knowledge-base/呼吸训练/表字段转换.csv"
+                "knowledge_base_health_preservation_in_twelve_hours",
+                "/csv/knowledge-base/时间节律/十二时辰养生.csv",
+                "/csv/knowledge-base/时间节律/十二时辰表字段转换.csv"
+        );
+        importKnowledgeBaseData(
+                "knowledge_base_health_preservation_in_twenty_four",
+                "/csv/knowledge-base/时间节律/二十四节气养生.csv",
+                "/csv/knowledge-base/时间节律/二十四节气字段转换.csv"
         );
     }
 
