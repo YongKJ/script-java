@@ -60,10 +60,10 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importFoodCookbookData();
 //        statisticsMedicineFoodShare();
 //        updateMedicineFoodShare();
-        importKnowledgeBaseData();
+//        importKnowledgeBaseData();
 //        importKnowledgeBaseDataLatest();
 //        updateKnowledgeBaseData();
-//        importKnowledgeBaseDataByBigModel();
+        importKnowledgeBaseDataByBigModel();
 //        exportKnowledgeBaseData();
     }
 
@@ -171,8 +171,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        }
 
         ThreadUtil.executeWithListDataByThreadPool(60, lstData, mapData -> {
-            String compatibility_analysis = (String) mapData.get("compatibility_analysis");
-            if (compatibility_analysis.startsWith("**")) {
+            String md_content = (String) mapData.get("md_content");
+            if (StringUtils.hasText(md_content)) {
                 return;
             }
 
@@ -258,83 +258,213 @@ public class SmallAssignmentUpdateService extends BaseService {
     private Map<String, Object> getKnowledgeBaseDataLatest(String mdContent) {
         Map<String, Object> mapData = GenUtil.fromJsonString(mdContent, Map.class);
 
-        String name = (String) mapData.get("名称");
+        String name = (String) mapData.get("方剂名称");
+        String chinese_pinyin = (String) mapData.get("汉语拼音");
+        String classic_classification = (String) mapData.get("经典分类");
+        String source = (String) mapData.get("出处典籍");
+        String original_text = (String) mapData.get("出处原文");
 
-        Map<String, Object> mapText = (Map<String, Object>) mapData.get("典籍溯源");
-        String original_text = (String) mapText.get("原文");
-        String source = (String) mapText.get("出处");
+        List<String> composition = Collections.singletonList(mapData.get("药材列表").toString());
+        if (composition.get(0).startsWith("[") &&
+                composition.get(0).endsWith("]")) {
+            composition = (List<String>) mapData.get("药材列表");
+        }
+        composition = getListStr(composition);
 
-        String composition = (String) mapData.get("组成药材及剂量");
-        List<String> core_functions = (List<String>) mapData.get("核心功效");
-        String constitution = (String) mapData.get("适应体质");
-        String syndrome_type = (String) mapData.get("证型");
-        String drinking_frequency = (String) mapData.get("饮用频率");
-        String drinking_regimen = (String) mapData.get("饮用疗程");
+        List<String> core_functions = Collections.singletonList(mapData.get("核心功效").toString());
+        if (core_functions.get(0).startsWith("[") &&
+                core_functions.get(0).endsWith("]")) {
+            core_functions = (List<String>) mapData.get("核心功效");
+        }
+        core_functions = getListStr(core_functions);
 
-        Map<String, Object> mapAnalysis = (Map<String, Object>) mapData.get("核心解析");
-        String compatibility_analysis = (String) mapAnalysis.get("配伍解析");
-        String dietary_analysis = (String) mapAnalysis.get("食性解析");
-        Map<String, Object> mapMethod = (Map<String, Object>) mapAnalysis.get("科学饮用指南");
-        String brewing_method = (String) mapMethod.get("冲泡方法");
-        String serving_suggestions = (String) mapMethod.get("饮用建议");
-        String expected_feelings = (String) mapMethod.get("预期感受");
+        List<String> constitution = Collections.singletonList(mapData.get("适应体质").toString());
+        if (constitution.get(0).startsWith("[") &&
+                constitution.get(0).endsWith("]")) {
+            core_functions = (List<String>) mapData.get("适应体质");
+        }
+        constitution = getListStr(constitution);
 
-        Map<String, Object> mapContraindication = (Map<String, Object>) mapData.get("禁忌");
-        List<String> absolute_contraindication = (List<String>) mapContraindication.get("绝对禁忌");
-        List<String> relative_contraindications = (List<String>) mapContraindication.get("相对禁忌");
+        List<String> syndrome_type = Collections.singletonList(mapData.get("证型").toString());
+        if (syndrome_type.get(0).startsWith("[") &&
+                syndrome_type.get(0).endsWith("]")) {
+            syndrome_type = (List<String>) mapData.get("证型");
+        }
+        syndrome_type = getListStr(syndrome_type);
+
+        List<String> main_symptoms_scenes = Collections.singletonList(mapData.get("主治症状/场景").toString());
+        if (main_symptoms_scenes.get(0).startsWith("[") &&
+                main_symptoms_scenes.get(0).endsWith("]")) {
+            main_symptoms_scenes = (List<String>) mapData.get("主治症状/场景");
+        }
+        main_symptoms_scenes = getListStr(main_symptoms_scenes);
+
+        List<String> absolute_contraindication = Collections.singletonList(mapData.get("绝对禁忌").toString());
+        if (absolute_contraindication.get(0).startsWith("[") &&
+                absolute_contraindication.get(0).endsWith("]")) {
+            absolute_contraindication = (List<String>) mapData.get("绝对禁忌");
+        }
+        absolute_contraindication = getListStr(absolute_contraindication);
+
+        List<String> relative_contraindications = Collections.singletonList(mapData.get("相对禁忌").toString());
+        if (relative_contraindications.get(0).startsWith("[") &&
+                relative_contraindications.get(0).endsWith("]")) {
+            relative_contraindications = (List<String>) mapData.get("相对禁忌");
+        }
+        relative_contraindications = getListStr(relative_contraindications);
+
+        String dietary_restrictions = (String) mapData.get("饮食禁忌");
+        String adverse_reaction_information = (String) mapData.get("不良反应提示");
+        String dosage_form = (String) mapData.get("剂型");
+        String brewing_method = (String) mapData.get("煎服方法");
+        String drinking_frequency = (String) mapData.get("服用频率");
+        String best_time_to_take = (String) mapData.get("最佳服用时间");
+        String drinking_regimen = (String) mapData.get("疗程建议");
+        String compatibility_analysis = (String) mapData.get("配伍解析");
+        String dietary_analysis = (String) mapData.get("性味归经解析");
+        String fangyi_analysis = (String) mapData.get("方义解析");
+        String modern_pharmacological_research = (String) mapData.get("现代药理研究");
+        String regional_characteristics = (String) mapData.get("地域特色");
+        String seasonal_adaptability = (String) mapData.get("季节适应性");
+        String population_specificity = (String) mapData.get("人群特异性");
+
+        List<String> serving_suggestions = Collections.singletonList(mapData.get("饮用建议").toString());
+        if (serving_suggestions.get(0).startsWith("[") &&
+                serving_suggestions.get(0).endsWith("]")) {
+            serving_suggestions = (List<String>) mapData.get("饮用建议");
+        }
+        serving_suggestions = getListStr(serving_suggestions);
+
+        String expected_feelings = (String) mapData.get("预期感受");
 
         String classical_texts_md = String.format("- **典籍溯源**：\n原文: %s\n出处: %s", original_text, source);
-        String core_analysis_md = String.format("- **核心解析**：\n配伍解析: %s\n食性: %s", compatibility_analysis, dietary_analysis);
-        String scientific_drinking_guide_md = String.format("- **科学饮用指南**：\n冲泡方法: %s\n饮用建议: %s\n预期感受: %s", brewing_method, serving_suggestions, expected_feelings);
+        String scientific_drinking_guide_md = String.format("- **科学饮用指南**：\n冲泡方法: %s\n饮用建议: %s\n预期感受: %s", brewing_method, String.join("; ", serving_suggestions), expected_feelings);
         String contraindications_md = String.format("- **禁忌**：\n绝对禁忌: %s\n相对禁忌: %s", String.join("; ", absolute_contraindication), String.join("; ", relative_contraindications));
+        String core_analysis_md = String.format(
+                "- **核心解析**：" +
+                        "\n配伍解析: %s" +
+                        "\n性味归经解析: %s" +
+                        "\n方义解析: %s" +
+                        "\n现代药理研究: %s" +
+                        "\n地域特色: %s" +
+                        "\n季节适应性: %s" +
+                        "\n人群特异性: %s" +
+                        "\n冲泡方法: %s" +
+                        "\n饮用建议: %s" +
+                        "\n预期感受: %s",
+                compatibility_analysis,
+                dietary_analysis,
+                fangyi_analysis,
+                modern_pharmacological_research,
+                regional_characteristics,
+                seasonal_adaptability,
+                population_specificity,
+                brewing_method,
+                String.join("; ", serving_suggestions),
+                expected_feelings
+        );
         String md_content = String.format(
                 "### 草本茶方查询结果" +
-                "\n- **名称**：%s" +
-                "\n- **典籍溯源**：%s" +
-                "\n- **组成药材及剂量**：%s" +
-                "\n- **核心功效**：%s" +
-                "\n- **适应体质**：%s" +
-                "\n- **证型**：%s" +
-                "\n- **饮用频率**：%s" +
-                "\n- **饮用疗程**：%s" +
-                "\n- **核心解析**：%s" +
-                "\n- **科学饮用指南**：%s" +
-                "\n- **禁忌**：%s",
+                        "\n- **方剂名称**：%s" +
+                        "\n- **汉语拼音**：%s" +
+                        "\n- **经典分类**：%s" +
+                        "\n- **出处典籍**：%s" +
+                        "\n- **出处原文**：%s" +
+                        "\n- **药材列表**：%s" +
+                        "\n- **核心功效**：%s" +
+                        "\n- **适应体质**：%s" +
+                        "\n- **证型**：%s" +
+                        "\n- **主治症状/场景**：%s" +
+                        "\n- **绝对禁忌**：%s" +
+                        "\n- **相对禁忌**：%s" +
+                        "\n- **饮食禁忌**：%s" +
+                        "\n- **不良反应提示**：%s" +
+                        "\n- **剂型**：%s" +
+                        "\n- **煎服方法**：%s" +
+                        "\n- **服用频率**：%s" +
+                        "\n- **最佳服用时间**：%s" +
+                        "\n- **疗程建议**：%s" +
+                        "\n- **配伍解析**：%s" +
+                        "\n- **性味归经解析**：%s" +
+                        "\n- **方义解析**：%s" +
+                        "\n- **现代药理研究**：%s" +
+                        "\n- **地域特色**：%s" +
+                        "\n- **季节适应性**：%s" +
+                        "\n- **人群特异性**：%s" +
+                        "\n- **饮用建议**：%s" +
+                        "\n- **预期感受**：%s",
                 name,
-                classical_texts_md.replace("- **典籍溯源**：\n", ""),
-                composition,
+                chinese_pinyin,
+                classic_classification,
+                source,
+                original_text,
+                String.join("; ", composition),
                 String.join("; ", core_functions),
-                constitution,
-                syndrome_type,
+                String.join("; ", constitution),
+                String.join("; ", syndrome_type),
+                String.join("; ", main_symptoms_scenes),
+                String.join("; ", absolute_contraindication),
+                String.join("; ", relative_contraindications),
+                dietary_restrictions,
+                adverse_reaction_information,
+                dosage_form,
+                brewing_method,
                 drinking_frequency,
+                best_time_to_take,
                 drinking_regimen,
-                core_analysis_md.replace("- **核心解析**：\n", ""),
-                scientific_drinking_guide_md.replace("- **科学饮用指南**：\n", ""),
-                contraindications_md.replace("- **禁忌**：\n", ""));
+                compatibility_analysis,
+                dietary_analysis,
+                fangyi_analysis,
+                modern_pharmacological_research,
+                regional_characteristics,
+                seasonal_adaptability,
+                population_specificity,
+                String.join("; ", serving_suggestions),
+                expected_feelings);
 
         Map<String, Object> mapContent = new LinkedHashMap<>();
-        mapContent.put("name", name);
-        mapContent.put("original_text", original_text);
-        mapContent.put("source", source);
+        mapContent.put("name", name.replace("'", "‘"));
+        mapContent.put("chinese_pinyin", chinese_pinyin.replace("'", "‘"));
+        mapContent.put("classic_classification", classic_classification.replace("'", "‘"));
+        mapContent.put("source", source.replace("'", "‘"));
+        mapContent.put("original_text", original_text.replace("'", "‘"));
         mapContent.put("composition", composition);
         mapContent.put("core_functions", core_functions);
         mapContent.put("constitution", constitution);
         mapContent.put("syndrome_type", syndrome_type);
-        mapContent.put("drinking_frequency", drinking_frequency);
-        mapContent.put("drinking_regimen", drinking_regimen);
-        mapContent.put("compatibility_analysis", compatibility_analysis);
-        mapContent.put("dietary_analysis", dietary_analysis);
-        mapContent.put("brewing_method", brewing_method);
-        mapContent.put("serving_suggestions", serving_suggestions);
-        mapContent.put("expected_feelings", expected_feelings);
+        mapContent.put("main_symptoms_scenes", main_symptoms_scenes);
         mapContent.put("absolute_contraindication", absolute_contraindication);
         mapContent.put("relative_contraindications", relative_contraindications);
-        mapContent.put("classical_texts_md", classical_texts_md);
-        mapContent.put("core_analysis_md", core_analysis_md);
-        mapContent.put("scientific_drinking_guide_md", scientific_drinking_guide_md);
-        mapContent.put("contraindications_md", contraindications_md);
+        mapContent.put("dietary_restrictions", dietary_restrictions.replace("'", "‘"));
+        mapContent.put("adverse_reaction_information", adverse_reaction_information.replace("'", "‘"));
+        mapContent.put("dosage_form", dosage_form.replace("'", "‘"));
+        mapContent.put("brewing_method", brewing_method.replace("'", "‘"));
+        mapContent.put("drinking_frequency", drinking_frequency.replace("'", "‘"));
+        mapContent.put("best_time_to_take", best_time_to_take.replace("'", "‘"));
+        mapContent.put("drinking_regimen", drinking_regimen.replace("'", "‘"));
+        mapContent.put("compatibility_analysis", compatibility_analysis.replace("'", "‘"));
+        mapContent.put("dietary_analysis", dietary_analysis.replace("'", "‘"));
+        mapContent.put("fangyi_analysis", fangyi_analysis.replace("'", "‘"));
+        mapContent.put("modern_pharmacological_research", modern_pharmacological_research.replace("'", "‘"));
+        mapContent.put("regional_characteristics", regional_characteristics.replace("'", "‘"));
+        mapContent.put("seasonal_adaptability", seasonal_adaptability.replace("'", "‘"));
+        mapContent.put("population_specificity", population_specificity.replace("'", "‘"));
+        mapContent.put("serving_suggestions", serving_suggestions);
+        mapContent.put("expected_feelings", expected_feelings.replace("'", "‘"));
+        mapContent.put("classical_texts_md", classical_texts_md.replace("'", "‘"));
+        mapContent.put("core_analysis_md", core_analysis_md.replace("'", "‘"));
+        mapContent.put("scientific_drinking_guide_md", scientific_drinking_guide_md.replace("'", "‘"));
+        mapContent.put("contraindications_md", contraindications_md.replace("'", "‘"));
         mapContent.put("md_content", md_content);
         return mapContent;
+    }
+
+    private List<String> getListStr(List<String> lstStr) {
+        List<String> strings = new ArrayList<>();
+        for (String str : lstStr) {
+            strings.add(str.replace("'", "‘"));
+        }
+        return strings;
     }
 
     private void updateKnowledgeBaseData() {
@@ -364,7 +494,7 @@ public class SmallAssignmentUpdateService extends BaseService {
     private void importKnowledgeBaseDataLatest() {
         importKnowledgeBaseDataLatest(
                 "knowledge_base_tea_drink_recipes",
-                "/csv/knowledge-base/草本茶方/草本茶方-ultra.csv",
+                "/csv/knowledge-base/草本茶方/代茶饮_养生知识库.csv",
                 "/csv/knowledge-base/草本茶方/表字段转换.csv"
         );
     }
@@ -380,14 +510,14 @@ public class SmallAssignmentUpdateService extends BaseService {
         Map<String, String> mapName = new HashMap<>();
         for (Map<String, String> mapCsv : csvData) {
             Map<String, Object> mapData = new HashMap<>();
-            String name = mapCsv.get("名称");
+            String name = mapCsv.get("﻿名称");
             if (mapName.containsKey(name)) {
                 continue;
             }
             mapName.put(name, name);
 
             SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
-                    new SnowFlakeGenerateIdWorker(0L,0L);
+                    new SnowFlakeGenerateIdWorker(0L, 0L);
             String id = snowFlakeGenerateIdWorker.generateNextId();
             mapData.put("id", Long.parseLong(id));
 
@@ -444,7 +574,7 @@ public class SmallAssignmentUpdateService extends BaseService {
             Map<String, Object> mapData = new HashMap<>();
 
             SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
-                    new SnowFlakeGenerateIdWorker(0L,0L);
+                    new SnowFlakeGenerateIdWorker(0L, 0L);
             String id = snowFlakeGenerateIdWorker.generateNextId();
             mapData.put("id", Long.parseLong(id));
 
@@ -702,7 +832,7 @@ public class SmallAssignmentUpdateService extends BaseService {
 
                 String tableName = tempMap.getValue().getName();
                 if (tableName.contains("_") ||
-                    tableName.contains("-")) {
+                        tableName.contains("-")) {
                     tableName = "`" + tableName + "`";
                     tempMap.getValue().setName(tableName);
                 }

@@ -137,9 +137,9 @@ public class SQL {
                     ((String) value).endsWith("`") ||
                     ((String) value).contains(".") &&
                             GenUtil.isNumeric((String) value) ?
-                    (String) value : String.format("'%s'", value);
+                    (String) value : String.format("'%s'", ((String) value).replace("'", "‘"));
         } else if (value instanceof List || value instanceof Map) {
-            return String.format("'%s'", GenUtil.toJsonString(value));
+            return String.format("'%s'", GenUtil.toJsonString(value).replace("'", "‘"));
         } else {
             return GenUtil.objToStr(value);
         }
