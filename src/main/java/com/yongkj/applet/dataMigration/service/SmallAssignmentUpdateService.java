@@ -63,7 +63,8 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importKnowledgeBaseData();
 //        importKnowledgeBaseDataLatest();
 //        updateKnowledgeBaseData();
-        importKnowledgeBaseDataByBigModel();
+        updateKnowledgeBaseDataLatest();
+//        importKnowledgeBaseDataByBigModel();
 //        exportKnowledgeBaseData();
     }
 
@@ -465,6 +466,65 @@ public class SmallAssignmentUpdateService extends BaseService {
             strings.add(str.replace("'", "‘"));
         }
         return strings;
+    }
+
+    private void updateKnowledgeBaseDataLatest() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_tea_drink_recipes");
+        List<Map<String, Object>> lstData = desDataList(table);
+        for (Map<String, Object> mapData : lstData) {
+            
+//            String name = (String) mapData.get("name");
+//            if (!Objects.equals(name, "玫瑰花西洋参养血茶")) {
+//                continue;
+//            }
+
+            boolean flag = false;
+            for (Map.Entry<String, Object> map : mapData.entrySet()) {
+                if (!(map.getValue() instanceof List)) {
+                    continue;
+                }
+                List<String> lstValue = (List<String>) map.getValue();
+                if (!(lstValue.size() == 1 &&
+                        lstValue.get(0).startsWith("[") &&
+                        lstValue.get(0).endsWith("]"))) {
+                    continue;
+                }
+
+                String value = lstValue.get(0);
+                value = value.replace("[", "")
+                        .replace("]", "");
+
+                List<String> values = new ArrayList<>();
+                if (value.contains(", ")) {
+                    values = Arrays.asList(value.split(", "));
+                }
+                if (value.contains(",")) {
+                    values = Arrays.asList(value.split(","));
+                }
+
+                List<String> tempValues = new ArrayList<>();
+                for (String tempValue : values) {
+                    if (!StringUtils.hasText(tempValue)) {
+                        continue;
+                    }
+                    tempValues.add(tempValue);
+                }
+                mapData.put(map.getKey(), tempValues);
+                flag = true;
+            }
+
+            if (!flag) {
+                continue;
+            }
+
+            Long id = (Long) mapData.get("id");
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("id", id));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "updateKnowledgeBaseDataLatest", "updateSql", updateSql));
+
+            desDataUpdate(updateSql);
+        }
     }
 
     private void updateKnowledgeBaseData() {
