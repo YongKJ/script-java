@@ -63,9 +63,148 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importKnowledgeBaseData();
 //        importKnowledgeBaseDataLatest();
 //        updateKnowledgeBaseData();
-        updateKnowledgeBaseDataLatest();
+//        updateKnowledgeBaseDataLatest();
 //        importKnowledgeBaseDataByBigModel();
+//        importKnowledgeBaseDataByBigModelLatest();
 //        exportKnowledgeBaseData();
+        importKnowledgeBaseBreathingExercisesData();
+    }
+
+    private void importKnowledgeBaseBreathingExercisesData() {
+        Table table = desDatabase.getMapTable().get("rel_breathing_exercises_training_duration");
+        List<Map<String, String>> lstCsv = CsvUtil.toMap("/csv/knowledge-base/呼吸训练/呼吸周期.csv");
+
+        Map<String, List<Map<String, String>>> mapCsv = new HashMap<>();
+        for (Map<String, String> map : lstCsv) {
+            String name = map.get("呼吸法名称");
+            if (!mapCsv.containsKey(name)) {
+                mapCsv.put(name, new ArrayList<>());
+            }
+
+            mapCsv.get(name).add(map);
+        }
+
+//        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/knowledge-base/呼吸训练/呼吸时长.csv");
+//        for (Map<String, String> mapData : csvData) {
+//            String name = mapData.get("呼吸法名称");
+//            if (name.contains("升阳")) {
+//                continue;
+//            }
+//
+//            String numStr = mapData.get("呼吸周期频率");
+//            Integer number = Integer.parseInt(numStr);
+//            List<Map<String, String>> lstCsvData = mapCsv.get(name);
+//            if (lstCsvData == null) {
+//                continue;
+//            }
+//
+//            for (int i = 0; i < number; i++) {
+//                for (Map<String, String> csv : lstCsvData) {
+//                    SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+//                            new SnowFlakeGenerateIdWorker(0L, 0L);
+//                    Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
+//                    Long knowledge_base_breathing_exercises_id = Long.parseLong(csv.get("呼吸法标识"));
+//                    String knowledge_base_breathing_exercises_name = csv.get("呼吸法名称");
+//
+//                    String breathingTypeStr = csv.get("呼吸类型");
+//                    Integer breathing_type = 1;
+//                    if (breathingTypeStr.contains("呼气")) {
+//                        breathing_type = 2;
+//                    } else if (breathingTypeStr.contains("屏息")) {
+//                        breathing_type = 3;
+//                    }
+//
+//                    Integer breathing_time = Integer.parseInt(csv.get("呼吸时间"));
+//                    String breathing_prompts = csv.get("呼吸提示");
+//
+//                    Map<String, Object> data = new HashMap<>();
+//                    data.put("id", id);
+//                    data.put("knowledge_base_breathing_exercises_id", knowledge_base_breathing_exercises_id);
+//                    data.put("knowledge_base_breathing_exercises_name", knowledge_base_breathing_exercises_name);
+//                    data.put("breathing_type", breathing_type);
+//                    data.put("breathing_time", breathing_time);
+//                    data.put("breathing_prompts", breathing_prompts);
+//
+//                    String insertSql = getInsertSQl(data, table);
+//                    LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseBreathingExercisesData", "insertSql", insertSql));
+//
+//                    desDataInsert(insertSql);
+//                }
+//            }
+//        }
+
+        List<Map<String, String>> lstCsvData = mapCsv.get("升阳导引呼吸法");
+        for (int i = 0; i < 2; i++) {
+            for (int k = 0; k < 15; k++) {
+                for (int j = 0; j < 2; j++) {
+                    Map<String, String> csv = lstCsvData.get(j);
+
+                    SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                            new SnowFlakeGenerateIdWorker(0L, 0L);
+                    Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
+                    Long knowledge_base_breathing_exercises_id = Long.parseLong(csv.get("呼吸法标识"));
+                    String knowledge_base_breathing_exercises_name = csv.get("呼吸法名称");
+
+                    String breathingTypeStr = csv.get("呼吸类型");
+                    Integer breathing_type = 1;
+                    if (breathingTypeStr.contains("呼气")) {
+                        breathing_type = 2;
+                    } else if (breathingTypeStr.contains("屏息")) {
+                        breathing_type = 3;
+                    }
+
+                    Integer breathing_time = Integer.parseInt(csv.get("呼吸时间"));
+                    String breathing_prompts = csv.get("呼吸提示");
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", id);
+                    data.put("knowledge_base_breathing_exercises_id", knowledge_base_breathing_exercises_id);
+                    data.put("knowledge_base_breathing_exercises_name", knowledge_base_breathing_exercises_name);
+                    data.put("breathing_type", breathing_type);
+                    data.put("breathing_time", breathing_time);
+                    data.put("breathing_prompts", breathing_prompts);
+
+                    String insertSql = getInsertSQl(data, table);
+                    LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseBreathingExercisesData", "insertSql", insertSql));
+
+                    desDataInsert(insertSql);
+                }
+            }
+
+            for (int j = 2; j < lstCsvData.size(); j++) {
+                Map<String, String> csv = lstCsvData.get(j);
+
+                SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                        new SnowFlakeGenerateIdWorker(0L, 0L);
+                Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
+                Long knowledge_base_breathing_exercises_id = Long.parseLong(csv.get("呼吸法标识"));
+                String knowledge_base_breathing_exercises_name = csv.get("呼吸法名称");
+
+                String breathingTypeStr = csv.get("呼吸类型");
+                Integer breathing_type = 1;
+                if (breathingTypeStr.contains("呼气")) {
+                    breathing_type = 2;
+                } else if (breathingTypeStr.contains("屏息")) {
+                    breathing_type = 3;
+                }
+
+                Integer breathing_time = Integer.parseInt(csv.get("呼吸时间"));
+                String breathing_prompts = csv.get("呼吸提示");
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", id);
+                data.put("knowledge_base_breathing_exercises_id", knowledge_base_breathing_exercises_id);
+                data.put("knowledge_base_breathing_exercises_name", knowledge_base_breathing_exercises_name);
+                data.put("breathing_type", breathing_type);
+                data.put("breathing_time", breathing_time);
+                data.put("breathing_prompts", breathing_prompts);
+
+                String insertSql = getInsertSQl(data, table);
+                LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseBreathingExercisesData", "insertSql", insertSql));
+
+                desDataInsert(insertSql);
+            }
+        }
     }
 
     private void exportKnowledgeBaseData() {
@@ -141,6 +280,32 @@ public class SmallAssignmentUpdateService extends BaseService {
 //                "科学饮用指南",
 //                "禁忌"
         );
+    }
+
+    private void importKnowledgeBaseDataByBigModelLatest() {
+        Table table = desDatabase.getMapTable().get("knowledge_base_breathing_exercises");
+        List<Map<String, Object>> lstData = desDataList(table);
+
+        ThreadUtil.executeWithListDataByThreadPool(60, lstData, mapData -> {
+            String md_content = (String) mapData.get("md_content");
+            if (StringUtils.hasText(md_content)) {
+                return;
+            }
+
+            Long id = (Long) mapData.get("id");
+            String name = (String) mapData.get("name");
+
+            String mdContent = ModelUtil.mdContent(name);
+            Map<String, Object> mapBaseData = getKnowledgeBaseDataLatestByBreathingExercises(mdContent);
+            mapData.putAll(mapBaseData);
+
+            String updateSql = getUpdateSQl(mapData,
+                    Wrappers.lambdaQuery(table)
+                            .eq("id", id));
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseDataByBigModel", "updateSql", updateSql));
+
+            desDataUpdate(updateSql);
+        });
     }
 
     private void importKnowledgeBaseDataByBigModel() {
@@ -253,6 +418,112 @@ public class SmallAssignmentUpdateService extends BaseService {
             String matchValue = matcher.group(1).trim();
             mapData.put(map.getValue(), matchValue);
         }
+        return mapData;
+    }
+
+    private Map<String, Object> getKnowledgeBaseDataLatestByBreathingExercises(String mdContent) {
+        Map<String, Object> mapData = GenUtil.fromJsonString(mdContent, Map.class);
+
+        String name = (String) mapData.get("name");
+        String alias_name = (String) mapData.get("alias_name");
+        String source = (String) mapData.get("source");
+        String original_source = (String) mapData.get("original_source");
+        List<String> analysis_texts = (List<String>) mapData.get("analysis_texts");
+        List<String> core_functions = (List<String>) mapData.get("core_functions");
+        List<String> constitution = (List<String>) mapData.get("constitution");
+        List<String> syndrome_type = (List<String>) mapData.get("syndrome_type");
+        List<String> main_symptoms_scenes = (List<String>) mapData.get("main_symptoms_scenes");
+        String phase_type = (String) mapData.get("phase_type");
+        String duration = (String) mapData.get("duration");
+        List<String> phase_description = (List<String>) mapData.get("phase_description");
+        String related_body_movements = (String) mapData.get("related_body_movements");
+        List<String> absolute_contraindication = (List<String>) mapData.get("absolute_contraindication");
+        List<String> relative_contraindications = (List<String>) mapData.get("relative_contraindications");
+        String practice_warning = (String) mapData.get("practice_warning");
+        List<String> use_with_caution_phase = (List<String>) mapData.get("use_with_caution_phase");
+        String recommended_frequency = (String) mapData.get("recommended_frequency");
+        String recommended_treatment_course = (String) mapData.get("recommended_treatment_course");
+        String duration_practice = (String) mapData.get("duration_practice");
+
+        List<String> scientific_principles = (List<String>) mapData.get("scientific_principles");
+        String mechanism_action = (String) mapData.get("mechanism_action");
+        List<String> posture_guidance = (List<String>) mapData.get("posture_guidance");
+        String visual_mnemonic = (String) mapData.get("visual_mnemonic");
+        List<String> practice_suggestions = (List<String>) mapData.get("practice_suggestions");
+        List<String> expected_feelings = (List<String>) mapData.get("expected_feelings");
+
+        String core_analysis_md = String.format(
+                "### 核心解析：" +
+                        "\n- 科学原理: %s" +
+                        "\n- 作用机制简述: %s" +
+                        "\n- 姿势指导: %s" +
+                        "\n- 形象化比喻/口诀: %s" +
+                        "\n- 练习建议: %s" +
+                        "\n- 预期感受: %s",
+                String.join("; ", scientific_principles),
+                mechanism_action,
+                String.join("; ", posture_guidance),
+                visual_mnemonic,
+                String.join("; ", practice_suggestions),
+                String.join("; ", expected_feelings)
+        );
+        String md_content = String.format(
+                "### 草本茶方查询结果" +
+                        "\n- **名称**：%s" +
+                        "\n- **别名**：%s" +
+                        "\n- **出处典籍**：%s" +
+                        "\n- **出处原文**：%s" +
+                        "\n- **典籍摘选解析**：%s" +
+                        "\n- **核心功效**：%s" +
+                        "\n- **适应体质**：%s" +
+                        "\n- **证型**：%s" +
+                        "\n- **主治症状/场景**：%s" +
+                        "\n- **阶段类型**：%s" +
+                        "\n- **持续时间**：%s" +
+                        "\n- **阶段描述**：%s" +
+                        "\n- **关联身体动作**：%s" +
+                        "\n- **绝对禁忌**：%s" +
+                        "\n- **相对禁忌**：%s" +
+                        "\n- **练习警告**：%s" +
+                        "\n- **禁用/慎用阶段**：%s" +
+                        "\n- **推荐频率**：%s" +
+                        "\n- **推荐疗程**：%s" +
+                        "\n- **单次练习时长/次数**：%s" +
+                        "\n- **科学原理**：%s" +
+                        "\n- **作用机制简述**：%s" +
+                        "\n- **姿势指导**：%s" +
+                        "\n- **形象化比喻/口诀**：%s" +
+                        "\n- **练习建议**：%s" +
+                        "\n- **预期感受**：%s",
+                name,
+                alias_name,
+                source,
+                original_source,
+                String.join("; ", analysis_texts),
+                String.join("; ", core_functions),
+                String.join("; ", constitution),
+                String.join("; ", syndrome_type),
+                String.join("; ", main_symptoms_scenes),
+                phase_type,
+                duration,
+                String.join("; ", phase_description),
+                related_body_movements,
+                String.join("; ", absolute_contraindication),
+                String.join("; ", relative_contraindications),
+                practice_warning,
+                String.join("; ", use_with_caution_phase),
+                recommended_frequency,
+                recommended_treatment_course,
+                duration_practice,
+                String.join("; ", scientific_principles),
+                mechanism_action,
+                String.join("; ", posture_guidance),
+                visual_mnemonic,
+                String.join("; ", practice_suggestions),
+                String.join("; ", expected_feelings));
+
+        mapData.put("core_analysis_md", core_analysis_md);
+        mapData.put("md_content", md_content);
         return mapData;
     }
 
