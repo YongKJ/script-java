@@ -84,57 +84,57 @@ public class SmallAssignmentUpdateService extends BaseService {
             mapCsv.get(name).add(map);
         }
 
-//        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/knowledge-base/呼吸训练/呼吸时长.csv");
-//        for (Map<String, String> mapData : csvData) {
-//            String name = mapData.get("呼吸法名称");
-//            if (name.contains("升阳")) {
-//                continue;
-//            }
-//
-//            String numStr = mapData.get("呼吸周期频率");
-//            Integer number = Integer.parseInt(numStr);
-//            List<Map<String, String>> lstCsvData = mapCsv.get(name);
-//            if (lstCsvData == null) {
-//                continue;
-//            }
-//
-//            for (int i = 0; i < number; i++) {
-//                for (Map<String, String> csv : lstCsvData) {
-//                    SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
-//                            new SnowFlakeGenerateIdWorker(0L, 0L);
-//                    Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
-//                    Long knowledge_base_breathing_exercises_id = Long.parseLong(csv.get("呼吸法标识"));
-//                    String knowledge_base_breathing_exercises_name = csv.get("呼吸法名称");
-//
-//                    String breathingTypeStr = csv.get("呼吸类型");
-//                    Integer breathing_type = 1;
-//                    if (breathingTypeStr.contains("呼气")) {
-//                        breathing_type = 2;
-//                    } else if (breathingTypeStr.contains("屏息")) {
-//                        breathing_type = 3;
-//                    }
-//
-//                    Integer breathing_time = Integer.parseInt(csv.get("呼吸时间"));
-//                    String breathing_prompts = csv.get("呼吸提示");
-//
-//                    Map<String, Object> data = new HashMap<>();
-//                    data.put("id", id);
-//                    data.put("knowledge_base_breathing_exercises_id", knowledge_base_breathing_exercises_id);
-//                    data.put("knowledge_base_breathing_exercises_name", knowledge_base_breathing_exercises_name);
-//                    data.put("breathing_type", breathing_type);
-//                    data.put("breathing_time", breathing_time);
-//                    data.put("breathing_prompts", breathing_prompts);
-//
-//                    String insertSql = getInsertSQl(data, table);
-//                    LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseBreathingExercisesData", "insertSql", insertSql));
-//
-//                    desDataInsert(insertSql);
-//                }
-//            }
-//        }
+        List<Map<String, String>> csvData = CsvUtil.toMap("/csv/knowledge-base/呼吸训练/呼吸时长.csv");
+        for (Map<String, String> mapData : csvData) {
+            String name = mapData.get("呼吸法名称");
+            if (name.contains("升阳")) {
+                continue;
+            }
+
+            String numStr = mapData.get("呼吸周期频率");
+            Integer number = Integer.parseInt(numStr);
+            List<Map<String, String>> lstCsvData = mapCsv.get(name);
+            if (lstCsvData == null) {
+                continue;
+            }
+
+            for (int i = 0; i < number; i++) {
+                for (Map<String, String> csv : lstCsvData) {
+                    SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                            new SnowFlakeGenerateIdWorker(0L, 0L);
+                    Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
+                    Long knowledge_base_breathing_exercises_id = Long.parseLong(csv.get("呼吸法标识"));
+                    String knowledge_base_breathing_exercises_name = csv.get("呼吸法名称");
+
+                    String breathingTypeStr = csv.get("呼吸类型");
+                    Integer breathing_type = 1;
+                    if (breathingTypeStr.contains("呼气")) {
+                        breathing_type = 2;
+                    } else if (breathingTypeStr.contains("屏息")) {
+                        breathing_type = 3;
+                    }
+
+                    Integer breathing_time = Integer.parseInt(csv.get("呼吸时间"));
+                    String breathing_prompts = csv.get("呼吸提示");
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", id);
+                    data.put("knowledge_base_breathing_exercises_id", knowledge_base_breathing_exercises_id);
+                    data.put("knowledge_base_breathing_exercises_name", knowledge_base_breathing_exercises_name);
+                    data.put("breathing_type", breathing_type);
+                    data.put("breathing_time", breathing_time);
+                    data.put("breathing_prompts", breathing_prompts);
+
+                    String insertSql = getInsertSQl(data, table);
+                    LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importKnowledgeBaseBreathingExercisesData", "insertSql", insertSql));
+
+                    desDataInsert(insertSql);
+                }
+            }
+        }
 
         List<Map<String, String>> lstCsvData = mapCsv.get("升阳导引呼吸法");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             for (int k = 0; k < 15; k++) {
                 for (int j = 0; j < 2; j++) {
                     Map<String, String> csv = lstCsvData.get(j);

@@ -63,10 +63,12 @@ public class ClassTemplateGenerateService extends BaseService {
         String folder = "C:\\Users\\Admin\\Desktop\\knowledge-base";
 
         List<String> tableNames = Arrays.asList(
-//                "knowledge_base_tea_drink_recipes",
+//                "knowledge_base_tea_drink_recipes"
 //                "knowledge_base_breathing_exercises"
-                "knowledge_base_health_preservation_in_twenty_four",
-                "knowledge_base_health_preservation_in_twelve_hours"
+//                "rel_breathing_exercises_training_duration"
+                "knowledge_base_breathing_exercises_record"
+//                "knowledge_base_health_preservation_in_twenty_four",
+//                "knowledge_base_health_preservation_in_twelve_hours"
         );
 
         generateTemplate("service-user", tableNames, folder, "knowledgeBase");
