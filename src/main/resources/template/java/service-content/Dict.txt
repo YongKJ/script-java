@@ -1,0 +1,5 @@
+package com.bc.content.service.dict;
+
+public interface DictClass {
+
+}

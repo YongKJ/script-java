@@ -1,0 +1,5 @@
+    /**
+     * FieldNote
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private FieldType FieldName;

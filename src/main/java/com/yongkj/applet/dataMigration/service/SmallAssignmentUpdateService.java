@@ -3,6 +3,7 @@ package com.yongkj.applet.dataMigration.service;
 import com.yongkj.applet.dataMigration.DataMigration;
 import com.yongkj.applet.dataMigration.core.BaseService;
 import com.yongkj.applet.dataMigration.pojo.dto.Database;
+import com.yongkj.applet.dataMigration.pojo.po.Field;
 import com.yongkj.applet.dataMigration.pojo.po.Table;
 import com.yongkj.applet.dataMigration.util.SnowFlakeGenerateIdWorker;
 import com.yongkj.applet.dataMigration.util.Wrappers;
@@ -67,7 +68,35 @@ public class SmallAssignmentUpdateService extends BaseService {
 //        importKnowledgeBaseDataByBigModel();
 //        importKnowledgeBaseDataByBigModelLatest();
 //        exportKnowledgeBaseData();
-        importKnowledgeBaseBreathingExercisesData();
+//        importKnowledgeBaseBreathingExercisesData();
+        importBcGroupDigitalVariableTimer();
+    }
+
+    private void importBcGroupDigitalVariableTimer() {
+        Table careTable = desDatabase.getMapTable().get("bc_group_care_dashboard");
+        Table timerTable = desDatabase.getMapTable().get("bc_group_digital_variable_timer");
+        List<String> fieldNames = Arrays.asList("id", "utc_created", "utc_modified", "utc_deleted");
+        for (Map.Entry<String, Field> map : careTable.getMapField().entrySet()) {
+            if (fieldNames.contains(map.getKey())) {
+                continue;
+            }
+
+            SnowFlakeGenerateIdWorker snowFlakeGenerateIdWorker =
+                    new SnowFlakeGenerateIdWorker(0L, 0L);
+            Long id = Long.parseLong(snowFlakeGenerateIdWorker.generateNextId());
+            String name = map.getValue().getComment();
+            String code = map.getKey();
+
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("id", id);
+            mapData.put("type", 2);
+            mapData.put("code", code);
+            mapData.put("name", name);
+
+            String insertSql = getInsertSQl(mapData, timerTable);
+            LogUtil.loggerLine(Log.of("SmallAssignmentUpdateService", "importBcGroupDigitalVariableTimer", "insertSql", insertSql));
+            desDataInsert(insertSql);
+        }
     }
 
     private void importKnowledgeBaseBreathingExercisesData() {

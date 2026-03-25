@@ -40,8 +40,23 @@ public class ClassTemplateGenerateService extends BaseService {
 //        generateAuthorizeTemplate();
 //        generateMedicinePlusTemplate();
 //        generateMaxComputeSLSEventDataTemplate();
-        generateKnowledgeBaseDataTemplate();
+//        generateKnowledgeBaseDataTemplate();
 //        generateQuestionnaireSheetDimensionTemplate();
+        generateDataVTemplate();
+    }
+
+    private void generateDataVTemplate() {
+        String folder = "C:\\Users\\Admin\\Desktop\\data-v";
+        if (!FileUtil.exist(folder)) {
+            FileUtil.mkdir(folder);
+        }
+
+        List<String> tableNames = Arrays.asList(
+                "datav_config",
+                "datav_timer_config"
+        );
+
+        generateTemplate("service-content", tableNames, folder, "datavConfig");
     }
 
     private void generateQuestionnaireSheetDimensionTemplate() {
@@ -64,9 +79,10 @@ public class ClassTemplateGenerateService extends BaseService {
 
         List<String> tableNames = Arrays.asList(
 //                "knowledge_base_tea_drink_recipes"
-//                "knowledge_base_breathing_exercises"
+                "knowledge_base_breathing_exercises",
+                "knowledge_base_breathing_exercises_classification"
 //                "rel_breathing_exercises_training_duration"
-                "knowledge_base_breathing_exercises_record"
+//                "knowledge_base_breathing_exercises_record"
 //                "knowledge_base_health_preservation_in_twenty_four",
 //                "knowledge_base_health_preservation_in_twelve_hours"
         );

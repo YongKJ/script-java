@@ -1,0 +1,5 @@
+package com.bc.content.service.entity.params;
+
+public interface ParamsClass {
+
+}
