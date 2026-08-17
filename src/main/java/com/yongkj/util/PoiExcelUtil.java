@@ -3,7 +3,10 @@ package com.yongkj.util;
 import com.yongkj.util.excel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.*;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
@@ -11,16 +14,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Excel 读写统一门面。
+ *
+ * <p>仅做转发，不持有任何可变状态——原先的静态字段（lstCellStyle / drawing / dataRow /
+ * mapSheetColWidth）已迁移到 {@link ExcelContext}，按 workbook 维度隔离，参见
+ * {@code ExcelContext} 的说明。并发导出不同 workbook 互不影响。
+ */
 public class PoiExcelUtil {
-
-    private static final int[][] MOVE = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    private static Map<String, Map<Integer, Integer>> mapSheetColWidth;
-    private static List<CellStyle> lstCellStyle;
-    private static SXSSFDrawing drawing;
-    private static int dataRow = 1;
 
     private PoiExcelUtil() {
     }
+
+    // ==================== 读取 ====================
 
     public static Workbook getWorkbook(MultipartFile file) {
         return ExcelReader.getWorkbook(file);
@@ -114,6 +120,8 @@ public class PoiExcelUtil {
         return ExcelReader.toMap(excelName, sheetName, headerRow, headerCol, headerLastCol, dataRow, dataLastRow, extraData);
     }
 
+    // ==================== 样式 ====================
+
     public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook) {
         return ExcelHeader.getCellStyles(workbook);
     }
@@ -121,6 +129,8 @@ public class PoiExcelUtil {
     public static List<CellStyle> getCellStyles(SXSSFWorkbook workbook, Color headerBackgroundColor, Color dataBackgroundColor, Color borderColor) {
         return ExcelHeader.getCellStyles(workbook, headerBackgroundColor, dataBackgroundColor, borderColor);
     }
+
+    // ==================== 表头 ====================
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader) {
         writeHeader(sheet, lstHeader, 0);
@@ -147,7 +157,7 @@ public class PoiExcelUtil {
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int widthCol) {
-        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, null);
+        writeHeader(sheet, lstHeader, lstCellStyle, dataCol, ExcelContext.of(sheet.getWorkbook()).getDataStartRow(), widthCol, null);
     }
 
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol) {
@@ -157,6 +167,8 @@ public class PoiExcelUtil {
     public static void writeHeader(SXSSFSheet sheet, List<List<String>> lstHeader, List<CellStyle> lstCellStyle, int dataCol, int dataRow, int widthCol, List<Integer> lstExcludeRow) {
         ExcelHeaderByWidthColAndCellStyle.writeHeader(sheet, lstHeader, lstCellStyle, dataCol, dataRow, widthCol, lstExcludeRow);
     }
+
+    // ==================== 图片 / 数据 ====================
 
     public static void writePicture(SXSSFSheet sheet, int rowIndex, int colIndex, String filePath) throws Exception {
         writePicture(sheet, rowIndex, 0, colIndex, 0, filePath);
@@ -210,6 +222,8 @@ public class PoiExcelUtil {
         ExcelWriter.writeCellData(cell, lstCellStyle, dataRow, cellData);
     }
 
+    // ==================== 列宽 ====================
+
     public static Map<Integer, Integer> getInitColWidths(SXSSFSheet sheet) {
         return ExcelHeader.getInitColWidths(sheet);
     }
@@ -222,43 +236,15 @@ public class PoiExcelUtil {
         ExcelHeader.updateColWidths(sheet, mapColWidth);
     }
 
-    public static void write(SXSSFWorkbook workbook, String fileName) {
-        ExcelWriter.write(workbook, fileName);
-    }
+    // ==================== 写盘 ====================
 
-    public static Map<String, Map<Integer, Integer>> getMapSheetColWidth() {
-        return mapSheetColWidth;
-    }
-
-    public static void setMapSheetColWidth(Map<String, Map<Integer, Integer>> mapSheetColWidth) {
-        PoiExcelUtil.mapSheetColWidth = mapSheetColWidth;
-    }
-
-    public static List<CellStyle> getLstCellStyle() {
-        return lstCellStyle;
-    }
-
-    public static void setLstCellStyle(List<CellStyle> lstCellStyle) {
-        PoiExcelUtil.lstCellStyle = lstCellStyle;
-    }
-
-    public static SXSSFDrawing getDrawing() {
-        return drawing;
-    }
-
-    public static void setDrawing(SXSSFDrawing drawing) {
-        PoiExcelUtil.drawing = drawing;
-    }
-
-    public static int getDataRow() {
-        return dataRow;
-    }
-
-    public static void setDataRow(int dataRow) {
-        PoiExcelUtil.dataRow = dataRow;
-    }
-
-    public static int[][] getMOVE() {
-        return MOVE;
+    /**
+     * 将 workbook 写出到文件。
+     *
+     * @return 是否写出成功。注意：方法不会关闭 workbook（可能还有后续写出），
+     * 调用方结束使用后应自行 {@code workbook.close()} 释放临时文件。
+     */
+    public static boolean write(SXSSFWorkbook workbook, String fileName) {
+        return ExcelWriter.write(workbook, fileName);
     }
 }

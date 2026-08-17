@@ -1,7 +1,6 @@
 package com.yongkj.util.excel;
 
 import com.yongkj.pojo.dto.Coords;
-import com.yongkj.util.PoiExcelUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -21,6 +20,7 @@ public class ExcelHeaderByCellStyle {
         int colSize = lstHeader.size();
         int rowSize = lstHeader.get(0).size();
         boolean[][] lstFlag = new boolean[rowSize][colSize];
+        ExcelContext ctx = ExcelContext.of(sheet.getWorkbook());
         for (int row = 0; row < rowSize; row++) {
             for (int col = 0; col < colSize; col++) {
                 if (!lstFlag[row][col]) {
@@ -33,46 +33,34 @@ public class ExcelHeaderByCellStyle {
                         ExcelHeader.checkMergeRange(lstHeader, lstFlag, lstCoords, row, col, lstHeader.get(col).get(row));
                     }
 
-                    merge(sheet, lstCoords, lstCellStyle);
+                    merge(sheet, lstCoords, lstCellStyle, ctx);
                 }
             }
         }
         //单元格冻结：从上往下，冻结 dataRow 行；从左往右，冻结 dataCol 列
-        sheet.createFreezePane(dataCol, PoiExcelUtil.getDataRow(), dataCol, PoiExcelUtil.getDataRow());
+        sheet.createFreezePane(dataCol, ctx.getDataStartRow(), dataCol, ctx.getDataStartRow());
     }
 
-    private static void merge(SXSSFSheet sheet, List<Coords> lstCoords, List<CellStyle> lstCellStyle) {
-        //单元格坐标排序
-        lstCoords.sort((c1, c2) -> {
-            if (c1.getX() > c2.getX() || c1.getY() > c2.getY()) {
-                return 1;
-            } else if (c1.getX() < c2.getX() || c1.getY() < c2.getY()) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
+    private static void merge(SXSSFSheet sheet, List<Coords> lstCoords, List<CellStyle> lstCellStyle, ExcelContext ctx) {
+        //一次 O(n) 遍历求最小/最大坐标（替代原先非传递性的全量排序）
+        Coords minCoords = ExcelHeader.minCoords(lstCoords);
+        Coords maxCoords = ExcelHeader.maxCoords(lstCoords);
         //表头数据写入到最小坐标的单元格中
-        ExcelWriter.setCellValue(sheet, lstCoords.get(0).getX(), lstCoords.get(0).getY(), lstCoords.get(0).getValue());
+        ExcelWriter.setCellValue(sheet, minCoords.getX(), minCoords.getY(), minCoords.getValue());
         for (Coords coords : lstCoords) {
-            //设置列宽
+            //记录列宽（写盘时统一应用）
             ExcelHeader.setWidthColByAuto(sheet, coords.getY(), coords.getValue());
             //设置行高
             Row row = CellUtil.getRow(coords.getX(), sheet);
-            row.setHeightInPoints(180);
-            row.setHeight((short) (4 * 180));
+            row.setHeight(ExcelHeader.ROW_HEIGHT);
             //设置单元格样式
             Cell cell = CellUtil.getCell(row, coords.getY());
             cell.setCellStyle(lstCellStyle.get(0));
-            //设置数据行号
-            if (coords.getX() + 1 > PoiExcelUtil.getDataRow()) {
-                PoiExcelUtil.setDataRow(coords.getX() + 1);
-            }
+            //记录数据起始行号（表头最大行号 + 1）
+            ctx.updateDataStartRow(coords.getX() + 1);
         }
         //合并单元格
         if (lstCoords.size() > 1) {
-            Coords minCoords = lstCoords.get(0);
-            Coords maxCoords = lstCoords.get(lstCoords.size() - 1);
             sheet.addMergedRegion(new CellRangeAddress(minCoords.getX(), maxCoords.getX(), minCoords.getY(), maxCoords.getY()));
         }
     }

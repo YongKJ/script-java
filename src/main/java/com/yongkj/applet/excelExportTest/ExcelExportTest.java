@@ -26,9 +26,9 @@ public class ExcelExportTest {
     }
 
     private void apply() {
-        readTestTwo();
+//        readTestTwo();
 //        readTestOne();
-//        writeTestSeven();
+        writeTestSeven();
 //        writeTestSix();
 //        writeTestFive();
 //        writeTestFour();
@@ -155,7 +155,7 @@ public class ExcelExportTest {
             }
         });
 
-        PoiExcelUtil.write(workbook, "C:\\Users\\Admin\\Desktop\\demo-test-by-thread-" + System.currentTimeMillis() + ".xlsx");
+        PoiExcelUtil.write(workbook, "C:\\Users\\dxj17\\Desktop\\demo-test-by-thread-" + System.currentTimeMillis() + ".xlsx");
     }
 
     private void writeTestSix() {
